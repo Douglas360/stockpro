@@ -9,13 +9,14 @@ import { Fotos } from './Tabs/Fotos';
 import { Fiscal } from './Tabs/Fiscal';
 import { Fornecedores } from './Tabs/Fornecedores';
 import { useProduct } from '../../../context/ProductContext/useProduct';
-import { Spinner } from 'reactstrap';
 import { CustomSpinner } from '../../../components/CustomSpinner';
+import { useAuth } from '../../../context/AuthContext/useAuth';
 
 const CadastrarProduto = () => {
   const [data, setData] = useState([]);
   const { createProduct, loading } = useProduct();
   const id_empresa = 1
+  const {user} = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +29,7 @@ const CadastrarProduto = () => {
     setData((prevData) => ({
       ...prevData,
       id_empresa: id_empresa,
+      id_usuario: user?.id_usuario,
     }));
   };
 

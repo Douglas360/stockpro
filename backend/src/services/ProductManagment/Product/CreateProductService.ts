@@ -53,7 +53,7 @@ class CreateProductService {
                     id_produto: product.id_produto,
                     tipo_movimentacao: "Entrada",
                     quantidade: productWithDetails?.estoque[0].quantidade || 0,
-                    id_usuario: 1, //TODO: Change to user id
+                    id_usuario: productData.id_usuario || 1,
                     descricao: "Entrada manual de produto",
 
                 }
@@ -93,14 +93,26 @@ class CreateProductService {
             const product = await prismaClient.produto.findFirst({
                 where: {
                     codigo_interno: id.toString()
-                }
+                },
+
+
             });
             if (!product) throw new Error("Product not found");
-            await prismaClient.produto.delete({
+            await prismaClient.movimentacaoEstoque.deleteMany({
                 where: {
                     id_produto: product.id_produto
                 }
             });
+            await prismaClient.produto.delete({
+                where: {
+                    id_produto: product.id_produto
+                },
+
+
+            });
+
+
+
 
             return { message: "Product deleted successfully" }
 

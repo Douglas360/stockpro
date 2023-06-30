@@ -38,8 +38,9 @@ class CreateProductController {
             valorFixoPisSt,
             valorFixoCofinsSt,
             fornecedor,
+            id_usuario,
         } = req.body;
-        console.log(fornecedor)
+       
         const estoqueData = {
             estoque_min: Number(estoqueMinimo) || 0,
             estoque_max: Number(estoqueMaximo) || 0,
@@ -86,7 +87,8 @@ class CreateProductController {
             vl_fixo_cofins: Number(valorFixoCofins) || 0,
             vl_fixo_pis_st: Number(valorFixoPisSt) || 0,
             vl_fixo_cofins_st: Number(valorFixoCofinsSt) || 0,
-            id_fornecedor: Number(fornecedor) || null
+            id_fornecedor: Number(fornecedor) || null,
+           id_usuario
 
         });
 

@@ -1,9 +1,64 @@
-import React from 'react'
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import React, { useEffect, useState } from 'react'
+import { faPenToSquare, faRandom } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Card, CardBody, Col, FormText, Input, Label, Row } from 'reactstrap'
+import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } from 'reactstrap'
+import { useRegister } from '../../../context/RegisterContext/useRegister'
+import { useAuth } from '../../../context/AuthContext/useAuth'
+
 
 const CardDadosGerais = ({ data, handleInputChange }) => {
+  const { listAllCustomers } = useRegister()
+  const { user } = useAuth()
+  const [customers, setCustomers] = useState([])
+  const [numeroVenda, setNumeroVenda] = useState('')
+  const [codigoError, setCodigoError] = useState(false)
+  const [customerError, setCustomerError] = useState(false)
+
+
+
+  const loadCustomers = async () => {
+    //const id_empresa = user?.id_empresa
+    const response = await listAllCustomers(1)
+
+    setCustomers(response)
+
+  }
+
+  useEffect(() => {
+    loadCustomers()
+  }, [])
+
+
+  const handleCodigoBlur = (e) => {
+    const { value } = e.target
+    if (value.length < 1) {
+      setCodigoError(true)
+    } else {
+      setCodigoError(false)
+    }
+  }
+  const handleCustomerBlur = (e) => {
+    const { value } = e.target
+    if (value.length < 1) {
+      setCustomerError(true)
+    } else {
+      setCustomerError(false)
+    }
+  }
+
+  const generateCode = () => {
+
+    const randomCode = Math.floor(100000 + Math.random() * 900000)
+
+    setNumeroVenda(randomCode.toString())
+
+    //update the data object
+    const updatedData = { ...data }
+    updatedData.numeroVenda = randomCode.toString()
+    handleInputChange({ target: { name: 'numeroVenda', value: randomCode.toString() } })
+
+  }
+
   return (
     <Card className="main-card mb-1">
       <CardBody>
@@ -16,17 +71,50 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
           </Col>
         </Row>
         <Row className='mb-2'>
-          <Col md='2'>
-            <Label>Número</Label>
-            <Input type='text' name='numeroOrcamento' id='numeroOrcamento' value={data.numeroOrcamento} onChange={handleInputChange} />
+          <Col md='3'>
+            <Label style={{ fontWeight: 'bold' }}>Número da venda</Label><span className='text-danger'>*</span>
+
+            <InputGroup>
+              <Input
+                required
+                type='text'
+                name='numeroVenda'
+                id='numeroVenda'
+                placeholder='Numero da Venda'
+                value={numeroVenda}
+                onChange={(e) => setNumeroVenda(e.target.value)}
+                onBlur={handleCodigoBlur}
+                invalid={codigoError}
+                valid={!codigoError}
+              />
+              <Button color='secondary' onClick={generateCode}>
+                <FontAwesomeIcon icon={faRandom} size='sm' style={{ marginRight: 3 }} />
+                Gerar</Button>
+            </InputGroup>
           </Col>
-          <Col md='6'>
-            <Label>Cliente</Label>
-            <Input type='text' name='clienteOrcamento' id='clienteOrcamento' value={data.ClienteOrcamento} onChange={handleInputChange} />
+          <Col md='5'>
+            <Label style={{ fontWeight: 'bold' }}>Cliente</Label><span className='text-danger'>*</span>
+            <Input type='select'
+              name='clienteOrcamento'
+              id='clienteOrcamento'
+              value={data.clienteOrcamento}
+              onChange={handleInputChange}
+              onBlur={handleCustomerBlur}
+              invalid={customerError}
+              valid={!customerError}
+              required
+            >
+              <option value=''>Selecione um cliente</option>
+              {customers.map((customer) => (
+                <option key={customer.id_cliente} value={customer.id_cliente}>
+                  {customer.nome}
+                </option>
+              ))}
+            </Input>
           </Col>
           <Col md='4'>
-            <Label>Data</Label>
-            <Input type='date' name='dataOrcamento' id='dataOrcamento' value={data.dataOrcamento} onChange={handleInputChange} defaultValue={new Date().toISOString().substr(0, 10)} />
+            <Label style={{ fontWeight: 'bold' }}>Data</Label><span className='text-danger'>*</span>
+            <Input type='date' name='dataOrcamento' id='dataOrcamento' value={data.dataOrcamento} onChange={handleInputChange} />
           </Col>
         </Row>
 

@@ -1,12 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { faBox, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table } from 'reactstrap'
+import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
+import { useProduct } from '../../../context/ProductContext/useProduct'
 
 const CardProduto = ({ data, handleInputChange }) => {
-  const [produtos, setProdutos] = useState([
-    { produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }
-  ])
+  const { listProducts } = useProduct()
+  const [products, setProducts] = useState([])
+  const [produtos, setProdutos] = useState([{ produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+  const [stockQuantities, setStockQuantities] = useState({});
+  const [typeDiscount, setTypeDiscount] = useState({}); // State to store the discount type (R$ or %) for each product
+
+  const loadProducts = async () => {
+    const response = await listProducts(1)
+    setProducts(response)
+  }
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
 
   const tipoVenda = [
     { id: 1, tipo: 'Venda' },
@@ -26,18 +38,93 @@ const CardProduto = ({ data, handleInputChange }) => {
     updatedFields[index][field] = value
     setProdutos(updatedFields)
 
-    //update the data object
+    // Update the data object
     const updatedData = { ...data }
     updatedData.produtos = updatedFields
     handleInputChange({ target: { name: 'produtos', value: updatedFields } })
 
+    if (field === 'produto') {
+      const selectedProduct = products.find((product) => product.id_produto === parseInt(value, 10));
+      if (selectedProduct) {
+        updatedFields[index].valor = selectedProduct.valor_venda
+        updatedFields[index].quantidade = '1' // Set the quantity as 1
+        updatedFields[index].subtotal = selectedProduct.valor_venda // Set the subtotal
+        updatedFields[index].tipo = '1' // Set the type
+        setStockQuantities({ ...stockQuantities, [index]: selectedProduct.estoque[0].quantidade }); // Set the stock quantity
+      }
+    }
   }
 
   const handleRemoveField = (index) => {
-    const list = [...produtos]
-    list.splice(index, 1)
-    setProdutos(list)
+    const updatedFields = [...produtos]
+    updatedFields.splice(index, 1)
+    setProdutos(updatedFields)
   }
+
+  const handleQuantityChange = (index, value) => {
+    const updatedFields = [...produtos]
+    updatedFields[index].quantidade = value
+    updatedFields[index].subtotal = value * updatedFields[index].valor
+    setProdutos(updatedFields)
+
+    // Update the data object
+    const updatedData = { ...data }
+    updatedData.produtos = updatedFields
+    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
+  }
+
+  const handleDiscountChange = (index, value) => {
+    const updatedFields = [...produtos]
+    updatedFields[index].desconto = value
+
+
+    if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
+      // Apply discount by subtracting the value directly
+      updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value
+    } else if (typeDiscount[index] === '%') {
+      // Apply discount as a percentage of the total
+      const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100
+      updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount
+    }
+
+    setProdutos(updatedFields)
+
+    // Update the data object
+    const updatedData = { ...data }
+    updatedData.produtos = updatedFields
+    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
+  }
+
+  const handleValueChange = (index, value) => {
+    const updatedFields = [...produtos]
+    updatedFields[index].valor = value
+    updatedFields[index].subtotal = updatedFields[index].quantidade * value - updatedFields[index].desconto
+    setProdutos(updatedFields)
+
+    // Update the data object
+    const updatedData = { ...data }
+    updatedData.produtos = updatedFields
+    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
+  }
+
+  const handleDiscountTypeChange = (index, value) => {
+    const updatedTypes = { ...typeDiscount }
+    updatedTypes[index] = value || 'R$'
+    setTypeDiscount(updatedTypes)
+    handleDiscountChange(index, produtos[index].desconto)
+  }
+
+  // Function to change the background color of the tooltip based on the stock quantity of the product selected
+  const getTooltipColor = (stockQuantity) => {
+    if (stockQuantity <= 1) {
+      return 'red'
+    } else if (stockQuantity > 1 && stockQuantity <= 3) {
+      return 'orange'
+    } else {
+      return 'green'
+    }
+  }
+
   return (
     <Card className="main-card mb-1">
       <CardBody>
@@ -45,7 +132,8 @@ const CardProduto = ({ data, handleInputChange }) => {
           <Col md='12'>
             <Label style={{ fontSize: 20 }}>
               <FontAwesomeIcon icon={faBox} style={{ fontSize: 20, marginRight: 3 }} />
-              Produtos</Label>
+              Produtos
+            </Label>
           </Col>
         </Row>
         <Table striped bordered hover>
@@ -61,25 +149,43 @@ const CardProduto = ({ data, handleInputChange }) => {
             </tr>
           </thead>
           <tbody>
-            {produtos?.map((produto, index) => (
+            {produtos.map((produto, index) => (
               <tr key={index}>
                 <td>
                   <Input
                     required
-                    type='text'
+                    type='select'
                     name='produto'
                     value={produto.produto}
                     onChange={(e) => handleFieldChange(index, 'produto', e.target.value)}
-                  />
+                  >
+                    <option value=''>Selecione</option>
+                    {products.map((product, innerIndex) => (
+                      <option key={innerIndex} value={product.id_produto}>{product.nome}</option>
+                    ))}
+                  </Input>
                 </td>
                 <td>
                   <Input
                     required
-                    type='text'
+                    type='number'
                     name='quantidade'
                     value={produto.quantidade}
-                    onChange={(e) => handleFieldChange(index, 'quantidade', e.target.value)}
+                    onChange={(e) => handleQuantityChange(index, e.target.value)}
+                    id={`quantidade-${index}`}
                   />
+
+                  {produto.produto && (
+                    <UncontrolledTooltip
+                      placement="bottom"
+                      target={`quantidade-${index}`}
+                      style={{ backgroundColor: getTooltipColor(stockQuantities[index]), color: 'white', fontSize: '12px' }}
+                    >
+                      <Label>
+                        Quantidade em estoque: {stockQuantities[index]}
+                      </Label>
+                    </UncontrolledTooltip>
+                  )}
                 </td>
                 <td>
                   <Input
@@ -90,41 +196,46 @@ const CardProduto = ({ data, handleInputChange }) => {
                     onChange={(e) => handleFieldChange(index, 'tipo', e.target.value)}
                   >
                     <option value=''>Selecione</option>
-                    {tipoVenda?.map((tipo, index) => (
-                      <option key={index} value={tipo.tipo}>{tipo.tipo}</option>
+                    {tipoVenda.map((tipo, innerIndex) => (
+                      <option key={innerIndex} value={tipo.id}>{tipo.tipo}</option>
                     ))}
                   </Input>
                 </td>
                 <td>
                   <Input
                     required
-                    type='text'
+                    type='number'
                     name='valor'
-                    value={produto.valor}
-                    onChange={(e) => handleFieldChange(index, 'valor', e.target.value)}
+                    value= {parseFloat(produto.valor).toFixed(2)}
+                   
+                    onChange={(e) => handleValueChange(index, e.target.value)}
                   />
                 </td>
                 <td>
                   <InputGroup>
                     <Input
-                      type='text'
+                      type='number'
                       name='desconto'
                       value={produto.desconto}
-                      onChange={(e) => handleFieldChange(index, 'desconto', e.target.value)}
-                      style={{ width: '58%'} }
+                      placeholder='0,00'
+                      onChange={(e) => handleDiscountChange(index, e.target.value)}
+                      style={{ width: '58%' }}
                     />
-                    <Input type="select" name="select" id="exampleSelect"
-                    
-                    >                    
-                      <option>R$</option>
-                      <option>%</option>
+                    <Input
+                      type='select'
+                      name='tipo_desconto'
+                      value={typeDiscount[index]}
+                      onChange={(e) => handleDiscountTypeChange(index, e.target.value)}
+                      style={{ width: '42%' }}
+                    >
+                      <option value='R$'>R$</option>
+                      <option value='%'>%</option>
                     </Input>
                   </InputGroup>
-
                 </td>
                 <td>
                   <Input
-                    type='text'
+                    type='number'
                     name='subtotal'
                     value={produto.subtotal}
                     onChange={(e) => handleFieldChange(index, 'subtotal', e.target.value)}
@@ -145,10 +256,7 @@ const CardProduto = ({ data, handleInputChange }) => {
         </Button>
         <br />
         <br />
-
-
       </CardBody>
-
     </Card>
   )
 }
