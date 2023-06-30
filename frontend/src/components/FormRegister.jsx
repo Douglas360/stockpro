@@ -1,0 +1,578 @@
+import React, { useState } from 'react'
+import { Button, Card, CardBody, Col, Form, FormFeedback, Input, InputGroup, InputGroupText, Label, Row, Spinner, UncontrolledAlert, UncontrolledTooltip } from 'reactstrap'
+import { faIdCard, faMapMarkerAlt, faPenToSquare, faPhone, faPlusCircle, faSave, faSearch, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useNavigate } from 'react-router-dom'
+import { GetCep } from '../functions/getCep'
+import { GetCnpj } from '../functions/getCnpj'
+import InputMask from 'react-input-mask';
+import { useAuth } from '../context/AuthContext/useAuth'
+
+const estados = [
+    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
+    'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
+
+const FormRegister = ({ title, handleFormSubmit, loading }) => {
+    const { user } = useAuth()
+    const [tipoCliente, setTipoCliente] = useState('')
+    const [checked, setChecked] = useState(false)
+    const [nameError, setNameError] = useState(false)
+    const [tipoClienteError, setTipoClienteError] = useState(false)
+    const [enderecosCliente, setEnderecosCliente] = useState([
+        { cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '' }
+    ])
+    const [contatosCliente, setContatosCliente] = useState([
+        { tipo_contato: '', nome: '', observacao: '' }
+    ])
+
+    const navigate = useNavigate()
+
+    const handleCancel = () => {
+        navigate(`/cadastro/${title}`)
+    }
+
+    const handleAddEndereco = () => {
+        setEnderecosCliente([...enderecosCliente, { cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '' }])
+    }
+
+    const handleRemoveEndereco = (index) => {
+        const list = [...enderecosCliente]
+        list.splice(index, 1)
+        setEnderecosCliente(list)
+    }
+
+    const handleEnderecoChange = (index, field, value) => {
+        const updatedEnderecos = [...enderecosCliente]
+        updatedEnderecos[index][field] = value
+        setEnderecosCliente(updatedEnderecos)
+    }
+
+    const handleAddContato = () => {
+        setContatosCliente([...contatosCliente, { tipo_contato: '', nome: '', observacao: '' }])
+    }
+
+    const handleRemoveContato = (index) => {
+        const list = [...contatosCliente]
+        list.splice(index, 1)
+        setContatosCliente(list)
+    }
+
+    const handleContatoChange = (index, field, value) => {
+        const updatedContatos = [...contatosCliente]
+        updatedContatos[index][field] = value
+        setContatosCliente(updatedContatos)
+    }
+
+    const handleChecked = () => {
+        setChecked(!checked)
+    }
+
+    const handleTipoClienteChange = (e) => {
+        setTipoCliente(e.target.value)
+    }
+
+    const handleSearchCep = async () => {
+        const cep = enderecosCliente[0].cep
+        if (cep.length > 0) {
+            try {
+                const updatedEnderecos = [...enderecosCliente];
+
+                for (let i = 0; i < updatedEnderecos.length; i++) {
+                    const cep = updatedEnderecos[i].cep;
+                    const response = await GetCep(cep);
+
+                    if (response) {
+                        const { logradouro, bairro, localidade, uf } = response;
+
+                        updatedEnderecos[i].rua = logradouro || '';
+                        updatedEnderecos[i].bairro = bairro || '';
+                        updatedEnderecos[i].cidade = localidade || '';
+                        updatedEnderecos[i].estado = uf || '';
+                    } else {
+                        updatedEnderecos[i].rua = '';
+                        updatedEnderecos[i].bairro = '';
+                        updatedEnderecos[i].cidade = '';
+                        updatedEnderecos[i].estado = '';
+                    }
+                }
+
+                setEnderecosCliente(updatedEnderecos);
+            } catch (error) {
+                console.error('Erro ao buscar os CEPs:', error);
+            }
+        }
+    };
+
+
+    const handleSearchCnpj = async (e) => {
+        const cnpj = e
+        if (cnpj?.length > 0) {
+            try {
+                const updatedEnderecos = [...enderecosCliente];
+                const response = await GetCnpj(cnpj);
+
+
+                if (response) {
+                    const { razao_social, nome_fantasia, ddd_telefone_1, logradouro, municipio, localidade, uf, cep } = response;
+                    document.getElementById('razaoSocialCliente').value = razao_social || '';
+                    document.getElementById('nomeCliente').value = nome_fantasia || '';
+                    document.getElementById('telefoneCliente').value = ddd_telefone_1 || '';
+
+                    updatedEnderecos[0].tipo_endereco = '2' || '';
+                    updatedEnderecos[0].cep = cep || '';
+                    updatedEnderecos[0].rua = logradouro || '';
+                    updatedEnderecos[0].bairro = municipio || '';
+                    updatedEnderecos[0].cidade = localidade || '';
+                    updatedEnderecos[0].estado = uf || '';
+
+                }
+
+                setEnderecosCliente(updatedEnderecos);
+
+            }
+            catch (error) {
+                console.error('Erro ao buscar os CNPJ:', error);
+            }
+        }
+
+    }
+
+    const handleSubmit = (event) => {
+        const idEmpresa = user?.id_empresa        
+        event.preventDefault();
+        const form = new FormData(event.target);
+        const value = Object.fromEntries(form.entries());
+
+        value.enderecos = enderecosCliente
+        value.contatos = contatosCliente
+        value.id_empresa = idEmpresa
+
+        handleFormSubmit(value)
+    };
+
+    const handleNameBlur = (e) => {
+        const { value } = e.target
+        if (value.length < 1) {
+            setNameError(true)
+        } else {
+            setNameError(false)
+        }
+    }
+
+    const handleTipoClienteBlur = (e) => {
+        const { value } = e.target
+        if (value === '0') {
+            setTipoClienteError(true)
+        } else {
+            setTipoClienteError(false)
+        }
+    }
+    return (
+        <Card className='main-card mb-3'>
+            <CardBody>
+                {loading && (
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 50
+                        }}
+                    >
+                        <Spinner style={{ width: '10rem', height: '10rem' }} color="primary" />
+                    </div>
+                )}
+                <Form onSubmit={handleSubmit}>
+                    <Row className='mb-3'>
+                        <UncontrolledAlert color="warning">
+                            <strong>Atenção!</strong> Preencha todos os campos obrigatórios.
+                        </UncontrolledAlert>
+                        <Col md='12'>
+                            <Label for='codigo' style={{ fontSize: 20 }}>
+                                <FontAwesomeIcon icon={faIdCard} style={{ fontSize: 20, marginRight: 3 }} />
+                                Dados gerais</Label>
+                        </Col>
+                        <Col md='3'>
+                            <Label for='tipoCliente' style={{ fontWeight: 'bold' }}>Tipo de {title} </Label><span className='text-danger'>*</span>
+                            <Input
+                                required
+                                type='select'
+                                name='tipoCliente'
+                                id='tipoCliente'
+                                value={tipoCliente}
+                                onChange={handleTipoClienteChange}
+                                onBlur={handleTipoClienteBlur}
+                                invalid={tipoClienteError}
+                                valid={!tipoClienteError}
+                            >
+                                <option value='0'>Selecione</option>
+                                <option value='Pessoa Fisica'>Pessoa Física</option>
+                                <option value='Pessoa Juridica' selected>Pessoa Jurídica</option>
+                            </Input>
+                            <FormFeedback>
+                                {tipoClienteError && `Tipo de ${title} é obrigatório`}
+                            </FormFeedback>
+                        </Col>
+                        <Col md='3'>
+                            <Label for='situacaoCliente' style={{ fontWeight: 'bold' }}>Situação do {title} </Label>
+                            <Input type='select' name='situacaoCliente' id='situacaoCliente' >
+                                <option value='0'>Selecione</option>
+                                <option value='1' selected>Ativo</option>
+                                <option value='2'>Inativo</option>
+                            </Input>
+                        </Col>
+                        <Col md='3'>
+                            <Label for='nomeCliente' style={{ fontWeight: 'bold' }}>Nome {tipoCliente === 'Pessoa Juridica' ? 'fantasia' : ''} </Label><span className='text-danger'>*</span>
+                            <Input
+                                required
+                                type='text'
+                                name='nomeCliente'
+                                id='nomeCliente'
+                                onBlur={handleNameBlur}
+                                invalid={nameError}
+                                valid={!nameError}
+                            />
+                            <FormFeedback>
+                                {nameError && `Nome do ${title} é obrigatório`}
+                            </FormFeedback>
+                        </Col>
+                        <Col md='3'>
+                            <Label for='emailCliente' style={{ fontWeight: 'bold' }}>E-mail </Label>
+                            <Input type='email' name='emailCliente' id='emailCliente' />
+                        </Col>
+                    </Row>
+                    {tipoCliente === 'Pessoa Fisica' &&
+                        <Row className='mb-3'>
+                            <Col md='3'>
+                                <Label for='cpfCliente' style={{ fontWeight: 'bold' }}>CPF </Label>
+                                {/*<Input type='text' name='cpfCliente' id='cpfCliente' />*/}
+                                <InputMask
+                                    mask="999.999.999-99"
+                                    maskPlaceholder=""
+                                >
+                                    {inputProps => (
+                                        <Input
+                                            type="text"
+                                            name="cpfCliente"
+                                            id="cpfCliente"
+                                            {...inputProps}
+                                        />
+                                    )}
+                                </InputMask>
+                            </Col>
+                            <Col md='3'>
+                                <Label for='rgCliente' style={{ fontWeight: 'bold' }}>RG </Label>
+                                <Input type='text' name='rgCliente' id='rgCliente' />
+                            </Col>
+                            <Col md='3'>
+                                <Label for='dataNascimentoCliente' style={{ fontWeight: 'bold' }}>Data de nascimento </Label>
+                                <Input type='date' name='dataNascimentoCliente' id='dataNascimentoCliente' />
+                            </Col>
+                            <Col md='3'>
+                                <Label for='telefoneCliente' style={{ fontWeight: 'bold' }}>Telefone </Label>
+                                <Input type='text' name='telefoneCliente' id='telefoneCliente' />
+                            </Col>
+
+                        </Row>
+                    }
+                    {tipoCliente === 'Pessoa Juridica' &&
+                        <>
+                            <Row className='mb-3'>
+                                <Col md='4'>
+                                    <Label for='cnpjCliente' style={{ fontWeight: 'bold' }} >CNPJ </Label>
+                                    <InputGroup>
+                                        {/*<Input type='text' name='cnpjCliente' id='cnpjCliente'
+                                            onBlur={(e) => { handleSearchCnpj(e.target.value) }}
+                />*/}
+                                        <InputMask
+                                            mask="99.999.999/9999-99"
+                                            maskPlaceholder=""
+                                            onBlur={(e) => { handleSearchCnpj(e.target.value) }}
+                                        >
+                                            {inputProps => (
+                                                <Input
+                                                    type="text"
+                                                    name="cnpjCliente"
+                                                    id="cnpjCliente"
+
+                                                    {...inputProps}
+                                                />
+                                            )}
+                                        </InputMask>
+                                        <InputGroupText addonType="append">
+                                            <FontAwesomeIcon icon={faSearch} size="xl" onClick={() => handleSearchCnpj()} id='searchCnpj' name='searchCnpj'
+                                                style={{ cursor: 'pointer' }}
+                                            />
+                                        </InputGroupText>
+
+                                    </InputGroup>
+                                    <UncontrolledTooltip placement="top" target="searchCnpj" style={{ fontSize: 12 }}>
+                                        Buscar CNPJ
+                                    </UncontrolledTooltip>
+                                </Col>
+                                <Col md='4'>
+                                    <Label for='razaoSocialCliente' style={{ fontWeight: 'bold' }}>Razão social </Label>
+                                    <Input type='text' name='razaoSocialCliente' id='razaoSocialCliente' />
+                                </Col>
+                                <Col md='4'>
+                                    <Label for='inscricaoEstadualCliente' style={{ fontWeight: 'bold' }}>Inscrição estadual </Label>
+                                    <InputGroup>
+                                        <Input type='text' name='inscricaoEstadualCliente' id='inscricaoEstadualCliente'
+                                            disabled={checked}
+                                            {...checked && { value: 'ISENTO' }
+                                            }
+                                        />
+                                        <InputGroupText addonType="append">
+                                            <Input
+                                                type='checkbox'
+                                                name='isentoInscricaoEstadualCliente'
+                                                id='isentoInscricaoEstadualCliente'
+                                                style={{ marginRight: 3 }}
+                                                onChange={handleChecked}
+                                            />
+                                            ISENTO
+                                        </InputGroupText>
+                                    </InputGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md='3'>
+                                    <Label for='tipoContribuinteCliente' style={{ fontWeight: 'bold' }}>Tipo de contribuinte </Label>
+                                    <Input type='select' name='tipoContribuinteCliente' id='tipoContribuinteCliente'
+                                    //value={checked ? '2' : '0'}
+                                    >
+                                        <option value='0'>Selecione</option>
+                                        <option value='1'>Contribuinte ICMS</option>
+                                        <option value='2'>Contribuinte ISENTO</option>
+                                        <option value='3'>Não contribuinte</option>
+                                    </Input>
+                                </Col>
+                                <Col md='3'>
+                                    <Label for='inscricaoMunicipalCliente' style={{ fontWeight: 'bold' }}>Inscrição municipal </Label>
+                                    <Input type='text' name='inscricaoMunicipalCliente' id='inscricaoMunicipalCliente' />
+                                </Col>
+                                <Col md='3'>
+                                    <Label for='inscricaoSuframaCliente' style={{ fontWeight: 'bold' }}>Inscrição SUFRAMA </Label>
+                                    <Input type='text' name='inscricaoSuframaCliente' id='inscricaoSuframaCliente' />
+                                </Col>
+                                <Col md='3'>
+                                    <Label for='telefoneCliente' style={{ fontWeight: 'bold' }}>Telefone </Label>
+                                    <Input type='text' name='telefoneCliente' id='telefoneCliente' />
+                                </Col>
+                            </Row>
+                        </>
+                    }
+                    {enderecosCliente?.map((endereco, index) => (
+                        <>
+                            <Row className='mb-2' key={index}>
+                                <Col md='12'>
+
+                                    <Label style={{ fontSize: 20 }}>
+                                        <FontAwesomeIcon icon={faMapMarkerAlt} style={{ fontSize: 20, marginRight: 3 }} />
+                                        Endereço</Label>
+                                    <Button color='danger' size='sm' onClick={() => handleRemoveEndereco(index)} style={{ float: 'right' }}>
+                                        <FontAwesomeIcon icon={faTrash} size="lg" />
+                                    </Button>
+                                </Col>
+                                <Col md='2'>
+                                    <Label for='tipoEnderecoCliente' style={{ fontWeight: 'bold' }}>Tipo de endereço </Label>
+                                    <Input type='select' name='tipoEnderecoCliente' id='tipoEnderecoCliente'
+                                        value={endereco.tipo_endereco}
+                                        onChange={e => handleEnderecoChange(index, 'tipo_endereco', e.target.value)}
+                                    >
+                                        <option value='0'>Selecione</option>
+                                        <option value='1'>Residencial</option>
+                                        <option value='2'>Comercial</option>
+                                        <option value='3'>Entrega</option>
+                                    </Input>
+                                </Col>
+                                <Col md='2'>
+                                    <Label for='cepCliente' style={{ fontWeight: 'bold' }}>CEP </Label>
+                                    <InputGroup>
+                                        {/*<Input type='text' name='cepCliente' id='cepCliente'
+                                            value={endereco.cep}
+                                            onChange={e => handleEnderecoChange(index, 'cep', e.target.value)}
+                                            onBlur={() => { handleSearchCep() }}
+                    />*/
+                                        }
+                                        <InputMask
+                                            mask="99.999-999"
+                                            maskPlaceholder=""
+                                            value={endereco.cep}
+                                            onChange={e => handleEnderecoChange(index, 'cep', e.target.value)}
+                                            onBlur={() => { handleSearchCep() }}
+                                        >
+                                            {inputProps => (
+                                                <Input
+                                                    type="text"
+                                                    name="cepCliente"
+                                                    id="cepCliente"
+                                                    {...inputProps}
+                                                />
+                                            )}
+                                        </InputMask>
+                                        <InputGroupText addonType="append">
+                                            <FontAwesomeIcon icon={faSearch} size="xl" onClick={handleSearchCep} id='searchCep' name='searchCep'
+                                                style={{ cursor: 'pointer' }}
+                                            />
+                                        </InputGroupText>
+
+                                    </InputGroup>
+                                    <UncontrolledTooltip placement="top" target="searchCep" style={{ fontSize: 12 }}>
+                                        Buscar CEP
+                                    </UncontrolledTooltip>
+                                </Col>
+                                <Col md='6'>
+                                    <Label for='logradouroCliente' style={{ fontWeight: 'bold' }}>Logradouro </Label>
+                                    <Input type='text' name='logradouroCliente' id='logradouroCliente'
+                                        value={endereco.rua}
+                                        onChange={e => handleEnderecoChange(index, 'rua', e.target.value)}
+                                    />
+                                </Col>
+                                <Col md='2'>
+                                    <Label for='numeroCliente' style={{ fontWeight: 'bold' }}>Número </Label>
+                                    <Input type='text' name='numeroCliente' id='numeroCliente'
+                                        value={endereco.numero}
+                                        onChange={e => handleEnderecoChange(index, 'numero', e.target.value)}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className='mb-2'>
+                                <Col md='3'>
+                                    <Label for='complementoCliente' style={{ fontWeight: 'bold' }}>Complemento </Label>
+                                    <Input type='text' name='complementoCliente' id='complementoCliente'
+                                        value={endereco.complemento}
+                                        onChange={e => handleEnderecoChange(index, 'complemento', e.target.value)}
+                                    />
+                                </Col>
+
+                                <Col md='3'>
+                                    <Label for='bairroCliente' style={{ fontWeight: 'bold' }}>Bairro </Label>
+                                    <Input type='text' name='bairroCliente' id='bairroCliente'
+                                        value={endereco.bairro}
+                                        onChange={e => handleEnderecoChange(index, 'bairro', e.target.value)}
+                                    />
+                                </Col>
+                                <Col md='3'>
+                                    <Label for='cidadeCliente' style={{ fontWeight: 'bold' }}>Cidade </Label>
+                                    <Input type='text' name='cidadeCliente' id='cidadeCliente'
+                                        value={endereco.cidade}
+                                        onChange={e => handleEnderecoChange(index, 'cidade', e.target.value)}
+                                    />
+                                </Col>
+                                <Col md='3'>
+                                    <Label for='estadoCliente' style={{ fontWeight: 'bold' }}>Estado </Label>
+                                    {/*<Input type='text' name='estadoCliente' id='estadoCliente'
+                                        value={endereco.estado}
+                                        onChange={e => handleEnderecoChange(index, 'estado', e.target.value)}
+                                            />*/}
+                                    <Input type='select' name='estadoCliente' id='estadoCliente'
+                                        value={endereco.estado}
+                                        onChange={e => handleEnderecoChange(index, 'estado', e.target.value)}
+                                    >
+                                        <option value='0'>Selecione</option>
+                                        {estados.map((estado, index) => (
+                                            <option key={index} value={estado}>{estado}</option>
+                                        ))}
+
+                                    </Input>
+
+
+                                </Col>
+
+
+                            </Row>
+                        </>
+
+                    ))}
+                    <Button color='dark' onClick={handleAddEndereco} className='mb-3'>
+                        <FontAwesomeIcon icon={faPlusCircle} size="xl" style={{ marginRight: 3 }} />
+                        Adicionar endereço</Button>
+
+                    {contatosCliente.map((contato, index) => (
+                        <Row className='mb-2' key={index}>
+                            <Col md='12'>
+                                <Label style={{ fontSize: 20 }}>
+                                    <FontAwesomeIcon icon={faPhone} style={{ fontSize: 20, marginRight: 3 }} />
+                                    Contatos</Label>
+                                <Button color='danger' size='sm' onClick={() => handleRemoveContato(index)} style={{ float: 'right' }}>
+                                    <FontAwesomeIcon icon={faTrash} size="lg" />
+                                </Button>
+                            </Col>
+                            <Col md='4'>
+                                <Label for='tipoContatoCliente' style={{ fontWeight: 'bold' }}>Tipo de contato </Label>
+                                <Input type='select' name='tipoContatoCliente' id='tipoContatoCliente'
+                                    value={contato.tipo_contato}
+                                    onChange={e => handleContatoChange(index, 'tipo_contato', e.target.value)}
+                                >
+                                    <option value='0'>Selecione</option>
+                                    <option value='1'>Telefone</option>
+                                    <option value='2'>E-mail</option>
+                                    <option value='3'>WhatsApp</option>
+                                    <option value='4'>Outros</option>
+                                </Input>
+                            </Col>
+                            <Col md='4'>
+                                <Label for='nomeContatoCliente' style={{ fontWeight: 'bold' }}>Nome </Label>
+                                <Input type='text' name='nomeContatoCliente' id='nomeContatoCliente'
+                                    value={contato.nome}
+                                    onChange={e => handleContatoChange(index, 'nome', e.target.value)}
+                                />
+                            </Col>
+                            <Col md='4'>
+                                <Label for='observacaoContatoCliente' style={{ fontWeight: 'bold' }}>Observação </Label>
+                                <Input type='text' name='observacaoContatoCliente' id='observacaoContatoCliente'
+                                    value={contato.observacao}
+                                    onChange={e => handleContatoChange(index, 'observacao', e.target.value)}
+                                />
+                            </Col>
+                        </Row>
+                    ))}
+                    <Button color='dark' onClick={handleAddContato} className='mb-3'>
+                        <FontAwesomeIcon icon={faPlusCircle} size="xl" style={{ marginRight: 3 }} />
+                        Adicionar contato</Button>
+                    <Row className='mb-1'>
+                        <Col md='12'>
+                            <Label style={{ fontSize: 20 }}>
+                                <FontAwesomeIcon icon={faPenToSquare} style={{ fontSize: 20, marginRight: 3 }} />
+                                Observações</Label>
+                        </Col>
+                    </Row>
+                    <Row className='mb-3'>
+                        <Col md='12'>
+                            <Input type='textarea' name='observacaoCliente' id='observacaoCliente'
+                            />
+
+                        </Col>
+                    </Row>
+                    {/* Buttons Add and Cancel*/}
+                    <Row className='mb-2'>
+                        <Col md={12}>
+                            <Button color='primary' type='submit'
+                                {...nameError || tipoClienteError ? { disabled: true } : null}
+                            >
+                                <FontAwesomeIcon icon={faSave} size='xl' style={{ marginRight: 3 }}
+
+                                />
+                                Salvar
+                            </Button>
+                            <Button color='danger' onClick={handleCancel} style={{ marginLeft: 3 }}>
+                                <FontAwesomeIcon icon={faTimes} size='xl' style={{ marginRight: 3 }} />
+                                Cancelar
+                            </Button>
+
+                        </Col>
+                    </Row>
+                </Form>
+            </CardBody>
+        </Card>
+    )
+}
+
+export default FormRegister
