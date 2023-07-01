@@ -58,6 +58,10 @@ router.get("/list/saleprice/", createSalePriceController.getAll);
 //Order routes
 const createOrderController = new CreateOrderController();
 router.post("/order", createOrderController.create);
+router.get("/list/order/id_company/:id", createOrderController.listOrdersByCompany);
+router.get("/list/order/id_customer/:id", createOrderController.listOrdersByCustomer);
+
+
 
 
 

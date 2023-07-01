@@ -11,8 +11,11 @@ import CardObservacao from './Cards/CardObservacao'
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useOrder } from '../../context/OrderContext/useOrder'
+import { CustomSpinner } from '../CustomSpinner'
 
 const FormBudget = ({ url }) => {
+    const { createOrder, loading } = useOrder()
     const navigate = useNavigate()
     const [data, setData] = useState([]);
 
@@ -25,9 +28,12 @@ const FormBudget = ({ url }) => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(data);
+        await createOrder(data)
+        navigate(url)
+        //console.log(data)
+
     };
 
     const handleCancel = () => {
@@ -35,20 +41,23 @@ const FormBudget = ({ url }) => {
     }
     return (
         <Form onSubmit={handleSubmit}>
+          {
+            loading && <CustomSpinner />
+          }
 
             <CardDadosGerais data={data} handleInputChange={handleInputChange} />
 
-            <CardProduto data={data} handleInputChange={handleInputChange}/>
+            <CardProduto data={data} handleInputChange={handleInputChange} />
 
-            <CardTransporte data={data} handleInputChange={handleInputChange}/>
+            <CardTransporte data={data} handleInputChange={handleInputChange} />
 
-            <CardTotal data={data} handleInputChange={handleInputChange}/>
+            <CardTotal data={data} handleInputChange={handleInputChange} />
 
-            <CardEnderecoEntrega data={data} handleInputChange={handleInputChange}/>
+            <CardEnderecoEntrega data={data} handleInputChange={handleInputChange} />
 
-            <CardPagamento data={data} handleInputChange={handleInputChange}/>
+            <CardPagamento data={data} handleInputChange={handleInputChange} />
 
-            <CardObservacao data={data} handleInputChange={handleInputChange}/>
+            <CardObservacao data={data} handleInputChange={handleInputChange} />
 
             <Row className='mb-2'>
                 <Col md={12}>

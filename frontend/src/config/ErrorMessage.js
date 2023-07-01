@@ -18,4 +18,7 @@ export const ERROR_MESSAGES = {
     "Customer not found": "Cliente não encontrado",
     "Company id is required": "Empresa é obrigatória",
     "Product already exists": "Já existe um produto com este código",
+    "Order number already exists": "Já existe uma venda com este número",
+    "Product not found": "Produto não encontrado",
+    "Insufficient inventory for product": "Estoque insuficiente para o produto",
 };

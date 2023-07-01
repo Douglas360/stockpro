@@ -39,6 +39,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
     const updatedData = { ...data }
     updatedData.pagamentoParcelado = updatedFields
     handleInputChange({ target: { name: 'pagamentoParcelado', value: updatedFields } })
+    
   }
 
 

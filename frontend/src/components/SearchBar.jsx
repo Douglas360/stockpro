@@ -48,7 +48,7 @@ export const SearchBar = ({
     };
     const filteredData = rows.filter(
         (client) =>
-            client.nome.toLowerCase().includes(searchTerm.toLowerCase())/* ||
+            client?.nome.toLowerCase().includes(searchTerm.toLowerCase())/* ||
             client?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             client?.telefone.toLowerCase().includes(searchTerm.toLowerCase()) ||
             client?.celular.toLowerCase().includes(searchTerm.toLowerCase())*/

@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { faTruckFast } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap'
+import { useRegister } from '../../../context/RegisterContext/useRegister'
 
 const CardTransporte = ({ data, handleInputChange }) => {
+    const { listAllCarriers } = useRegister();
+    const [carriers, setCarriers] = useState([]);
+
+    const loadCarriers = async () => {
+        const response = await listAllCarriers(1);
+        setCarriers(response);
+    }
+
+    useEffect(() => {
+        loadCarriers();
+    }, [])
+
+
     return (
         <Card className="main-card mb-1">
             <CardBody>
@@ -36,13 +50,19 @@ const CardTransporte = ({ data, handleInputChange }) => {
                             </td>
                             <td>
                                 <Input
-                                    type='text'
-                                    name='transportadora'
-                                    id='transportadora'
-                                    placeholder='Transportadora'
+                                    type='select'
+                                    name='id_transportadora'
+                                    id='id_transportadora'
                                     onChange={handleInputChange}
-                                    value={data.transportadora}
-                                />
+                                    value={data.id_transportadora}
+                                >
+                                    <option value=''>Selecione uma transportadora</option>
+                                    {carriers.map(carrier => (
+                                        <option key={carrier.id_transportadora} value={carrier.id_transportadora}>{carrier.nome}</option>
+                                    ))}
+                                </Input>
+
+
                             </td>
                         </tr>
                     </tbody>

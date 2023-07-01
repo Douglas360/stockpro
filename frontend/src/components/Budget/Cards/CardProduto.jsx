@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
 import { useProduct } from '../../../context/ProductContext/useProduct'
 
+
 const CardProduto = ({ data, handleInputChange }) => {
   const { listProducts } = useProduct()
   const [products, setProducts] = useState([])
@@ -113,7 +114,6 @@ const CardProduto = ({ data, handleInputChange }) => {
     setTypeDiscount(updatedTypes)
     handleDiscountChange(index, produtos[index].desconto)
   }
-
   // Function to change the background color of the tooltip based on the stock quantity of the product selected
   const getTooltipColor = (stockQuantity) => {
     if (stockQuantity <= 1) {
@@ -161,7 +161,10 @@ const CardProduto = ({ data, handleInputChange }) => {
                   >
                     <option value=''>Selecione</option>
                     {products.map((product, innerIndex) => (
-                      <option key={innerIndex} value={product.id_produto}>{product.nome}</option>
+                      // Check if the product has in stock quantity and if it is greater than 0 to show it in the list of products to select from the dropdown list
+                      <option key={innerIndex} value={product.id_produto}>
+                        {product.nome}
+                      </option>
                     ))}
                   </Input>
                 </td>
@@ -206,8 +209,8 @@ const CardProduto = ({ data, handleInputChange }) => {
                     required
                     type='number'
                     name='valor'
-                    value= {parseFloat(produto.valor).toFixed(2)}
-                   
+                    value={produto.valor}
+
                     onChange={(e) => handleValueChange(index, e.target.value)}
                   />
                 </td>
@@ -237,7 +240,7 @@ const CardProduto = ({ data, handleInputChange }) => {
                   <Input
                     type='number'
                     name='subtotal'
-                    value={produto.subtotal}
+                    value={parseFloat(produto?.subtotal).toFixed(2)}
                     onChange={(e) => handleFieldChange(index, 'subtotal', e.target.value)}
                   />
                 </td>

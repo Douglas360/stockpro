@@ -15,7 +15,6 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
   const [customerError, setCustomerError] = useState(false)
 
 
-
   const loadCustomers = async () => {
     //const id_empresa = user?.id_empresa
     const response = await listAllCustomers(1)
@@ -27,6 +26,13 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
   useEffect(() => {
     loadCustomers()
   }, [])
+
+  const situacaoVenda = [
+    { id: 1, name: 'Concretizada' },
+    { id: 2, name: 'Em aberto' },
+    { id: 3, name: 'Em andamento' },
+    { id: 4, name: 'Cancelada' },
+  ]
 
 
   const handleCodigoBlur = (e) => {
@@ -120,8 +126,23 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
 
         <Row className='mb-2'>
           <Col md='4'>
-            <Label>Aos cuidados de</Label>
-            <Input type='text' name='aosCuidadosDeOrcamento' id='aosCuidadosDeOrcamento' value={data.aosCuidadosDeOrcamento} onChange={handleInputChange} />
+            <Label>Situação</Label>
+            <Input type='select'
+              name='situacaoVendaOrcamento'
+              id='situacaoVendaOrcamento'
+              value={data.situacaoVendaOrcamento}
+              defaultValue={1}
+              onChange={handleInputChange}
+            >
+              <option value=''>Selecione</option>
+              {situacaoVenda.map((situacao) => (
+                <option key={situacao.id} value={situacao.id}>
+                  {situacao.name}
+                </option>
+              ))}
+            </Input>
+
+
           </Col>
           <Col md='4'>
             <Label>Validade</Label>

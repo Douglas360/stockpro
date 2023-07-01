@@ -21,14 +21,14 @@ const CardObservacao = ({ data, handleInputChange }) => {
               Observações que serão impressas no orçamento
             </FormText>
 
-            <Input type='textarea' name='observacaoOrcamento' id='observacaoOrcamento' rows='5' value={data.observacaoOrcamento} />
+            <Input type='textarea' name='observacaoOrcamento' id='observacaoOrcamento' rows='5' value={data.observacaoOrcamento} onChange={handleInputChange} />
           </Col>
           <Col md='6'>
             <Label style={{ fontSize: 16 }}>Observações internas</Label><br />
             <FormText color='muted' style={{ fontStyle: 'italic' }}>
               Esta observação é de uso interno, portanto não será impressa no pedido.
             </FormText>
-            <Input type='textarea' name='observacaoInternaOrcamento' id='observacaoInternaOrcamento' rows='5' value={data.observacaoInternaOrcamento} />
+            <Input type='textarea' name='observacaoInternaOrcamento' id='observacaoInternaOrcamento' rows='5' value={data.observacaoInternaOrcamento} onChange={handleInputChange} />
 
           </Col>
         </Row>

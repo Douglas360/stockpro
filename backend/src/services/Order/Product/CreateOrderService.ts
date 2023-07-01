@@ -14,7 +14,7 @@ class CreateOrderService {
 
                 // Check if the product exists
                 const product = await prismaClient.produto.findUnique({
-                    where: { id_produto: item.id_produto },
+                    where: { id_produto: Number(item.id_produto) },
                 });
 
                 if (!product) {
@@ -28,7 +28,7 @@ class CreateOrderService {
 
                 // Check if the product has inventory                
                 const inventory = await prismaClient.controleEstoque.findUnique({
-                    where: { id_produto: item.id_produto },
+                    where: { id_produto: Number(item.id_produto) },
                 });
 
                 if (!inventory || inventory.quantidade === null) {
@@ -36,13 +36,14 @@ class CreateOrderService {
                 }
 
                 if (item.quantidade > inventory.quantidade) {
-                    throw new Error(`Insufficient inventory for product ${item.id_produto}`);
+                    //throw new Error(`Insufficient inventory for product ${item.id_produto}`);
+                    throw new Error(`Insufficient inventory for product`);
                 }
             }
 
             //Check if already exists an order with the same number
             const orderExists = await prismaClient.venda.findFirst({
-                where: { numero_venda: rest.numero_venda },
+                where: { numero_venda: Number(rest.numero_venda) },
             });
 
             if (orderExists) {
@@ -110,6 +111,102 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
+
+    async listOrdersByCompany(companyId: number): Promise<any> {
+        try {
+            const orders = await prismaClient.venda.findMany({
+                where: {
+                    id_empresa: companyId,
+                },
+                include: {
+                    cliente: {
+                        select: {
+                            nome: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    data_venda: "desc",
+                },
+            });
+
+            const ordersFormatted = orders.map((order) => {
+
+                return {
+                    id_venda: order.id_venda,
+                    numero_venda: order.numero_venda,
+                    nome_cliente: order.cliente?.nome,
+                    data_venda: order.data_venda,
+                    id_situacao_venda: order.id_situacao_venda,
+                    valor_total: order.valor_total,
+
+
+                };
+            });
+
+            return ordersFormatted;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+
+    async listOrdersByDateRange(startDate: Date, endDate: Date): Promise<any> {
+        try {
+            const orders = await prismaClient.venda.findMany({
+                where: {
+                    data_venda: {
+                        gte: startDate,
+                        lte: endDate,
+                    },
+                },
+                include: {
+                    itens: true,
+                },
+            });
+
+            return orders;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async listOrdersByCustomer(customerId: number): Promise<any> {
+        try {
+            const orders = await prismaClient.venda.findMany({
+                where: {
+                    id_cliente: customerId,
+                },
+                include: {
+                    itens: true,
+                },
+            });
+
+            return orders;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async listOrdersByStatus(statusId: number): Promise<any> {
+        try {
+            const orders = await prismaClient.venda.findMany({
+                where: {
+                    id_situacao_venda: statusId,
+                },
+                include: {
+                    itens: true,
+                },
+            });
+
+            return orders;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+
+
 }
 
 export { CreateOrderService };
