@@ -46,6 +46,7 @@ const ListarFornecedor = () => {
         rows={clients}
         handleDeleteData={handleDelete}
         msgDelete={'Fornecedor'}
+        
       />
 
 
