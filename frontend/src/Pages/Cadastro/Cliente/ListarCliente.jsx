@@ -4,6 +4,7 @@ import { SearchBar } from '../../../components/SearchBar';
 import { useRegister } from '../../../context/RegisterContext/useRegister';
 import { useAuth } from '../../../context/AuthContext/useAuth';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
+import { faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 const ListarClientes = () => {
   const { listAllCustomers,deleteCustomer } = useRegister();
@@ -25,6 +26,26 @@ const ListarClientes = () => {
   }, []);
 
   const columns = ['Código', 'Nome', 'Tipo', 'Ativo', 'Telefone', 'Cadastrado em'];
+
+  const actions = [
+    {
+        label: 'Teste',
+        icon: faEdit,
+        color: 'orange',
+        onClick: (client) => {
+            // Lógica para a ação de edição
+        },
+    },
+    {
+        label: 'TEste2',
+        icon: faTrashCan,
+        color: 'red',
+        onClick: (client) => {
+           //lógica
+        },
+    },
+    // Adicione mais ações se necessário
+];
 
   const clients = customers.map((customer) => {
     const dataCadastro = dateFormatWithHours(customer.createdAt);
@@ -53,6 +74,7 @@ const ListarClientes = () => {
         rows={clients}
         handleDeleteData={handleDelete}
         msgDelete={'Cliente'}
+        actions={actions}
       />
 
 

@@ -7,6 +7,7 @@ import Produto from '../Pages/Produto';
 import Orcamento from '../Pages/Orcamento';
 import Venda from '../Pages/Venda';
 import Login from '../Pages/Login';
+import NotaFiscal from '../Pages/NotaFiscal';
 import { useAuth } from '../context/AuthContext/useAuth';
 
 export const AppRouter = () => {
@@ -26,6 +27,7 @@ export const AppRouter = () => {
           <Route path="/produto/*" element={<Private><Produto /></Private>} />
           <Route path="/orcamento/*" element={<Private><Orcamento /></Private>} />
           <Route path="/venda/*" element={<Private><Venda /></Private>} />
+          <Route path="/nota-fiscal/*" element={<Private><NotaFiscal /></Private>} />
 
         </Routes>
       </CombinedProvider>

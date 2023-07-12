@@ -32,23 +32,32 @@ model User {
 }
 
 model Empresa {
-  id_empresa   Int              @id @default(autoincrement())
-  nome         String           @unique
-  endereco     String
-  cnpj         String           @unique
-  email        String           @unique
-  telefone     String?
-  avatar       String?
-  ativo        Boolean          @default(true)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  deletedAt    DateTime?
-  usuarios     User[]
-  clientes     Cliente[]
-  fornecedores Fornecedor[]
-  transportes  Transportadora[]
-  produtos     Produto[]
-  venda        Venda[]
+  id_empresa     Int              @id @default(autoincrement())
+  nome           String           @unique
+  nome_fantasia  String?
+  logradouro     String?
+  numero         String?
+  complemento    String?
+  bairro         String?
+  cidade         String?
+  estado         String?
+  cep            String?
+  inscr_estadual String?
+  cnpj           String           @unique
+  email          String           @unique
+  telefone       String?
+  avatar         String?
+  ativo          Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  usuarios       User[]
+  clientes       Cliente[]
+  fornecedores   Fornecedor[]
+  transportes    Transportadora[]
+  produtos       Produto[]
+  venda          Venda[]
+  nota_fiscal    NotaFiscal[]
 
   @@map("t_empresa")
 }
@@ -204,6 +213,7 @@ model Produto {
   valor_venda         Float?
   codigo_ncm          String?
   codigo_cest         String?
+  cfop                String?
   origem              String?
   codigo_beneficio    String?
   peso_bruto          Float?
@@ -275,6 +285,7 @@ model Venda {
   id_forma_pagamento Int
   id_transportadora  Int?
   valor_total        Float
+  valor_produto      Float?
   valor_desconto     Float?
   valor_frete        Float?
   observacao         String?
@@ -297,6 +308,7 @@ model ItemVenda {
   id_item_venda  Int   @id @default(autoincrement())
   id_venda       Int
   id_produto     Int
+  numero_item    Int?
   quantidade     Int
   valor_unitario Float
   valor_total    Float
@@ -322,4 +334,22 @@ model MovimentacaoEstoque {
   venda   Venda?  @relation(fields: [id_venda], references: [id_venda], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("t_movimentacao_estoque")
+}
+
+model NotaFiscal {
+  id_nfe         Int       @id @default(autoincrement())
+  id_empresa     Int
+  ref            String?   @unique
+  status         String?
+  status_sefaz   String?
+  mensagem_sefaz String?
+  chave_nfe      String?
+  numero_nfe     String?
+  caminho_xml    String?
+  caminho_pdf    String?
+  data_emissao   DateTime?
+
+  empresa Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("t_nota_fiscal")
 }

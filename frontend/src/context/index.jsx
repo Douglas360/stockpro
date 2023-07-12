@@ -3,6 +3,7 @@ import { AuthProvider } from './AuthContext'
 import { RegisterProvider } from './RegisterContext'
 import { ProductProvider } from './ProductContext'
 import { OrderProvider } from './OrderContext'
+import { InvoiceProvider } from './InvoiceContext'
 
 
 
@@ -11,8 +12,10 @@ export const CombinedProvider = ({ children }) => {
         <AuthProvider>
             <RegisterProvider>
                 <ProductProvider>
-                 <OrderProvider>
-                    {children}
+                    <OrderProvider>
+                        <InvoiceProvider>
+                            {children}
+                        </InvoiceProvider>
                     </OrderProvider>
                 </ProductProvider>
             </RegisterProvider>

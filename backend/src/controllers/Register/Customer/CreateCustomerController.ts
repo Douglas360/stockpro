@@ -34,7 +34,7 @@ class CreateCustomerController {
             dt_nascimento: dataNascimentoCliente ? new Date(dataNascimentoCliente) : null,
             cnpj: cnpjCliente,
             razao_social: razaoSocialCliente,
-            inscricao_estadual: inscricaoEstadualCliente,
+            inscricao_estadual: inscricaoEstadualCliente ? inscricaoEstadualCliente : 'ISENTO',
             tipo_contribuinte: tipoContribuinteCliente,
             inscricao_municipal: inscricaoMunicipalCliente,
             inscricao_suframa: inscricaoSuframaCliente,

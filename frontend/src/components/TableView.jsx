@@ -1,50 +1,21 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Table, Tooltip } from 'reactstrap';
+import { DropdownMenu, DropdownToggle, Nav, NavItem, NavLink, Spinner, Table, UncontrolledButtonDropdown, UncontrolledTooltip, } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSadTear, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faEllipsisV, faEllipsisVertical, faSadTear, } from '@fortawesome/free-solid-svg-icons';
 import { Pagination } from 'react-bootstrap';
 import { useRegister } from '../context/RegisterContext/useRegister';
 
-const DeleteModal = ({ isOpen, toggleModal, handleConfirm }) => {
-    return (
-        <Modal isOpen={isOpen} toggle={toggleModal} >
-            <div className="bg-white rounded-lg p-6 sm:p-8 md:p-10 lg:p-12">
-                <ModalHeader toggle={toggleModal} className="text-lg font-medium mb-4">
-                    Confirmação de exclusão
-                </ModalHeader>
-                <ModalBody className="text-gray-600 mb-6">Tem certeza que deseja excluir?</ModalBody>
-                <ModalFooter className="flex justify-end">
-                    <Button color="secondary" outline className="mr-2" onClick={toggleModal}>
-                        Cancelar
-                    </Button>
-                    <Button color="danger" outline onClick={handleConfirm}>
-                        Excluir
-                    </Button>
-                </ModalFooter>
-            </div>
-        </Modal>
-    );
-};
 
-const TableView = ({ columns, rows, handleDeleteData }) => {
+const TableView = ({ columns, rows, renderActions }) => {
     const { loading } = useRegister();
     const [sortColumn, setSortColumn] = useState('');
     const [sortOrder, setSortOrder] = useState('asc');
-    const [openEditTooltip, setOpenEditTooltip] = useState({});
-    const [openDeleteTooltip, setOpenDeleteTooltip] = useState({});
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
     const handleItemsPerPage = (e) => {
         setCurrentPage(1);
         setItemsPerPage(+e.target.value);
-    };
-
-    const handleConfirm = () => {
-        handleDeleteData(selectedItem);
-        setDeleteModalOpen(false);
     };
 
     const handleSort = (column) => {
@@ -93,70 +64,44 @@ const TableView = ({ columns, rows, handleDeleteData }) => {
 
         return sortedData;
     };
-    const toggleEditTooltip = (clientId) => {
-        setOpenEditTooltip((prevState) => ({
-            ...prevState,
-            [clientId]: !prevState[clientId],
-        }));
-    };
-    const toggleDeleteTooltip = (clientId) => {
-        setOpenDeleteTooltip((prevState) => ({
-            ...prevState,
-            [clientId]: !prevState[clientId],
-        }));
-    };
 
     const sortedData = sortData(rows);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData?.slice(indexOfFirstItem, indexOfLastItem);
-    const renderActions = (client) => {
-        const handleEdit = () => {
-            // Handle edit action
-        };
 
-        const handleDelete = () => {
-            setSelectedItem(client.id);
-            setDeleteModalOpen(true);
-        };
 
+
+   /* const renderActions = (client) => {
         return (
             <div>
-                <Tooltip placement="top"
+                {actions.map((action, index) => (
+                    <React.Fragment key={index}>
+                        <UncontrolledTooltip
+                            placement="top"
+                            target={`${action.label}-${client.id}`}
+                            style={{ fontSize: '.6rem', padding: '4px 8px' }}
+                        >
+                            {action.label}
+                        </UncontrolledTooltip>
 
-                    target={`edit-${client.id}`}
-                    isOpen={openEditTooltip[client.id]}
-                    toggle={() => toggleEditTooltip(client.id)}
-                    style={{ fontSize: '.7rem', padding: '4px 8px' }}>
-                    Editar
-                </Tooltip>
-                <Tooltip placement="top"
-                    target={`delete-${client.id}`}
-                    isOpen={openDeleteTooltip[client.id]}
-                    toggle={() => toggleDeleteTooltip(client.id)}
-                    style={{ fontSize: '.7rem', padding: '4px 8px' }}>
-                    Excluir
-                </Tooltip>
-                <FontAwesomeIcon
-                    icon={faEdit}
-                    id={`edit-${client.id}`}
-                    className="mb-2 me-2 btn-transition"
-                    size="xl"
-                    style={{ cursor: 'pointer', color: 'orange' }}
-                    onClick={handleEdit}
-                />
-                <FontAwesomeIcon
-                    icon={faTrashCan}
-                    id={`delete-${client.id}`}
-                    className="mb-2 me-2 btn-transition"
-                    size="xl"
-                    style={{ cursor: 'pointer', color: 'red' }}
-                    onClick={handleDelete}
-                />
+
+                        <FontAwesomeIcon
+                            icon={action.icon}
+                            id={`${action.label}-${client.id}`}
+                            className="mb-2 me-2 btn-transition"
+                            size="xl"
+                            style={{ cursor: 'pointer', color: action.color }}
+                            onClick={() => action.onClick(client)}
+                        />
+                    </React.Fragment>
+                ))}
             </div>
         );
-    };
+    };*/
+
+
     return (
         <>
             {currentItems.length === 0 ? (
@@ -208,12 +153,14 @@ const TableView = ({ columns, rows, handleDeleteData }) => {
                                         ))}
                                         <td>
                                             {renderActions(client)}
-
+                                          
                                         </td>
+
                                     </tr>
                                 ))}
                             </tbody>
                         </Table>
+
                         <div className="d-flex justify-content-between align-items-center mt-3">
                             <div>
                                 <span>Items Por Página:</span>
@@ -256,11 +203,7 @@ const TableView = ({ columns, rows, handleDeleteData }) => {
                 )
             }
 
-            <DeleteModal
-                isOpen={deleteModalOpen}
-                toggleModal={() => setDeleteModalOpen(!deleteModalOpen)}
-                handleConfirm={handleConfirm}
-            />
+
         </>
     );
 };

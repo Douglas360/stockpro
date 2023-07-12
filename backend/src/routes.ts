@@ -8,6 +8,7 @@ import { CreateCarrierController } from "./controllers/Register/Carrier/CreateCa
 import { CreateProductController } from "./controllers/ProductManagment/Product/CreateProductController";
 import { CreateSalePriceController } from "./controllers/ProductManagment/SalePrice/CreateSalePriceController";
 import { CreateOrderController } from "./controllers/Order/Product/CreateOrderController";
+import { CreateInvoiceController } from "./controllers/Invoice/CreateInvoiceController";
 import { auth } from "./middleware/auth";
 
 const router = Router();
@@ -60,6 +61,16 @@ const createOrderController = new CreateOrderController();
 router.post("/order", createOrderController.create);
 router.get("/list/order/id_company/:id", createOrderController.listOrdersByCompany);
 router.get("/list/order/id_customer/:id", createOrderController.listOrdersByCustomer);
+
+//Invoice routes
+const createInvoiceController = new CreateInvoiceController();
+router.post("/invoice", createInvoiceController.create);
+router.get("/list/invoice/:ref", createInvoiceController.getInvoiceData);
+router.get("/list/invoice/company_id/:id", createInvoiceController.getInvoice);
+
+
+
+
 
 
 

@@ -103,7 +103,8 @@ export const NotaFiscalNav = [
         label: 'Nota Fiscal',
         content: [
             {
-                label: 'Gerenciar NF-e'
+                label: 'Gerenciar NF-e',
+                to: '/nota-fiscal/gerenciar',
             },
         ]
     }

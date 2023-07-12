@@ -8,7 +8,7 @@ import { useProduct } from '../../../context/ProductContext/useProduct'
 const CardProduto = ({ data, handleInputChange }) => {
   const { listProducts } = useProduct()
   const [products, setProducts] = useState([])
-  const [produtos, setProdutos] = useState([{ produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+  const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
   const [stockQuantities, setStockQuantities] = useState({});
   const [typeDiscount, setTypeDiscount] = useState({}); // State to store the discount type (R$ or %) for each product
 
@@ -31,7 +31,8 @@ const CardProduto = ({ data, handleInputChange }) => {
   ]
 
   const handleAddField = () => {
-    setProdutos([...produtos, { produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+    setProdutos([...produtos, { numero_item: produtos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+    console.log(produtos)
   }
 
   const handleFieldChange = (index, field, value) => {

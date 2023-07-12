@@ -16,7 +16,7 @@ const CadastrarProduto = () => {
   const [data, setData] = useState([]);
   const { createProduct, loading } = useProduct();
   const id_empresa = 1
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

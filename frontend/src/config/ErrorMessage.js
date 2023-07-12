@@ -21,4 +21,9 @@ export const ERROR_MESSAGES = {
     "Order number already exists": "Já existe uma venda com este número",
     "Product not found": "Produto não encontrado",
     "Insufficient inventory for product": "Estoque insuficiente para o produto",
+    "Missing orderId": "Falta o id da venda",
+    "Order not found": "Venda não encontrada",
+    "One or more products are missing codigo_ncm": "Um ou mais produtos estão sem código NCM",
+    "Missing nome": "Falta o nome",
+    "Missing nome_fantasia": "Falta o nome fantasia",
 };

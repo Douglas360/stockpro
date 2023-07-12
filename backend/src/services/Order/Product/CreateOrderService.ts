@@ -1,3 +1,4 @@
+
 import prismaClient from "../../../prisma";
 import { IOrderItem } from "../../../types/OrderItem";
 import { IOrder } from "../../../types/OrderTypes";
@@ -8,6 +9,7 @@ class CreateOrderService {
         let updatedItems;
         try {
             const { itens, ...rest } = orderData;
+
 
             // Perform additional checks on each order item if needed
             for (const item of itens) {
@@ -62,7 +64,9 @@ class CreateOrderService {
                     itens: true,
 
                 },
+
             });
+
 
             // Update the inventory for each sold item
             updatedItems = await Promise.all(
@@ -149,7 +153,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
 
     async listOrdersByDateRange(startDate: Date, endDate: Date): Promise<any> {
         try {

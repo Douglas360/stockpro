@@ -15,21 +15,44 @@ const CardTotal = ({ data, handleInputChange }) => {
 
     data.valorProdutos = valorProdutosTotal;
     data.valorTotal = valorTotalComDesconto;
-   
+
     useEffect(() => {
         const descontoValor = parseFloat(data.descontoValor || 0);
         const valorComDesconto = valorTotal - descontoValor;
         setValorTotalComDesconto(valorComDesconto);
-    
+
     }, [data.descontoValor, valorTotal]);
 
     useEffect(() => {
         const descontoPorcentagem = parseFloat(data.descontoPorcentagem || 0);
         const descontoValor = (valorTotal * descontoPorcentagem) / 100;
         const valorComDesconto = valorTotal - descontoValor;
-       
+
         setValorTotalComDesconto(valorComDesconto);
     }, [data.descontoPorcentagem, valorTotal]);
+
+    const formattedValorProdutosTotal = isNaN(valorProdutosTotal)
+        ? '' // Define uma string vazia se não for um número válido
+        : parseFloat(valorProdutosTotal).toLocaleString('pt-br', {
+            style: 'currency',
+            currency: 'BRL',
+        });
+
+    const formattedValorTotal = isNaN(valorTotal)
+        ? '' // Define uma string vazia se não for um número válido
+        : parseFloat(valorTotalComDesconto).toLocaleString('pt-br', {
+            style: 'currency',
+            currency: 'BRL',
+        });
+
+    const formattedValorFrete = isNaN(valorFrete)
+        ? '' // Define uma string vazia se não for um número válido
+        : parseFloat(valorFrete).toLocaleString('pt-br', {
+            style: 'currency',
+            currency: 'BRL',
+        });
+
+
 
     return (
         <Card className="main-card mb-1">
@@ -68,13 +91,15 @@ const CardTotal = ({ data, handleInputChange }) => {
                     <tbody>
                         <tr>
                             <td>
+
                                 <Input
                                     type="text"
                                     name="valorProdutos"
                                     id="valorProdutos"
                                     placeholder="Valor dos produtos"
                                     readOnly
-                                    defaultValue={valorProdutosTotal}
+                                    defaultValue={formattedValorProdutosTotal
+                                    }
                                 />
                             </td>
                             <td>
@@ -84,7 +109,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     id="valorFrete"
                                     placeholder="Valor do frete"
                                     readOnly
-                                    defaultValue={valorFrete}
+                                    defaultValue={formattedValorFrete}
                                 />
                             </td>
                             <td>
@@ -114,7 +139,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     id="valorTotal"
                                     placeholder="Valor total"
                                     readOnly
-                                    value={valorTotalComDesconto}
+                                    value={formattedValorTotal}
                                 />
                             </td>
                         </tr>

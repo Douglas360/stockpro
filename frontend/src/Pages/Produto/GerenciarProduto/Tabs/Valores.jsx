@@ -40,7 +40,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
 
   const [lucroSugerido, setLucroSugerido] = useState([]);
   const [valorVendaSugerido, setValorVendaSugerido] = useState('0,000');
-  
+
 
   const loadSalePrices = async () => {
     const salePrices = await listSalePrices();
@@ -108,7 +108,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     const valorVendaSugerido = custoFinal * (1 + lucroSug / 100);
     setValorVendaSugerido(valorVendaSugerido.toFixed(4));
 
-    const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);    
+    const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);
 
     data.valorVendaUtilizado = valorVendaUtil.toFixed(4)
 
@@ -142,6 +142,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                 </Tooltip>
               </Label>
               <Input
+                required
                 type='number'
                 name='valorCusto'
                 id='valorCusto'
@@ -250,7 +251,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                     <th>Lucro sugerido (%)</th>
                     <th>Lucro utilizado (%)</th>
                     <th>Valor de venda sugerido (R$)</th>
-                    <th>Valor de venda utilizado (R$)</th>
+                    <th>Valor de venda utilizado (R$)<span className='text-danger'>*</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -282,6 +283,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                       </td>
                       <td>
                         <Input
+                          required
                           type='number'
                           name='valorVendaUtilizado'
                           id='valorVendaUtilizado'

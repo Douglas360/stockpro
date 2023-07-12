@@ -1,11 +1,32 @@
-import { faArrowDown, faFileExcel, faGears, faPlusCircle, faSearch, faTrashArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faEdit, faFileExcel, faGears, faPlusCircle, faSearch, faTrashArrowUp, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupText, Row, Spinner } from 'reactstrap'
+import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row, Spinner, UncontrolledButtonDropdown, UncontrolledTooltip } from 'reactstrap'
 
 import { useNavigate } from 'react-router-dom';
 import { AdvancedSearch } from './AdvancedSearch';
 import TableView from './TableView';
+
+const DeleteModal = ({ isOpen, toggleModal, handleConfirm }) => {
+    return (
+        <Modal isOpen={isOpen} toggle={toggleModal} >
+            <div className="bg-white rounded-lg p-6 sm:p-8 md:p-10 lg:p-12">
+                <ModalHeader toggle={toggleModal} className="text-lg font-medium mb-4">
+                    Confirmação de exclusão
+                </ModalHeader>
+                <ModalBody className="text-gray-600 mb-6">Tem certeza que deseja excluir?</ModalBody>
+                <ModalFooter className="flex justify-end">
+                    <Button color="secondary" outline className="mr-2" onClick={toggleModal}>
+                        Cancelar
+                    </Button>
+                    <Button color="danger" outline onClick={handleConfirm}>
+                        Excluir
+                    </Button>
+                </ModalFooter>
+            </div>
+        </Modal>
+    );
+};
 
 export const SearchBar = ({
     urlNavigate,
@@ -14,8 +35,14 @@ export const SearchBar = ({
     msgDelete,
     handleDeleteData,
     loading,
+    actions,
+    ActionsDropdown
 
 }) => {
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -42,7 +69,6 @@ export const SearchBar = ({
 
     };
 
-
     const handleAdvancedSearch = () => {
         // Advanced search logic here
     };
@@ -54,6 +80,59 @@ export const SearchBar = ({
             client?.celular.toLowerCase().includes(searchTerm.toLowerCase())*/
 
     );
+
+    const newActions = [
+        ...actions ? actions : [],
+        {
+            label: 'Excluir',
+            icon: faTrashCan,
+            color: 'red',
+            onClick: (client) => {
+                setSelectedItem(client.id);
+                setDeleteModalOpen(true);
+            },
+        },
+    ];
+
+
+    const renderActions = (client) => {
+        return (
+            <>
+                {newActions.map((action, index) => (
+                    <React.Fragment key={index}>
+                        <UncontrolledTooltip
+                            placement="top"
+                            target={`${action.label}-${client.id}`}
+                            style={{ fontSize: '.6rem', padding: '4px 8px' }}
+                        >
+                            {action.label}
+                        </UncontrolledTooltip>
+
+
+                        <FontAwesomeIcon
+                            icon={action.icon}
+                            id={`${action.label}-${client.id}`}
+                            className="me-1 btn-transition"
+                            size="xl"
+                            style={{ cursor: 'pointer', color: action.color }}
+                            onClick={() => action.onClick(client)}
+                        />
+                    </React.Fragment>
+                ))}
+
+                {ActionsDropdown && (
+                    <ActionsDropdown client={client} />
+                )}
+            </>
+        );
+    };
+
+
+    const handleConfirm = () => {
+        handleDeleteData(selectedItem);
+        setDeleteModalOpen(false);
+    };
+
     return (
         <>
 
@@ -134,9 +213,15 @@ export const SearchBar = ({
                         columns={columns}
                         rows={filteredData}
                         handleDeleteData={handleDeleteData}
+                        renderActions={renderActions}
                     />
                 </Col>
             </Row>
+            <DeleteModal
+                isOpen={deleteModalOpen}
+                toggleModal={() => setDeleteModalOpen(!deleteModalOpen)}
+                handleConfirm={handleConfirm}
+            />
         </>
     )
 }
