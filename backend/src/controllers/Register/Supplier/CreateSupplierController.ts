@@ -49,6 +49,25 @@ class CreateSupplierController {
         const supplier = await createSupplierService.create(supplierData);
         return res.json(supplier);
     }
+    async get(req: Request, res: Response) {
+        //By Id in search params of request
+        const { id } = req.params;
+
+        const createSupplierService = new CreateSupplierService();
+        const supplier = await createSupplierService.get(Number(id));
+        return res.json(supplier);
+    }
+    async update(req: Request, res: Response) {
+        //By Id in search params of request
+        const { id } = req.params;
+        const {supplierData} = req.body;
+
+        const createSupplierService = new CreateSupplierService();
+        const supplier = await createSupplierService.update(Number(id), supplierData);
+        return res.json(supplier);
+    }
+       
+
     async getAll(req: Request, res: Response) {
         //By Id in search params of request
         const { id } = req.query;

@@ -98,6 +98,83 @@ class CreateSupplierService {
             throw new Error(error.message);
         }
     }
+    async get(id_fornecedor: number) {
+        try {
+            const supplier = await prismaClient.fornecedor.findUnique({
+                where: {
+                    id_fornecedor: id_fornecedor,
+                },
+                include: {
+                    enderecos: true,
+                    contatos: true,
+                },
+               
+            });
+
+            if (!supplier) {
+                throw new Error("Supplier not found");
+            }
+
+            return supplier
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async update(supplierId: number, supplierData: ISupplier) {
+        try {
+            const existingSupplier = await prismaClient.fornecedor.findUnique({
+                where: { id_fornecedor: supplierId },
+            });
+
+            if (!existingSupplier) {
+                throw new Error("Supplier not found");
+            }
+
+            // Update the supplier's information
+            const updatedSupplier = await prismaClient.fornecedor.update({
+                where: { id_fornecedor: supplierId },
+                data: supplierData,
+            });
+
+            if (supplierData.endereco) {
+                // Map to create the supplier's addresses
+
+                const addressData = supplierData.endereco?.map((address) => ({
+                    ...address,
+                    id_fornecedor: updatedSupplier.id_fornecedor,
+                }));
+
+                // Create the supplier's address
+                if (addressData) {
+                    await prismaClient.endereco.createMany({
+                        data: addressData,
+                    });
+                }
+
+            }
+
+            if (supplierData.contato) {
+                // Map to create the customer's contact
+                const contactData = supplierData.contato?.map((contact) => ({
+                    ...contact,
+                    id_fornecedor: updatedSupplier.id_fornecedor,
+                }));
+
+                // Create the customer's contact
+                if (contactData) {
+                    await prismaClient.contato.createMany({
+                        data: contactData,
+                    });
+
+                }
+            }
+
+            return updatedSupplier;
+        } catch (error: any) {
+            console.log(error.message)
+            throw new Error(error.message);
+        }
+    }
     async getAll(id_empresa: number) {
         try {
             const supplier = await prismaClient.fornecedor.findMany({

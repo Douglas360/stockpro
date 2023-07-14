@@ -38,6 +38,8 @@ router.delete("/delete/customer/:id", createCustomerController.delete);
 //Supplier routes
 const createSupplierController = new CreateSupplierController();
 router.post("/supplier", createSupplierController.create);
+router.get("/supplier/:id", createSupplierController.get);
+router.put("/supplier/:id", createSupplierController.update);
 router.get("/list/supplier/id_company?:id", createSupplierController.getAll);
 router.delete("/delete/supplier/:id", createSupplierController.delete);
 

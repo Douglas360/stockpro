@@ -76,6 +76,33 @@ export const RegisterProvider = ({ children }) => {
         return handleRequest(api.post('/supplier', data), 'Fornecedor cadastrado com sucesso');
     };
 
+    //function to get a Supplier by id
+    const getSupplierById = async (data) => {
+        return handleRequest(api.get(`/supplier/${data}`))
+    };
+
+    //function to update a Supplier by id
+    const updateSupplier = async (data) => {
+        const supplierData = {
+            "supplierData": {
+                "nome": data.nomeCliente || data.razaoSocialCliente,
+                "tipo_fornecedor": data.tipoCliente,
+                "cpf": data.cpfCliente,
+                "cnpj": data.cnpjCliente,
+                "email": data.emailCliente,
+                "rg_representante": data.rgCliente,
+                "dt_nascimento": data.dataNascimentoCliente,
+                "telefone": data.telefoneCliente,
+                "inscricao_estadual": data.inscricaoEstadualCliente,
+                "inscricao_municipal": data.inscricaoMunicipalCliente,
+                "inscricao_suframa": data.inscricaoSuframaCliente,
+                "tipo_contribuinte": data.tipoContribuinteCliente,
+            }
+        }
+        return handleRequest(api.put(`/supplier/${data.id}`, supplierData), 'Fornecedor atualizado com sucesso');
+    };
+
+
     //function to list all Suppliers by company id in query params
     const listAllSuppliers = async (data) => {
         return handleRequest(api.get(`/list/supplier/id_company?id=${data}`))
@@ -143,6 +170,8 @@ export const RegisterProvider = ({ children }) => {
                 updateCustomer,
                 deleteCustomer,
                 createSupplier,
+                getSupplierById,
+                updateSupplier,
                 listAllSuppliers,
                 deleteSupplier,
                 createCarrier,
