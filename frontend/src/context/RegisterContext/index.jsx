@@ -25,8 +25,8 @@ export const RegisterProvider = ({ children }) => {
                 autoClose: 2000,
                 hideProgressBar: true,
             });
-        } finally {
-            setLoading(false);
+        } finally {       
+                setLoading(false);         
         }
     };
 
@@ -38,6 +38,32 @@ export const RegisterProvider = ({ children }) => {
     //function to list all Customers by company id in query params
     const listAllCustomers = async (data) => {
         return handleRequest(api.get(`/list/customer/id_company?id=${data}`))
+    };
+
+    //function to get a Customer by id
+    const getCustomerById = async (data) => {
+        return handleRequest(api.get(`/customer/${data}`))
+    };
+
+    //function to update a Customer by id 
+    const updateCustomer = async (data) => {
+        const customerData = {
+            "customerData": {
+                "nome": data.nomeCliente || data.razaoSocialCliente,
+                "tipo_cliente": data.tipoCliente,
+                "cpf": data.cpfCliente,
+                "cnpj": data.cnpjCliente,
+                "email": data.emailCliente,
+                "rg_representante": data.rgCliente,
+                "dt_nascimento": data.dataNascimentoCliente,
+                "telefone": data.telefoneCliente,
+                "inscricao_estadual": data.inscricaoEstadualCliente,
+                "inscricao_municipal": data.inscricaoMunicipalCliente,
+                "inscricao_suframa": data.inscricaoSuframaCliente,
+                "tipo_contribuinte": data.tipoContribuinteCliente,
+            }
+        }
+        return handleRequest(api.put(`/customer/${data.id}`, customerData), 'Cliente atualizado com sucesso');
     };
 
     //function to delete a Customer by id
@@ -86,7 +112,9 @@ export const RegisterProvider = ({ children }) => {
             value={{
                 loading,
                 createCustomer,
+                getCustomerById,
                 listAllCustomers,
+                updateCustomer,
                 deleteCustomer,
                 createSupplier,
                 listAllSuppliers,

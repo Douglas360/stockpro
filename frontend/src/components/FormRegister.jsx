@@ -13,18 +13,37 @@ const estados = [
     'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
-const FormRegister = ({ title, handleFormSubmit, loading }) => {
+const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
+    console.log(initialValues?.cnpj)
+
     const { user } = useAuth()
-    const [tipoCliente, setTipoCliente] = useState('')
+    const [tipoCliente, setTipoCliente] = useState(initialValues?.tipo_cliente || 'Pessoa Juridica')
     const [checked, setChecked] = useState(false)
     const [nameError, setNameError] = useState(false)
     const [tipoClienteError, setTipoClienteError] = useState(false)
-    const [enderecosCliente, setEnderecosCliente] = useState([
-        { cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '' }
-    ])
-    const [contatosCliente, setContatosCliente] = useState([
+    const [inscricaoEstadual, setInscricaoEstadual] = useState()
+    const [cnpj, setCnpj] = useState(initialValues?.cnpj || '')
+    const [enderecosCliente, setEnderecosCliente] = useState(
+        initialValues?.enderecos?.map((endereco) => ({ ...endereco })) || [
+            {
+                tipo_endereco: '',
+                cep: '',
+                rua: ':)',
+                numero: '',
+                complemento: '',
+                bairro: '',
+                cidade: '',
+                estado: '',
+            },
+        ]
+    );
+
+
+    const [contatosCliente, setContatosCliente] = useState(initialValues?.contatos || [
         { tipo_contato: '', nome: '', observacao: '' }
     ])
+
+
 
     const navigate = useNavigate()
     const handleCancel = useCallback(() => {
@@ -73,6 +92,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
 
     const handleChecked = useCallback(() => {
         setChecked((prevState) => !prevState);
+        setInscricaoEstadual("ISENTO");
     }, []);
 
     const handleTipoClienteChange = useCallback((e) => {
@@ -118,7 +138,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                 const response = await GetCnpj(cnpj);
 
                 if (response) {
-                   
+
                     const { razao_social, nome_fantasia, ddd_telefone_1, logradouro, municipio, bairro, uf, cep, numero } = response;
                     document.getElementById('razaoSocialCliente').value = razao_social || '';
                     document.getElementById('nomeCliente').value = nome_fantasia || '';
@@ -149,6 +169,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
         value.enderecos = enderecosCliente;
         value.contatos = contatosCliente;
         value.id_empresa = idEmpresa;
+        value.inscricaoEstadualCliente = inscricaoEstadual;
 
         handleFormSubmit(value);
     }, [user, enderecosCliente, contatosCliente, handleFormSubmit]);
@@ -287,10 +308,11 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 onBlur={handleTipoClienteBlur}
                                 invalid={tipoClienteError}
                                 valid={!tipoClienteError}
+
                             >
                                 <option value='0'>Selecione</option>
                                 <option value='Pessoa Fisica'>Pessoa Física</option>
-                                <option value='Pessoa Juridica' selected>Pessoa Jurídica</option>
+                                <option value='Pessoa Juridica' >Pessoa Jurídica</option>
                             </Input>
                             <FormFeedback>
                                 {tipoClienteError && `Tipo de ${title} é obrigatório`}
@@ -298,7 +320,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                         </Col>
                         <Col md='3'>
                             <Label for='situacaoCliente' style={{ fontWeight: 'bold' }}>Situação do {title} </Label>
-                            <Input type='select' name='situacaoCliente' id='situacaoCliente' >
+                            <Input type='select' name='situacaoCliente' id='situacaoCliente'>
                                 <option value='0'>Selecione</option>
                                 <option value='1' selected>Ativo</option>
                                 <option value='2'>Inativo</option>
@@ -311,6 +333,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 type='text'
                                 name='nomeCliente'
                                 id='nomeCliente'
+                                defaultValue={initialValues?.nome}
                                 onBlur={handleNameBlur}
                                 invalid={nameError}
                                 valid={!nameError}
@@ -321,7 +344,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                         </Col>
                         <Col md='3'>
                             <Label for='emailCliente' style={{ fontWeight: 'bold' }}>E-mail </Label>
-                            <Input type='email' name='emailCliente' id='emailCliente' />
+                            <Input type='email' name='emailCliente' id='emailCliente' defaultValue={initialValues?.email} />
                         </Col>
                     </Row>
                     {tipoCliente === 'Pessoa Fisica' &&
@@ -335,6 +358,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 >
                                     {inputProps => (
                                         <Input
+                                            defaultValue={initialValues?.cpf}
                                             type="text"
                                             name="cpfCliente"
                                             id="cpfCliente"
@@ -365,9 +389,11 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                     <Label for='cnpjCliente' style={{ fontWeight: 'bold' }} >CNPJ </Label><span className='text-danger'>*</span>
                                     <InputGroup>
                                         <InputMask
-                                            mask="99.999.999/9999-99"
+                                            mask="99.999.999/9999-99"                                        
+                                            value={initialValues?.cnpj || cnpj}
                                             maskPlaceholder=""
                                             onBlur={(e) => { handleSearchCnpj(e.target.value) }}
+                                            onChange={(e) => { initialValues?.cnpj ? setCnpj(initialValues?.cnpj) : setCnpj(e.target.value) }}
                                         >
                                             {inputProps => (
                                                 <Input
@@ -393,17 +419,21 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 </Col>
                                 <Col md='4'>
                                     <Label for='razaoSocialCliente' style={{ fontWeight: 'bold' }}>Razão social </Label><span className='text-danger'>*</span>
-                                    <Input required type='text' name='razaoSocialCliente' id='razaoSocialCliente' />
+                                    <Input required type='text' name='razaoSocialCliente' id='razaoSocialCliente' defaultValue={initialValues?.razao_social} />
                                 </Col>
                                 <Col md='4'>
                                     <Label for='inscricaoEstadualCliente' style={{ fontWeight: 'bold' }}>Inscrição estadual </Label> <span className='text-danger'>*</span>
                                     <InputGroup>
-                                    <Input required type='text' name='inscricaoEstadualCliente' id='inscricaoEstadualCliente'
-                                        disabled={checked}
-                                       {...(checked ? { value: 'ISENTO' } : {})
-                                        }
-                                      
-                                    />
+                                        <Input required type='text' name='inscricaoEstadualCliente' id='inscricaoEstadualCliente'
+
+                                            disabled={checked}
+                                            defaultValue={initialValues?.inscricao_estadual || ''}
+                                            value={checked ? 'ISENTO' : inscricaoEstadual}
+                                            onChange={(e) => { setInscricaoEstadual(e.target.value) }}
+
+
+
+                                        />
                                         <InputGroupText addonType="append">
                                             <Input
                                                 type='checkbox'
@@ -421,6 +451,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 <Col md='3'>
                                     <Label for='tipoContribuinteCliente' style={{ fontWeight: 'bold' }}>Tipo de contribuinte </Label>
                                     <Input type='select' name='tipoContribuinteCliente' id='tipoContribuinteCliente'
+                                        defaultValue={initialValues?.tipo_contribuinte}
                                     //value={checked ? '2' : '0'}
                                     >
                                         <option value='0'>Selecione</option>
@@ -431,15 +462,15 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 </Col>
                                 <Col md='3'>
                                     <Label for='inscricaoMunicipalCliente' style={{ fontWeight: 'bold' }}>Inscrição municipal </Label>
-                                    <Input type='text' name='inscricaoMunicipalCliente' id='inscricaoMunicipalCliente' />
+                                    <Input type='text' name='inscricaoMunicipalCliente' id='inscricaoMunicipalCliente' defaultValue={initialValues?.inscricao_municipal} />
                                 </Col>
                                 <Col md='3'>
                                     <Label for='inscricaoSuframaCliente' style={{ fontWeight: 'bold' }}>Inscrição SUFRAMA </Label>
-                                    <Input type='text' name='inscricaoSuframaCliente' id='inscricaoSuframaCliente' />
+                                    <Input type='text' name='inscricaoSuframaCliente' id='inscricaoSuframaCliente' defaultValue={initialValues?.inscricao_suframa} />
                                 </Col>
                                 <Col md='3'>
                                     <Label for='telefoneCliente' style={{ fontWeight: 'bold' }}>Telefone </Label>
-                                    <Input type='text' name='telefoneCliente' id='telefoneCliente' />
+                                    <Input type='text' name='telefoneCliente' id='telefoneCliente' defaultValue={initialValues?.telefone} />
                                 </Col>
                             </Row>
                         </>
@@ -471,12 +502,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 <Col md='2'>
                                     <Label for='cepCliente' style={{ fontWeight: 'bold' }}>CEP </Label> <span className='text-danger'>*</span>
                                     <InputGroup>
-                                        {/*<Input type='text' name='cepCliente' id='cepCliente'
-                                            value={endereco.cep}
-                                            onChange={e => handleEnderecoChange(index, 'cep', e.target.value)}
-                                            onBlur={() => { handleSearchCep() }}
-                    />*/
-                                        }
+
                                         <InputMask
                                             mask="99.999-999"
                                             maskPlaceholder=""
@@ -545,10 +571,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                                 </Col>
                                 <Col md='3'>
                                     <Label for='estadoCliente' style={{ fontWeight: 'bold' }}>Estado </Label> <span className='text-danger'>*</span>
-                                    {/*<Input type='text' name='estadoCliente' id='estadoCliente'
-                                        value={endereco.estado}
-                                        onChange={e => handleEnderecoChange(index, 'estado', e.target.value)}
-                                            />*/}
+
                                     <Input required type='select' name='estadoCliente' id='estadoCliente'
                                         value={endereco.estado}
                                         onChange={e => handleEnderecoChange(index, 'estado', e.target.value)}
@@ -624,6 +647,7 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
                     <Row className='mb-3'>
                         <Col md='12'>
                             <Input type='textarea' name='observacaoCliente' id='observacaoCliente'
+                                defaultValue={initialValues?.observacao}
                             />
 
                         </Col>
@@ -653,3 +677,5 @@ const FormRegister = ({ title, handleFormSubmit, loading }) => {
 }
 
 export default FormRegister
+
+

@@ -30,6 +30,8 @@ router.post("/user", createUserController.handle);
 //Customer routes
 const createCustomerController = new CreateCustomerController();
 router.post("/customer", createCustomerController.create);
+router.get("/customer/:id", createCustomerController.get);
+router.put("/customer/:id", createCustomerController.update);
 router.get("/list/customer/id_company?:id", createCustomerController.getAll);
 router.delete("/delete/customer/:id", createCustomerController.delete);
 

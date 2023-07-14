@@ -48,7 +48,23 @@ class CreateCustomerController {
         const customer = await createCustomerService.create(customerData);
         return res.json(customer);
     }
+    async get(req: Request, res: Response) {
+        // By Id in search params of request
+        const { id } = req.params
 
+        const createCustomerService = new CreateCustomerService();
+        const customer = await createCustomerService.get(Number(id));
+        return res.json(customer);
+    }
+    async update(req: Request, res: Response) {
+        const { customerData } = req.body;
+        const { id } = req.params;
+        console.log(customerData.inscricao_estadual)     
+
+        const createCustomerService = new CreateCustomerService();
+        const customer = await createCustomerService.update(Number(id), customerData);
+        return res.json(customer);
+    }
     async getAll(req: Request, res: Response) {
         // By Id in search params of request
         const { id } = req.query;

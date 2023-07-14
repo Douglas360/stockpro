@@ -98,6 +98,40 @@ class CreateCarrierService {
             throw new Error(error.message);
         }
     }
+    async get(carrierId: number) {
+        try {
+            const carrier = await prismaClient.transportadora.findUnique({
+                where: { id_transportadora: carrierId },
+                include: {
+                    enderecos: true,
+                    contatos: true,
+                },
+            });
+
+            if (!carrier) {
+                throw new Error("Carrier not found");
+            }
+
+            return carrier;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    
+    async update(carrierId: number, carrierData: ICarrier) {
+        try {
+            const existingCarrier = await prismaClient.transportadora.findUnique({
+                where: { id_transportadora: carrierId },
+            });
+
+            if (!existingCarrier) {
+                throw new Error("Carrier not found");
+            }
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }    
+    
     async getAll(id_empresa: number) {
         try {
             const carriers = await prismaClient.transportadora.findMany({

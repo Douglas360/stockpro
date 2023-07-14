@@ -4,12 +4,14 @@ import { SearchBar } from '../../../components/SearchBar';
 import { useRegister } from '../../../context/RegisterContext/useRegister';
 import { useAuth } from '../../../context/AuthContext/useAuth';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
-import { faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const ListarClientes = () => {
-  const { listAllCustomers,deleteCustomer } = useRegister();
+  const { listAllCustomers, deleteCustomer } = useRegister();
   const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
+  const navigate = useNavigate();
 
   //const id_empresa = user?.id_empresa;
   const loadCustomers = async () => {
@@ -19,7 +21,7 @@ const ListarClientes = () => {
     setCustomers(response);
   };
   useEffect(() => {
-   
+
     loadCustomers();
 
 
@@ -29,23 +31,15 @@ const ListarClientes = () => {
 
   const actions = [
     {
-        label: 'Teste',
-        icon: faEdit,
-        color: 'orange',
-        onClick: (client) => {
-            // Lógica para a ação de edição
-        },
+      label: 'Editar',
+      icon: faEdit,
+      color: 'orange',
+      onClick: (client) => {
+        navigate(`/cadastro/cliente/editar/${client.id}`);
+      },
     },
-    {
-        label: 'TEste2',
-        icon: faTrashCan,
-        color: 'red',
-        onClick: (client) => {
-           //lógica
-        },
-    },
-    // Adicione mais ações se necessário
-];
+
+  ];
 
   const clients = customers.map((customer) => {
     const dataCadastro = dateFormatWithHours(customer.createdAt);
@@ -60,7 +54,7 @@ const ListarClientes = () => {
   });
 
   const handleDelete = async (id) => {
-   
+
     await deleteCustomer(id);
     await loadCustomers();
   };

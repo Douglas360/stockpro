@@ -103,6 +103,26 @@ class CreateCustomerService {
             throw error;
         }
     }
+    async get(customerId: number) {
+        try {
+            const customer = await prismaClient.cliente.findUnique({
+                where: { id_cliente: customerId },
+                include: {
+                    enderecos: true,
+                    contatos: true,
+                },
+            });
+
+            if (!customer) {
+                throw new Error("Customer not found");
+            }
+
+            return customer;
+        } catch (error: any) {
+        
+            throw new Error(error.message);
+        }
+    }
 
     async update(customerId: number, customerData: ICustomer) {
         try {
@@ -122,7 +142,8 @@ class CreateCustomerService {
 
             return updatedCustomer;
         } catch (error: any) {
-            throw error;
+            console.log(error.message)
+            throw new Error(error.message);
         }
     }
     async getAll(id_empresa: number) {
@@ -148,7 +169,7 @@ class CreateCustomerService {
         }
     }
     async delete(customerId: number) {
-      
+
         try {
             const existingCustomer = await prismaClient.cliente.findUnique({
                 where: { id_cliente: customerId },
@@ -158,15 +179,15 @@ class CreateCustomerService {
                 throw new Error("Customer not found");
             }
 
-           /* // Delete the customer's address
-            await prismaClient.endereco.deleteMany({
-                where: { id_cliente: customerId },
-            });
-
-            // Delete the customer's contact
-            await prismaClient.contato.deleteMany({
-                where: { id_cliente: customerId },
-            });*/
+            /* // Delete the customer's address
+             await prismaClient.endereco.deleteMany({
+                 where: { id_cliente: customerId },
+             });
+ 
+             // Delete the customer's contact
+             await prismaClient.contato.deleteMany({
+                 where: { id_cliente: customerId },
+             });*/
 
             await prismaClient.cliente.delete({
                 where: { id_cliente: customerId },

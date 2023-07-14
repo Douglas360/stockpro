@@ -40,6 +40,10 @@ const Cadastro = () => {
                                 element={<CadastrarCliente />}
                             />
                             <Route
+                                path="cliente/editar/:id"
+                                element={<CadastrarCliente/>}
+                            />
+                            <Route
                                 path="fornecedor"
                                 element={<FornecedorJSX onTabSelect={handleTabSelect} />}
                             />
