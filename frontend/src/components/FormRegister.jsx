@@ -13,8 +13,7 @@ const estados = [
     'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
-const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
-    console.log(initialValues?.cnpj)
+const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {   
 
     const { user } = useAuth()
     const [tipoCliente, setTipoCliente] = useState(initialValues?.tipo_cliente || 'Pessoa Juridica')

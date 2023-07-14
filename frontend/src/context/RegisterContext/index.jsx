@@ -25,8 +25,8 @@ export const RegisterProvider = ({ children }) => {
                 autoClose: 2000,
                 hideProgressBar: true,
             });
-        } finally {       
-                setLoading(false);         
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -106,6 +106,32 @@ export const RegisterProvider = ({ children }) => {
         return handleRequest(api.post('/product', data), 'Produto cadastrado com sucesso');
     };
 
+    //function to get a Carrier by id
+    const getCarrierById = async (data) => {
+        return handleRequest(api.get(`/carrier/${data}`))
+    };
+
+    //function to update a Carrier by id
+    const updateCarrier = async (data) => {
+        const carrierData = {
+            "carrierData": {
+                "nome": data.nomeCliente || data.razaoSocialCliente,
+                "tipo_transportadora": data.tipoCliente,
+                "cpf": data.cpfCliente,
+                "cnpj": data.cnpjCliente,
+                "email": data.emailCliente,
+                "rg_representante": data.rgCliente,
+                "dt_nascimento": data.dataNascimentoCliente,
+                "telefone": data.telefoneCliente,
+                "inscricao_estadual": data.inscricaoEstadualCliente,
+                "inscricao_municipal": data.inscricaoMunicipalCliente,
+                "inscricao_suframa": data.inscricaoSuframaCliente,
+                "tipo_contribuinte": data.tipoContribuinteCliente,
+            }
+        }
+        return handleRequest(api.put(`/carrier/${data.id}`, carrierData), 'Transportadora atualizada com sucesso');
+    };
+
 
     return (
         <RegisterContext.Provider
@@ -120,6 +146,8 @@ export const RegisterProvider = ({ children }) => {
                 listAllSuppliers,
                 deleteSupplier,
                 createCarrier,
+                getCarrierById,
+                updateCarrier,
                 listAllCarriers,
                 deleteCarrier,
                 createProduct,

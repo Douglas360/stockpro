@@ -44,6 +44,8 @@ router.delete("/delete/supplier/:id", createSupplierController.delete);
 //Carrier routes
 const createCarrierController = new CreateCarrierController();
 router.post("/carrier", createCarrierController.create);
+router.get("/carrier/:id", createCarrierController.get);
+router.put("/carrier/:id", createCarrierController.update);
 router.get("/list/carrier/id_company?:id", createCarrierController.getAll);
 router.delete("/delete/carrier/:id", createCarrierController.delete);
 

@@ -41,7 +41,7 @@ const Cadastro = () => {
                             />
                             <Route
                                 path="cliente/editar/:id"
-                                element={<CadastrarCliente/>}
+                                element={<CadastrarCliente />}
                             />
                             <Route
                                 path="fornecedor"
@@ -49,6 +49,10 @@ const Cadastro = () => {
                             />
                             <Route
                                 path="fornecedor/cadastrar"
+                                element={<CadastrarFornecedor />}
+                            />
+                            <Route
+                                path="fornecedor/editar/:id"
                                 element={<CadastrarFornecedor />}
                             />
 
@@ -61,6 +65,12 @@ const Cadastro = () => {
                                 path="transportadora/cadastrar"
                                 element={<CadastrarTransportadora />}
                             />
+
+                            <Route
+                                path="transportadora/editar/:id"
+                                element={<CadastrarTransportadora />}
+                            />
+
 
 
 

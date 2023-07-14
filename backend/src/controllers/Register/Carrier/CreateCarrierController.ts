@@ -48,6 +48,22 @@ class CreateCarrierController {
         const carrier = await createCarrierService.create(carrierData);
         return res.json(carrier);
     }
+    async get(req: Request, res: Response) {
+        // By Id in search params of request
+        const { id } = req.params
+
+        const createCarrierService = new CreateCarrierService();
+        const carrier = await createCarrierService.get(Number(id));
+        return res.json(carrier);
+    }
+    async update(req: Request, res: Response) {
+        const { carrierData } = req.body;
+        const { id } = req.params;
+       
+        const createCarrierService = new CreateCarrierService();
+        const carrier = await createCarrierService.update(Number(id), carrierData);
+        return res.json(carrier);
+    }
 
     async getAll(req: Request, res: Response) {
         // By Id in search params of request

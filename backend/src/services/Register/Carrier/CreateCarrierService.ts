@@ -126,7 +126,15 @@ class CreateCarrierService {
 
             if (!existingCarrier) {
                 throw new Error("Carrier not found");
+            }else{
+                // Update the carrier's information
+                const updatedCarrier = await prismaClient.transportadora.update({
+                    where: { id_transportadora: carrierId },
+                    data: carrierData,
+                });
+                return updatedCarrier;
             }
+
         } catch (error: any) {
             throw new Error(error.message);
         }
