@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { DropdownMenu, DropdownToggle, Nav, NavItem, NavLink, Spinner, Table, UncontrolledButtonDropdown, UncontrolledTooltip, } from 'reactstrap';
+import { Spinner, Table,} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faEllipsisV, faEllipsisVertical, faSadTear, } from '@fortawesome/free-solid-svg-icons';
+import { faSadTear, } from '@fortawesome/free-solid-svg-icons';
 import { Pagination } from 'react-bootstrap';
 import { useRegister } from '../context/RegisterContext/useRegister';
 

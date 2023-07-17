@@ -10,8 +10,10 @@ const ListarFornecedor = () => {
   const { listAllSuppliers, deleteSupplier } = useRegister();
   const [suppliers, setSuppliers] = useState([]);
   const navigate = useNavigate();
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+  const id = JSON.parse(idEmpresa).id_empresa;
   const loadSuppliers = async () => {
-    const response = await listAllSuppliers(1);
+    const response = await listAllSuppliers(id);
     setSuppliers(response);
   };
   useEffect(() => {
@@ -27,6 +29,8 @@ const ListarFornecedor = () => {
   };
 
   const columns = ['Código', 'Nome', 'Tipo', 'Ativo', 'Telefone', 'Cadastrado em'];
+  const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
+
   const actions = [
     {
       label: 'Editar',
@@ -56,6 +60,7 @@ const ListarFornecedor = () => {
       <SearchBar
         urlNavigate={'/cadastro/fornecedor/cadastrar'}
         columns={columns}
+        columnsToFilter={columnsToFilter}
         rows={clients}
         handleDeleteData={handleDelete}
         msgDelete={'Fornecedor'}

@@ -27,4 +27,6 @@ export const ERROR_MESSAGES = {
     "Missing nome": "Falta o nome",
     "Missing nome_fantasia": "Falta o nome fantasia",
     "Code is required": "Código interno é obrigatório",
+    "id not found": "Id não encontrado",
+    "statusId not found": "Status não encontrado",
 };

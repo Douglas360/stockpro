@@ -32,7 +32,7 @@ export const ProductProvider = ({ children }) => {
 
     //function to create a Product
     const createProduct = async (data) => {
-      
+
         return handleRequest(api.post('/product', data), 'Produto cadastrado com sucesso');
     };
 

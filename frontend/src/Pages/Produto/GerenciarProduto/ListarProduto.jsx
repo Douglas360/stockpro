@@ -10,8 +10,10 @@ const ListarProdutos = () => {
   const { listProducts, deleteProduct, loading } = useProduct();
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+  const id = JSON.parse(idEmpresa).id_empresa;
   const loadProducts = async () => {
-    const response = await listProducts(1)//id_empresa   
+    const response = await listProducts(id)//id_empresa   
 
     setProducts(response);
   };
@@ -26,6 +28,8 @@ const ListarProdutos = () => {
   };
 
   const columns = ['Cód', 'Nome', 'Vr. venda', 'Estoque', 'Cadastrado em'];
+  const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
+
   const actions = [
     {
       label: 'Editar',
@@ -52,6 +56,7 @@ const ListarProdutos = () => {
       <SearchBar
         urlNavigate={'/produto/gerenciar/cadastrar'}
         columns={columns}
+        columnsToFilter={columnsToFilter}
         rows={clients}
         handleDeleteData={handleDelete}
         loading={loading}

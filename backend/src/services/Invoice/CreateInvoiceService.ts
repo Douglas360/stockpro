@@ -65,7 +65,7 @@ class CreateInvoiceService {
         throw new Error('Missing nome');
       }
       if (!order.empresa?.nome_fantasia) {
-        throw new Error('Missing nome_fantasia');
+        throw new Error('Falta atualizar o nome fantasia da empresa');
       }
 
       let valor_produto

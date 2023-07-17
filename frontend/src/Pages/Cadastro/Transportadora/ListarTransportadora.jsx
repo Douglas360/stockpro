@@ -10,8 +10,10 @@ const ListarTransportadora = () => {
   const { listAllCarriers, deleteCarrier } = useRegister();
   const [carrier, setCarrier] = useState([]);
   const navigate = useNavigate();
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+  const id = JSON.parse(idEmpresa).id_empresa;
   const loadCarrier = async () => {
-    const response = await listAllCarriers(1);
+    const response = await listAllCarriers(id);
     setCarrier(response);
   };
 
@@ -27,6 +29,8 @@ const ListarTransportadora = () => {
 
 
   const columns = ['Código', 'Nome', 'Tipo', 'Ativo', 'Telefone', 'Cadastrado em'];
+  const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
+
   const actions = [
     {
       label: 'Editar',
@@ -57,6 +61,7 @@ const ListarTransportadora = () => {
       <SearchBar
         urlNavigate={'/cadastro/transportadora/cadastrar'}
         columns={columns}
+        columnsToFilter={columnsToFilter}
         rows={clients}
         handleDeleteData={handleDelete}
         msgDelete={'Transportadora'}

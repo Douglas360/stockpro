@@ -33,6 +33,56 @@ class CreateOrderController {
         return res.status(200).json(orderResult);
 
     }
+    async listSalesStatus(req: Request, res: Response) {
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.listSalesStatus();
+
+        return res.status(200).json(orderResult);
+
+    }
+    async listHistorySalesStatus(req: Request, res: Response) {
+        const { id } = req.params;
+      
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.listHistorySalesStatus(Number(id));
+
+        return res.status(200).json(orderResult);
+
+    }
+    async updateOrderStatus(req: Request, res: Response) {
+        const { id } = req.params;
+        const { statusId, descricao } = req.body;
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.updateOrderStatus(Number(id), Number(statusId), descricao);
+
+        return res.status(200).json(orderResult);
+
+    }
+    async delete(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.delete(Number(id));
+
+        return res.status(200).json(orderResult);
+
+    }
+    async cancelOrder(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.cancel(Number(id));
+
+        return res.status(200).json(orderResult);
+
+    }
 }
 
 export { CreateOrderController };

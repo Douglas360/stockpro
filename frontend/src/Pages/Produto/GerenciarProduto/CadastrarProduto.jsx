@@ -19,15 +19,16 @@ const CadastrarProduto = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const isEditMode = !!id;
-  const id_empresa = 1
-  const { user } = useAuth();
+  const idSession = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+  const id_empresa = JSON.parse(idSession).id_empresa;
+  const id_usuario = JSON.parse(idSession).id;
 
   useEffect(() => {
     //if is edit mode, get product by id
     if (isEditMode) {
       const loadProduct = async () => {
         const response = await getProduct(id)
-       console.log(response)
+       
         setProduct({
           id_produto: response?.id_produto,
           nomeProduto: response.nome,
@@ -36,7 +37,7 @@ const CadastrarProduto = () => {
           movimentaEstoque: response.movimenta_estoque,
           habilitarNf: response.habilitar_nfce,
           validade: response.validade,
-          //id_usuario: 1,
+          id_usuario: id_usuario,
           id_empresa: id_empresa,
           pesoProduto: response.peso_kg,
           alturaProduto: response.altura_cm,
@@ -78,7 +79,7 @@ const CadastrarProduto = () => {
           movimentaEstoque: response.movimenta_estoque,
           habilitarNf: response.habilitar_nfce,
           validade: response.validade,
-          //id_usuario: 1,        
+          id_usuario: id_usuario,
           id_empresa: id_empresa,
           pesoProduto: response.peso_kg,
           alturaProduto: response.altura_cm,
@@ -110,7 +111,7 @@ const CadastrarProduto = () => {
           valorFixoCofins: response.vl_fixo_cofins,
           valorFixoPisSt: response.vl_fixo_pis_st,
           valorFixoCofinsSt: response.vl_fixo_cofins_st,
-        
+
 
         })
       }
@@ -129,7 +130,7 @@ const CadastrarProduto = () => {
     setData((prevData) => ({
       ...prevData,
       id_empresa: id_empresa,
-      id_usuario: user?.id_usuario,
+      id_usuario: id_usuario,
     }));
   };
 

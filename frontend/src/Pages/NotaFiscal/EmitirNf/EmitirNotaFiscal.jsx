@@ -39,7 +39,7 @@ export const EmitirNotaFiscal = () => {
                 subheading="Relizar uma nova emissão de nota fiscal."
                 icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
             />
-            {loading && <CustomSpinner />}
+            {loading && <CustomSpinner/>}
             <Card className='main-card mb-3'>
                 <CardBody>
                     <h5 className='card-title'>Emitir Nota Fiscal</h5>

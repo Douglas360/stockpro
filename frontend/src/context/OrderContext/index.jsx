@@ -23,7 +23,7 @@ export const OrderProvider = ({ children }) => {
             const message =
                 ERROR_MESSAGES[error.response?.data.error] || 'Erro desconhecido';
             toast.error(message, {
-                autoClose: 2000,
+                autoClose: 4000,
                 hideProgressBar: true,
             });
         } finally {
@@ -70,11 +70,11 @@ export const OrderProvider = ({ children }) => {
             "orderData": {
                 "numero_venda": parseInt(data.numeroVenda),
                 "data_venda": new Date(),
-                "id_empresa": 1,
+                "id_empresa": parseInt(data.id_empresa),
                 "id_cliente": parseInt(data.clienteOrcamento),
                 "id_situacao_venda": parseInt(data.situacaoVendaOrcamento) || 1,
                 "id_canal_venda": parseInt(data.canalVendaOrcamento) || 1,
-                "id_user": 1,
+                "id_user": parseInt(data.id_user),
                 "id_forma_pagamento": parseInt(data.formaPagamentoAvista) || 1,
                 "id_transportadora": parseInt(data.id_transportadora),
                 "valor_total": data.valorTotal,
@@ -102,11 +102,30 @@ export const OrderProvider = ({ children }) => {
         return handleRequest(api.get(`/list/order/id_company/${id_empresa}`));
     };
 
-    /* //function to create invoice
-     const createInvoice = async (data) => {
-         //console.log(data)
-         return handleRequestCreate(api.post('/invoice', data), 'Nota fiscal emitida com sucesso');
-     };*/
+    //function to list all Sales Status
+    const listSalesStatus = async () => {
+        return handleRequest(api.get('/list/salesstatus'));
+    };
+
+    //function to list history of a Order by id
+    const listHistoryOrder = async (id) => {
+        return handleRequest(api.get(`/list/historysalesstatus/${id}`));
+    };
+
+    //function to delete a Order by id
+    const deleteOrder = async (data) => {
+        return handleRequest(api.delete(`/delete/order/${data}`), 'Venda deletada com sucesso');
+    };
+
+    //function to update a Order Status by id
+    const updateOrderStatus = async (data, id) => {       
+        return handleRequest(api.put(`/update/orderstatus/${id}`, data), 'Status da venda atualizado com sucesso');
+    };
+
+    //function to cancel a Order by id
+    const cancelOrder = async (data) => {
+        return handleRequest(api.put(`/cancel/order/${data}`), 'Venda cancelada com sucesso');
+    };
 
 
     return (
@@ -115,7 +134,12 @@ export const OrderProvider = ({ children }) => {
                 loading,
                 createOrder,
                 listAllOrders,
-               
+                listSalesStatus,
+                listHistoryOrder,
+                deleteOrder,
+                updateOrderStatus,
+                cancelOrder
+
 
             }}
         >

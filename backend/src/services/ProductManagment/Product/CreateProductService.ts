@@ -3,7 +3,7 @@ import { IProduct } from "../../../types/ProductTypes";
 
 class CreateProductService {
     async execute(productData: IProduct) {
-
+      
         try {
             //Validate fields
             if (!productData.nome) {
@@ -25,8 +25,14 @@ class CreateProductService {
                 throw new Error("Product already exists");
             }
 
+            //productData without id_usuario
+            const productDataWithoutIdUser = {
+                ...productData,
+                id_usuario: undefined
+            }
+
             const product = await prismaClient.produto.create({
-                data: productData,
+                data: productDataWithoutIdUser,
                 include: {
                     campos: true,
                     estoque: true,

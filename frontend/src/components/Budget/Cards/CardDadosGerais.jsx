@@ -4,22 +4,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } from 'reactstrap'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
 import { useAuth } from '../../../context/AuthContext/useAuth'
+import { useOrder } from '../../../context/OrderContext/useOrder'
 
 
 const CardDadosGerais = ({ data, handleInputChange }) => {
   const { listAllCustomers } = useRegister()
-  const { user } = useAuth()
+  const { listSalesStatus } = useOrder()
+  //const { user } = useAuth()
   const [customers, setCustomers] = useState([])
   const [numeroVenda, setNumeroVenda] = useState('')
   const [codigoError, setCodigoError] = useState(false)
   const [customerError, setCustomerError] = useState(false)
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
+  const id = JSON.parse(idEmpresa).id_empresa
+  const [situacaoVenda, setSituacaoVenda] = useState([])
 
 
   const loadCustomers = async () => {
     //const id_empresa = user?.id_empresa
-    const response = await listAllCustomers(1)
-
+    const response = await listAllCustomers(id)
+    const responseStatus = await listSalesStatus()
     setCustomers(response)
+    setSituacaoVenda(responseStatus)
 
   }
 
@@ -27,12 +33,7 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
     loadCustomers()
   }, [])
 
-  const situacaoVenda = [
-    { id: 1, name: 'Concretizada' },
-    { id: 2, name: 'Em aberto' },
-    { id: 3, name: 'Em andamento' },
-    { id: 4, name: 'Cancelada' },
-  ]
+
 
 
   const handleCodigoBlur = (e) => {
@@ -136,8 +137,8 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
             >
               <option value=''>Selecione</option>
               {situacaoVenda.map((situacao) => (
-                <option key={situacao.id} value={situacao.id}>
-                  {situacao.name}
+                <option key={situacao.id_situacao_venda} value={situacao.id_situacao_venda}>
+                  {situacao.descricao}
                 </option>
               ))}
             </Input>

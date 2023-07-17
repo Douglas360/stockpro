@@ -42,6 +42,7 @@ class CreateProductController {
             fornecedor,
             id_usuario,
         } = req.body;
+        console.log(id_usuario)
 
         const estoqueData = {
             estoque_min: Number(estoqueMinimo) || 0,

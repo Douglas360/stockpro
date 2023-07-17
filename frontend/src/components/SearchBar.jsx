@@ -1,7 +1,7 @@
-import { faArrowDown, faEdit, faFileExcel, faGears, faPlusCircle, faSearch, faTrashArrowUp, faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faFileExcel, faGears, faPlusCircle, faSearch, faTrashArrowUp, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row, Spinner, UncontrolledButtonDropdown, UncontrolledTooltip } from 'reactstrap'
+import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Row, Spinner, UncontrolledTooltip } from 'reactstrap'
 
 import { useNavigate } from 'react-router-dom';
 import { AdvancedSearch } from './AdvancedSearch';
@@ -36,7 +36,8 @@ export const SearchBar = ({
     handleDeleteData,
     loading,
     actions,
-    ActionsDropdown
+    ActionsDropdown,
+    columnsToFilter
 
 }) => {
 
@@ -72,14 +73,25 @@ export const SearchBar = ({
     const handleAdvancedSearch = () => {
         // Advanced search logic here
     };
-    const filteredData = rows.filter(
+
+    const columnsTo =  ['nome', 'email', 'telefone', 'celular'];
+
+    const filteredData = rows?.filter((client) =>
+        columnsTo.some(
+            (column) =>
+                client[column]?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        
+    );
+
+    /*const filteredData = rows?.filter(
         (client) =>
             client?.nome.toLowerCase().includes(searchTerm.toLowerCase())/* ||
             client?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             client?.telefone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            client?.celular.toLowerCase().includes(searchTerm.toLowerCase())*/
+            client?.celular.toLowerCase().includes(searchTerm.toLowerCase())
 
-    );
+    )*/
 
     const newActions = [
         ...actions ? actions : [],

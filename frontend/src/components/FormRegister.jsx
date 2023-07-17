@@ -13,7 +13,7 @@ const estados = [
     'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
-const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {   
+const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
 
     const { user } = useAuth()
     const [tipoCliente, setTipoCliente] = useState(initialValues?.tipo_cliente || 'Pessoa Juridica')
@@ -388,7 +388,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                                     <Label for='cnpjCliente' style={{ fontWeight: 'bold' }} >CNPJ </Label><span className='text-danger'>*</span>
                                     <InputGroup>
                                         <InputMask
-                                            mask="99.999.999/9999-99"                                        
+                                            mask="99.999.999/9999-99"
                                             value={initialValues?.cnpj || cnpj}
                                             maskPlaceholder=""
                                             onBlur={(e) => { handleSearchCnpj(e.target.value) }}

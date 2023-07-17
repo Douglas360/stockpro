@@ -1,39 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit,  faPlusSquare } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 import { DropdownMenu, DropdownToggle, Nav, NavItem, NavLink, UncontrolledButtonDropdown } from 'reactstrap';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { SearchBar } from '../../../components/SearchBar';
 import { useOrder } from '../../../context/OrderContext/useOrder';
 import { useNavigate } from 'react-router-dom';
+import { ChangeStatusModal } from './ChangeStatusModal';
 
 
 const ListarVendaProduto = () => {
-    const { listAllOrders } = useOrder();
+    const { listAllOrders, listHistoryOrder, deleteOrder, cancelOrder, loading } = useOrder();
     const [orders, setOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
-
+    const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
+    const [data, setData] = useState({});
     const navigate = useNavigate();
+    const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+    const id = JSON.parse(idEmpresa).id_empresa;
 
+    const loadOrders = async () => {
+        const response = await listAllOrders(id);
+
+        setOrders(response);
+    };
 
     useEffect(() => {
-        const loadOrders = async () => {
-            const response = await listAllOrders(1);
-            setOrders(response);
-        };
-
         loadOrders();
     }, []);
 
     const handleEmitNfeClick = (status, client) => {
-        if (status != "Concretizada") {
+        if (status !== "Concretizada") {
             setShowModal(true)
         }
         else {
             navigate(`/nota-fiscal/emitir/${client.id}`)
         }
     }
+    const handleDelete = async (id) => {
+        await deleteOrder(id);
+        await loadOrders();
+    };
+    const handleChangeStatusClick = async (client) => {
+        const response = await listHistoryOrder(client.id)
+        //pass id to modal 
+        response[0].id = client.id
+        setData(response)
+        setShowChangeStatusModal(true)
+    }
+    const handleCancelOrder = async (client) => {
+        if (client.status.props.children === "Cancelada") {
+            alert("Venda ja está cancelada")
+            return
+        }
+        alert(`Cancelar a venda ${client.id}`);
+        await cancelOrder(client.id);
+        await loadOrders();
+    };
 
     const ActionsDropdown = ({ client }) => {
         const navItems = [
@@ -42,6 +66,9 @@ const ListarVendaProduto = () => {
                 label: 'Alterar situação',
                 icon: 'lnr-inbox',
                 color: 'success',
+                onClick: () => handleChangeStatusClick(client),
+
+
             },
             {
                 href: '/venda/produto/imprimir',
@@ -61,6 +88,7 @@ const ListarVendaProduto = () => {
                 label: 'Realizar Devolução',
                 icon: 'lnr-undo',
                 color: 'danger',
+                onClick: () => handleCancelOrder(client)
             },
         ];
 
@@ -91,35 +119,33 @@ const ListarVendaProduto = () => {
     const columns = ['Nº', 'Cliente', 'Data', 'Situação', 'Valor'];
 
     const actions = [
-       
+
         {
             label: 'Editar',
             icon: faEdit,
             color: 'orange',
             onClick: (client) => {
                 // Lógica para a ação de edição
+                alert(`Editar a venda ${client.id}`);
             },
         },
-       
+
     ];
 
-    const status = {
-        1: <div className="ms-auto badge bg-success">Concretizada</div>,
-        2: <div className="ms-auto badge bg-warning">Em aberto</div>,
-        3: <div className="ms-auto badge bg-info">Em andamento</div>,
-        4: <div className="ms-auto badge bg-danger">Cancelada</div>,
-    };
 
-    const clients = orders?.map(({ numero_venda, nome_cliente, data_venda, id_situacao_venda, valor_total }) => ({
+    const clients = orders?.map(({ numero_venda, nome_cliente, data_venda, situacao_venda, valor_total, cor }) => ({
         id: numero_venda,
         nome: nome_cliente,
         date: new Date(data_venda).toLocaleString('pt-br'),
-        status: status[id_situacao_venda],
+        status: <div className="ms-auto badge" style={{ backgroundColor: cor }}>{situacao_venda}</div>,
         valor: parseFloat(valor_total).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
     }));
 
     const toggleModal = () => {
         setShowModal(!showModal);
+    };
+    const toggleChangeStatusModal = () => {
+        setShowChangeStatusModal(!showChangeStatusModal);
     };
 
     return (
@@ -131,7 +157,9 @@ const ListarVendaProduto = () => {
                 rows={clients}
                 msgDelete="Venda Produto"
                 actions={actions}
+                loading={loading}
                 ActionsDropdown={ActionsDropdown}
+                handleDeleteData={handleDelete}
             />
             <Modal isOpen={showModal} toggle={toggleModal}>
                 <ModalHeader toggle={toggleModal}>Situação inválida</ModalHeader>
@@ -144,6 +172,17 @@ const ListarVendaProduto = () => {
                     </Button>
                 </ModalFooter>
             </Modal>
+
+            {showChangeStatusModal &&
+                <ChangeStatusModal
+                    isOpen={showChangeStatusModal}
+                    toggleModal={toggleChangeStatusModal}
+                    data={data}
+                    loadOrders={loadOrders}
+
+                />
+
+            }
         </>
     );
 };

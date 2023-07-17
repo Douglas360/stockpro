@@ -67,8 +67,13 @@ router.get("/list/saleprice/", createSalePriceController.getAll);
 //Order routes
 const createOrderController = new CreateOrderController();
 router.post("/order", createOrderController.create);
+router.delete("/delete/order/:id", createOrderController.delete);
 router.get("/list/order/id_company/:id", createOrderController.listOrdersByCompany);
 router.get("/list/order/id_customer/:id", createOrderController.listOrdersByCustomer);
+router.get("/list/salesstatus", createOrderController.listSalesStatus);
+router.put("/update/orderstatus/:id", createOrderController.updateOrderStatus);
+router.get("/list/historysalesstatus/:id", createOrderController.listHistorySalesStatus);
+router.put("/cancel/order/:id", createOrderController.cancelOrder);
 
 //Invoice routes
 const createInvoiceController = new CreateInvoiceController();

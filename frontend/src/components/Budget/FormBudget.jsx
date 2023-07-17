@@ -17,6 +17,9 @@ import { CustomSpinner } from '../CustomSpinner'
 const FormBudget = ({ url }) => {
     const { createOrder, loading } = useOrder()
     const navigate = useNavigate()
+    const idOrder = sessionStorage?.getItem('user') || localStorage?.getItem('user')
+    const id = JSON.parse(idOrder).id_empresa
+    const id_user = JSON.parse(idOrder).id
     const [data, setData] = useState([]);
 
     const handleInputChange = (e) => {
@@ -30,10 +33,12 @@ const FormBudget = ({ url }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        data.id_empresa = id
+        data.id_user = id_user
+
         await createOrder(data)
         navigate(url)
-        //console.log(data)
-
+      
     };
 
     const handleCancel = () => {
@@ -41,9 +46,9 @@ const FormBudget = ({ url }) => {
     }
     return (
         <Form onSubmit={handleSubmit}>
-          {
-            loading && <CustomSpinner />
-          }
+            {
+                loading && <CustomSpinner />
+            }
 
             <CardDadosGerais data={data} handleInputChange={handleInputChange} />
 

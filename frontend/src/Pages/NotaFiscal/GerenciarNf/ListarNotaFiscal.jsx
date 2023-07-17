@@ -12,10 +12,12 @@ import { useInvoice } from '../../../context/InvoiceContext/useInvoice';
 export const ListarNotaFiscal = () => {
     const { getAllInvoices, loading } = useInvoice();
     const [invoices, setInvoices] = useState([]);
+    const idEmpresa = (localStorage.getItem('user')) || sessionStorage.getItem('user');
+    const id = JSON.parse(idEmpresa).id_empresa;      
 
     useEffect(() => {
         const loadInvoice = async () => {
-            const responseInvoices = await getAllInvoices(1);
+            const responseInvoices = await getAllInvoices(id);
             setInvoices(responseInvoices);
         };
 
@@ -54,6 +56,7 @@ export const ListarNotaFiscal = () => {
         'erro_autorizacao': <ErroAutorizacaoStatus invoices={invoices} />
     };
     const columns = ['NFe', 'Nº Venda', 'Cliente', 'Data Emissão', 'Situação'];
+    const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
 
     const order = invoices?.map(({ numero_nfe, ref, nome_cliente, data_emissao, status }) => ({
         id: numero_nfe,
@@ -89,11 +92,12 @@ export const ListarNotaFiscal = () => {
             subheading="Gerenciar emissão de nota fiscal."
             icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
         />
-            {loading && <CustomSpinner />}
+            {loading && <CustomSpinner/>}
 
             <SearchBar
                 urlNavigate="/venda/produto/cadastrar"
                 columns={columns}
+                columnsToFilter={columnsToFilter}
                 rows={order}
                 msgDelete="Nota Fiscal"
                 actions={actions}

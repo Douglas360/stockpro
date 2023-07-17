@@ -11,9 +11,11 @@ const CardProduto = ({ data, handleInputChange }) => {
   const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
   const [stockQuantities, setStockQuantities] = useState({});
   const [typeDiscount, setTypeDiscount] = useState({}); // State to store the discount type (R$ or %) for each product
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
+  const id = JSON.parse(idEmpresa).id_empresa
 
   const loadProducts = async () => {
-    const response = await listProducts(1)
+    const response = await listProducts(id)
     setProducts(response)
   }
 
@@ -32,7 +34,7 @@ const CardProduto = ({ data, handleInputChange }) => {
 
   const handleAddField = () => {
     setProdutos([...produtos, { numero_item: produtos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
-    console.log(produtos)
+
   }
 
   const handleFieldChange = (index, field, value) => {

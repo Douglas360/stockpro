@@ -9,14 +9,14 @@ import { useNavigate } from 'react-router-dom';
 
 const ListarClientes = () => {
   const { listAllCustomers, deleteCustomer } = useRegister();
-  const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
   const navigate = useNavigate();
+  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user');
+  const id = JSON.parse(idEmpresa).id_empresa;
 
-  //const id_empresa = user?.id_empresa;
   const loadCustomers = async () => {
 
-    const response = await listAllCustomers(1);
+    const response = await listAllCustomers(id);
 
     setCustomers(response);
   };
@@ -28,6 +28,8 @@ const ListarClientes = () => {
   }, []);
 
   const columns = ['Código', 'Nome', 'Tipo', 'Ativo', 'Telefone', 'Cadastrado em'];
+  const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
+
 
   const actions = [
     {
@@ -41,11 +43,11 @@ const ListarClientes = () => {
 
   ];
 
-  const clients = customers.map((customer) => {
+  const clients = customers?.map((customer) => {
     const dataCadastro = dateFormatWithHours(customer.createdAt);
     return {
       id: customer.id_cliente,
-      nome: customer.nome,
+      nome: customer?.nome,
       tipo: customer.tipo_cliente,
       ativo: customer.ativo ? 'Sim' : 'Não',
       telefone: customer.telefone,
@@ -65,6 +67,7 @@ const ListarClientes = () => {
       <SearchBar
         urlNavigate={'/cadastro/cliente/cadastrar'}
         columns={columns}
+        columnsToFilter={columnsToFilter}
         rows={clients}
         handleDeleteData={handleDelete}
         msgDelete={'Cliente'}

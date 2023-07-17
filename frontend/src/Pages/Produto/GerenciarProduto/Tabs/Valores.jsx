@@ -30,7 +30,7 @@ import { useProduct } from '../../../../context/ProductContext/useProduct';
 import { CustomSpinner } from '../../../../components/CustomSpinner';
 
 export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
-  
+
   const navigate = useNavigate();
   const { createSalePrice, listSalePrices, loading } = useProduct();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -45,7 +45,6 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
 
   const loadSalePrices = async () => {
     const salePrices = await listSalePrices();
-
     setLucroSugerido(salePrices);
   };
 
@@ -77,9 +76,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
   const handleModalCancel = () => {
     // Reset the input values
     setDescricao('');
-    setValor('');
-
-    // Close the modal
+    setValor('');    // Close the modal
     setModal(false);
   };
   const handleCancel = () => {

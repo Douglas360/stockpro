@@ -27,6 +27,7 @@ model User {
   empresa              Empresa?              @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade, onUpdate: Cascade)
   venda                Venda[]
   movimentacao_estoque MovimentacaoEstoque[]
+  historico_situacao   HistoricoSituacaoVenda[]
 
   @@map("t_usuario")
 }
@@ -275,7 +276,7 @@ model LucroSugerido {
 
 model Venda {
   id_venda           Int       @id @default(autoincrement())
-  numero_venda       Int?
+  numero_venda       Int      @unique
   data_venda         DateTime
   id_empresa         Int
   id_cliente         Int
@@ -294,12 +295,14 @@ model Venda {
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?
 
-  empresa              Empresa?              @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction)
-  cliente              Cliente?              @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade, onUpdate: Cascade)
-  usuario              User?                 @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  transportadora       Transportadora?       @relation(fields: [id_transportadora], references: [id_transportadora], onDelete: NoAction, onUpdate: NoAction)
-  itens                ItemVenda[]
-  movimentacao_estoque MovimentacaoEstoque[]
+  empresa                  Empresa?                 @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction)
+  cliente                  Cliente?                 @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade, onUpdate: Cascade)
+  usuario                  User?                    @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transportadora           Transportadora?          @relation(fields: [id_transportadora], references: [id_transportadora], onDelete: NoAction, onUpdate: NoAction)
+  itens                    ItemVenda[]
+  movimentacao_estoque     MovimentacaoEstoque[]
+  historico_situacao_venda HistoricoSituacaoVenda[]
+  situacao_venda           SituacaoVenda            @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_venda")
 }
@@ -352,4 +355,31 @@ model NotaFiscal {
   empresa Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_nota_fiscal")
+}
+
+model SituacaoVenda {
+  id_situacao_venda Int      @id @default(autoincrement())
+  descricao         String?
+  cor               String?
+  ativo             Boolean? @default(true)
+
+  venda              Venda[]
+  situacao_historico HistoricoSituacaoVenda[]
+
+  @@map("t_situacao_venda")
+}
+
+model HistoricoSituacaoVenda {
+  id_historico_situacao_venda Int      @id @default(autoincrement())
+  descricao                   String?
+  id_venda                    Int  
+  id_situacao_venda           Int
+  id_usuario                  Int
+  data                        DateTime @default(now())
+
+  venda          Venda         @relation(fields: [id_venda], references: [id_venda], onDelete: Cascade, onUpdate: Cascade)
+  situacao_venda SituacaoVenda @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
+  usuario        User          @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("t_historico_situacao_venda")
 }
