@@ -14,6 +14,33 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
   const handleCancel = () => {
     navigate('/produto/gerenciar')
   }
+const handlePesoLiquidChange = (e) => {
+    const { value } = e.target
+    const pesoLiquido = value.replace(',','.')
+    
+    //Update the data object
+    const updatedData = { ...data }
+    updatedData.pesoLiquido = pesoLiquido
+    handleInputChange({ target: { name: 'pesoLiquido', value: pesoLiquido } })
+
+  }
+
+const handlePesoBrutoChange = (e) => {
+    const { value } = e.target
+    const pesoBruto = value.replace(',','.')
+
+    //Update the data object
+    const updatedData = { ...data }
+    updatedData.pesoBruto = pesoBruto
+    handleInputChange({ target: { name: 'pesoBruto', value: pesoBruto } })
+
+  }
+
+
+
+
+
+
   return (
     <Card className='main-card mb-3'>
       <CardBody>
@@ -66,7 +93,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
               />
             </Col>
             <Col md={3}>
-              <Label for='origemProduto'>Origem</Label> <span className='text-danger'>*</span>
+              <Label for='origemProduto'>Origem</Label> <span className='text-danger'>*</span>            
               <Input
                 required
                 type='select'
@@ -97,7 +124,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 id='pesoLiquido'
                 placeholder='Peso Líquido'
                 value={data.pesoLiquido}
-                onChange={handleInputChange}
+                onChange={handlePesoLiquidChange}
               />
             </Col>
             <Col md={2}>
@@ -108,7 +135,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 id='pesoBruto'
                 placeholder='Peso Bruto'
                 value={data.pesoBruto}
-                onChange={handleInputChange}
+                onChange={handlePesoBrutoChange}
               />
             </Col>
             <Col md={2}>

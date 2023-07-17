@@ -32,7 +32,18 @@ export const ProductProvider = ({ children }) => {
 
     //function to create a Product
     const createProduct = async (data) => {
+      
         return handleRequest(api.post('/product', data), 'Produto cadastrado com sucesso');
+    };
+
+    // function to get a Product by id
+    const getProduct = async (data) => {
+        return handleRequest(api.get(`/product/${data}`))
+    };
+
+    //function to update a Product by id
+    const updateProduct = async (data) => {
+        return handleRequest(api.put(`/product/${data.productData.id_produto}`, data), 'Produto atualizado com sucesso');
     };
 
     //function to list all Products 
@@ -60,6 +71,8 @@ export const ProductProvider = ({ children }) => {
             value={{
                 loading,
                 createProduct,
+                getProduct,
+                updateProduct,
                 listProducts,
                 deleteProduct,
                 createSalePrice,

@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Card, CardBody, Col, Form, Input, Label, Row, Table, Alert } from 'reactstrap'
 
 export const Detalhes = ({ data, handleInputChange, handleSubmit, Loading }) => {
+
   const navigate = useNavigate()
-  const [extraFields, setExtraFields] = useState([])
+  const [extraFields, setExtraFields] = useState(data?.camposExtras || [])
   const [alert, setAlert] = useState(true)
 
   const handleAlert = () => {
@@ -177,6 +178,7 @@ export const Detalhes = ({ data, handleInputChange, handleSubmit, Loading }) => 
                 name='produtoAtivo'
                 id='produtoAtivo'
                 value={data.produtoAtivo}
+                checked={data?.produtoAtivo}
                 onChange={handleInputChange}
                 className='mb-2'
               /> Produto Ativo

@@ -26,4 +26,5 @@ export const ERROR_MESSAGES = {
     "One or more products are missing codigo_ncm": "Um ou mais produtos estão sem código NCM",
     "Missing nome": "Falta o nome",
     "Missing nome_fantasia": "Falta o nome fantasia",
+    "Code is required": "Código interno é obrigatório",
 };

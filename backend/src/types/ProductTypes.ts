@@ -42,4 +42,5 @@ export interface IProduct {
     vl_fixo_cofins_st?: number | null;
     id_fornecedor?: number | null;
     id_usuario?: number | null;
+    cfop?: string | null;
 }

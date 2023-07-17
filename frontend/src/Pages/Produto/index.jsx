@@ -37,6 +37,10 @@ const Produto = () => {
                                 path="gerenciar/cadastrar"
                                 element={<CadastrarProduto />}
                             />
+                            <Route
+                                path="gerenciar/editar/:id"
+                                element={<CadastrarProduto />}
+                            />
 
                             <Route
                                 path="valores"

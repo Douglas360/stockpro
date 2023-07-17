@@ -54,6 +54,8 @@ router.delete("/delete/carrier/:id", createCarrierController.delete);
 //Product routes
 const createProductController = new CreateProductController();
 router.post("/product", createProductController.create);
+router.get("/product/:id", createProductController.get);
+router.put("/product/:id", createProductController.update);
 router.get("/list/product/id_company?:id", createProductController.getAll);
 router.delete("/delete/product/:id", createProductController.delete);
 

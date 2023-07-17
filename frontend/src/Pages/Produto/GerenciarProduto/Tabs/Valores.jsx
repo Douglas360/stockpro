@@ -30,6 +30,7 @@ import { useProduct } from '../../../../context/ProductContext/useProduct';
 import { CustomSpinner } from '../../../../components/CustomSpinner';
 
 export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
+  
   const navigate = useNavigate();
   const { createSalePrice, listSalePrices, loading } = useProduct();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -85,9 +86,20 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     navigate('/produto/gerenciar');
   };
   const handleSumPrice = () => {
-    let valorCusto = data.valorCusto?.replace(',', '.');
-    let despesasAcessorias = data.despesasAcessorias?.replace(',', '.');
-    let outrasDespesas = data.outrasDespesas?.replace(',', '.');
+    let valorCusto = data?.valorCusto
+    if (typeof valorCusto === 'string') {
+      valorCusto = valorCusto.replace(',', '.')
+    }
+    //let despesasAcessorias = data.despesasAcessorias?.replace(',', '.');
+    let despesasAcessorias = data.despesasAcessorias
+    if (typeof despesasAcessorias === 'string') {
+      despesasAcessorias = despesasAcessorias.replace(',', '.')
+    }
+    //let outrasDespesas = data.outrasDespesas?.replace(',', '.');
+    let outrasDespesas = data.outrasDespesas
+    if (typeof outrasDespesas === 'string') {
+      outrasDespesas = outrasDespesas.replace(',', '.')
+    }
 
     valorCusto = valorCusto ? parseFloat(valorCusto) : 0;
     despesasAcessorias = despesasAcessorias ? parseFloat(despesasAcessorias) : 0;

@@ -3,13 +3,14 @@ import { IProduct } from "../../../types/ProductTypes";
 
 class CreateProductService {
     async execute(productData: IProduct) {
+
         try {
             //Validate fields
             if (!productData.nome) {
                 throw new Error("Product name is required");
             }
             if (!productData.codigo_interno) {
-                throw new Error("Company id is required");
+                throw new Error("Code is required");
             }
             if (!productData.id_empresa) {
                 throw new Error("Company id is required");
@@ -24,8 +25,6 @@ class CreateProductService {
                 throw new Error("Product already exists");
             }
 
-
-
             const product = await prismaClient.produto.create({
                 data: productData,
                 include: {
@@ -34,8 +33,6 @@ class CreateProductService {
                     fornecedor: true
                 }
             });
-
-
 
             const productWithDetails = await prismaClient.produto.findFirst({
                 where: {
@@ -61,11 +58,96 @@ class CreateProductService {
 
             return productWithDetails;
         } catch (error: any) {
+            console.log(error)
             throw new Error(error.message);
 
         }
 
     }
+    async get(id: string) {
+        try {
+            // Check id          
+            if (!id) { throw new Error("id is required") }
+
+            const product = await prismaClient.produto.findFirst({
+                where: {
+                    codigo_interno: id.toString()
+                },
+                include: {
+                    campos: true,
+                    estoque: true
+                }
+            });
+            if (!product) throw new Error("Product not found")
+            return product;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async update(id: number, productData: IProduct, stockData?: any) {
+
+        try {
+            // Check id
+            if (!id) throw new Error("id not found")
+
+            const product = await prismaClient.produto.update({
+                where: {
+                    id_produto: id
+                },
+                data: productData,
+            });
+
+            if (stockData) {
+                const existingStockData = await prismaClient.controleEstoque.findUnique({
+                    where: {
+                        id_estoque: stockData.id_estoque
+                    }
+                });
+
+                if (
+                    existingStockData?.estoque_min !== stockData.estoque_min ||
+                    existingStockData?.estoque_max !== stockData.estoque_max ||
+                    existingStockData?.quantidade !== stockData.quantidade
+                ) {
+                    await prismaClient.controleEstoque.update({
+                        where: {
+                            id_estoque: stockData.id_estoque
+                        },
+                        data: {
+                            estoque_min: stockData.estoque_min,
+                            estoque_max: stockData.estoque_max,
+                            quantidade: stockData.quantidade,
+                            data_ultima_entrada: stockData.data_ultima_entrada
+                        }
+                    });
+
+                    //Update movement inventory
+                    await prismaClient.movimentacaoEstoque.create({
+                        data: {
+                            id_produto: product.id_produto,
+                            tipo_movimentacao: "Entrada",
+                            quantidade: stockData.quantidade,
+                            id_usuario: productData.id_usuario || 1,
+                            descricao: "Entrada manual de produto",
+                        }
+                    });
+                }
+            }
+
+
+            //Update movement inventory
+
+
+            return product;
+        } catch (error: any) {
+            console.log(error.message)
+            throw new Error(error.message);
+        }
+    }
+
+
+
+
     async getAll(id_empresa: number) {
         try {
             // Check id_empresa

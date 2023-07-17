@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { CreateProductService } from "../../../services/ProductManagment/Product/CreateProductService";
+import { IProduct } from "../../../types/ProductTypes";
+
 
 class CreateProductController {
     async create(req: Request, res: Response) {
@@ -40,7 +42,7 @@ class CreateProductController {
             fornecedor,
             id_usuario,
         } = req.body;
-       
+
         const estoqueData = {
             estoque_min: Number(estoqueMinimo) || 0,
             estoque_max: Number(estoqueMaximo) || 0,
@@ -54,9 +56,9 @@ class CreateProductController {
             nome: nomeProduto,
             codigo_interno: codigoInterno,
             codigo_barra: codigoBarra,
-            movimenta_estoque: Boolean(movimentaEstoque),
-            habilitar_nfce: Boolean(habilitarNf),
-            validade: Boolean(validade),
+            movimenta_estoque: movimentaEstoque === "true" ? true : false,
+            habilitar_nfce: habilitarNf === "true" ? true : false,
+            validade: validade === "true" ? true : false,
             peso_kg: Number(pesoProduto) || 0,
             altura_cm: Number(alturaProduto) || 0,
             largura_cm: Number(larguraProduto) || 0,
@@ -88,12 +90,79 @@ class CreateProductController {
             vl_fixo_pis_st: Number(valorFixoPisSt) || 0,
             vl_fixo_cofins_st: Number(valorFixoCofinsSt) || 0,
             id_fornecedor: Number(fornecedor) || null,
-           id_usuario
+            id_usuario
 
         });
 
         return res.json(product);
     }
+
+    async get(req: Request, res: Response) {
+        const { id } = req.params;
+        const createProductService = new CreateProductService();
+        const product = await createProductService.get(id);
+        return res.json(product);
+    }
+
+    async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { productData } = req.body;
+
+        const updatedStockData = {
+            id_estoque: Number(productData.id_estoque),
+            estoque_min: Number(productData.estoqueMinimo),
+            estoque_max: Number(productData.estoqueMaximo),
+            quantidade: Number(productData.estoqueAtual),
+            //data_ultima_entrada: new Date()
+            //getDate Brasil 
+            data_ultima_entrada: new Date()               
+            
+        } as any
+
+
+        const updatedProductData: IProduct = {
+            nome: productData.nomeProduto,
+            codigo_interno: productData.codigoInterno,
+            codigo_barra: productData.codigoBarra,
+            movimenta_estoque: productData.movimentaEstoque === "true" ? true : false,
+            habilitar_nfce: productData.habilitarNf === "true" ? true : false,
+            validade: productData.validade === "true" ? true : false,
+            peso_kg: Number(productData.pesoProduto),
+            altura_cm: Number(productData.alturaProduto),
+            largura_cm: Number(productData.larguraProduto),
+            comprimento_cm: Number(productData.comprimentoProduto),
+            descricao: productData.descricaoProduto,
+            id_empresa: Number(productData.id_empresa),
+            /*campos: {
+                create: productData.camposExtras,
+            },*/
+            valor_custo: Number(productData.valorCusto),
+            despesas_acessorias: Number(productData.despesasAcessorias),
+            despesas_outras: Number(productData.outrasDespesas),
+            custo_final: Number(productData.custoFinal),
+            valor_venda: Number(productData.valorVendaUtilizado),
+            codigo_ncm: productData.codigoNcm,
+            cfop: productData.cfop,
+            codigo_cest: productData.codigoCest,
+            codigo_beneficio: productData.codigoBeneficio,
+            origem: productData.origemProduto,
+            peso_liquido: parseFloat(productData.pesoLiquido),
+            peso_bruto: parseFloat(productData.pesoBruto),
+            numero_fci: productData.numeroFci,
+            vl_tribut: Number(productData.VrAproxTribut),
+            vl_fixo_pis: Number(productData.valorFixoPis),
+            vl_fixo_cofins: Number(productData.valorFixoCofins),
+            vl_fixo_pis_st: Number(productData.valorFixoPisSt),
+            vl_fixo_cofins_st: Number(productData.valorFixoCofinsSt),
+            id_fornecedor: Number(productData.fornecedor) || null,
+
+        }
+
+        const createProductService = new CreateProductService();
+        const product = await createProductService.update(Number(id), updatedProductData, updatedStockData);
+        return res.json(product);
+    }
+
 
     async getAll(req: Request, res: Response) {
         const { id } = req.query;
