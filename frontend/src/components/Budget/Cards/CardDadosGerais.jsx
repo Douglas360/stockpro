@@ -3,22 +3,20 @@ import { faPenToSquare, faRandom } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } from 'reactstrap'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
-import { useAuth } from '../../../context/AuthContext/useAuth'
 import { useOrder } from '../../../context/OrderContext/useOrder'
 
+const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
 
-const CardDadosGerais = ({ data, handleInputChange }) => {
+
   const { listAllCustomers } = useRegister()
   const { listSalesStatus } = useOrder()
-  //const { user } = useAuth()
   const [customers, setCustomers] = useState([])
-  const [numeroVenda, setNumeroVenda] = useState('')
+  const [numeroVenda, setNumeroVenda] = useState(data?.numeroVenda)
   const [codigoError, setCodigoError] = useState(false)
   const [customerError, setCustomerError] = useState(false)
   const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
   const id = JSON.parse(idEmpresa).id_empresa
   const [situacaoVenda, setSituacaoVenda] = useState([])
-
 
   const loadCustomers = async () => {
     //const id_empresa = user?.id_empresa
@@ -32,9 +30,6 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
   useEffect(() => {
     loadCustomers()
   }, [])
-
-
-
 
   const handleCodigoBlur = (e) => {
     const { value } = e.target
@@ -88,6 +83,7 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
                 name='numeroVenda'
                 id='numeroVenda'
                 placeholder='Numero da Venda'
+                defaultValue={data?.numeroVenda || ''}
                 value={numeroVenda}
                 onChange={(e) => setNumeroVenda(e.target.value)}
                 onBlur={handleCodigoBlur}
@@ -104,7 +100,7 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
             <Input type='select'
               name='clienteOrcamento'
               id='clienteOrcamento'
-              value={data.clienteOrcamento}
+              value={data?.clienteOrcamento || ''}
               onChange={handleInputChange}
               onBlur={handleCustomerBlur}
               invalid={customerError}
@@ -121,7 +117,7 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
           </Col>
           <Col md='4'>
             <Label style={{ fontWeight: 'bold' }}>Data</Label><span className='text-danger'>*</span>
-            <Input type='date' name='dataOrcamento' id='dataOrcamento' value={data.dataOrcamento} onChange={handleInputChange} />
+            <Input type='date' name='dataOrcamento' id='dataOrcamento' value={data?.dataOrcamento || ''} onChange={handleInputChange} />
           </Col>
         </Row>
 
@@ -131,7 +127,7 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
             <Input type='select'
               name='situacaoVendaOrcamento'
               id='situacaoVendaOrcamento'
-              value={data.situacaoVendaOrcamento}
+              value={data?.situacaoVendaOrcamento || ''}
               defaultValue={1}
               onChange={handleInputChange}
             >
@@ -145,16 +141,20 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
 
 
           </Col>
-          <Col md='4'>
-            <Label>Validade</Label>
-            <Input type='text' name='validadeOrcamento' id='validadeOrcamento' placeholder='Ex: 10 dias' value={data.validadeOrcamento} onChange={handleInputChange} />
-          </Col>
+
+          {typeForm !== 'venda' && (
+            <Col md='4'>
+              <Label>Validade</Label>
+              <Input type='text' name='validadeOrcamento' id='validadeOrcamento' placeholder='Ex: 10 dias' value={data?.validadeOrcamento || ''} onChange={handleInputChange} />
+            </Col>
+          )}
+
           <Col md='4'>
             <Label>Canal de venda</Label>
             <Input type='select'
               name='canalVendaOrcamento'
               id='canalVendaOrcamento'
-              value={data.canalVendaOrcamento}
+              value={data?.canalVendaOrcamento || ''}
               onChange={handleInputChange}
             >
               <option value=''>Selecione</option>
@@ -166,26 +166,22 @@ const CardDadosGerais = ({ data, handleInputChange }) => {
               <option value='6'>Outros</option>
             </Input>
           </Col>
+
         </Row>
-        <Row className='mt-2'>
-          <Col md='12'>
-            <Label>Introdução</Label>
-            <Input type='textarea' name='introducaoOrcamento' id='introducaoOrcamento' value={data.introducaoOrcamento} onChange={handleInputChange} />
-            <FormText color='muted' style={{ fontStyle: 'italic' }}>
-              Este texto irá aparecer no início da proposta enviada para o cliente, caso não queira inserir uma introdução basta deixar este espaço em branco.
-            </FormText>
-          </Col>
-        </Row>
-
-
-
-
+        {typeForm !== 'venda' && (
+          <Row className='mt-2'>
+            <Col md='12'>
+              <Label>Introdução</Label>
+              <Input type='textarea' name='introducaoOrcamento' id='introducaoOrcamento' value={data?.introducaoOrcamento || ''} onChange={handleInputChange} />
+              <FormText color='muted' style={{ fontStyle: 'italic' }}>
+                Este texto irá aparecer no início da proposta enviada para o cliente, caso não queira inserir uma introdução basta deixar este espaço em branco.
+              </FormText>
+            </Col>
+          </Row>
+        )}
 
       </CardBody>
-
-
     </Card>
   )
 }
-
 export default CardDadosGerais

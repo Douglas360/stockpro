@@ -8,10 +8,11 @@ import { SearchBar } from '../../../components/SearchBar';
 import { useOrder } from '../../../context/OrderContext/useOrder';
 import { useNavigate } from 'react-router-dom';
 import { ChangeStatusModal } from './ChangeStatusModal';
+import { printA4 } from '../../../functions/printA4';
 
 
 const ListarVendaProduto = () => {
-    const { listAllOrders, listHistoryOrder, deleteOrder, cancelOrder, loading } = useOrder();
+    const { listAllOrders, listHistoryOrder, deleteOrder, cancelOrder, loading, listOrderToPrint } = useOrder();
     const [orders, setOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
@@ -59,6 +60,11 @@ const ListarVendaProduto = () => {
         await loadOrders();
     };
 
+    const handlePrintA4 = async (client) => {
+        const response = await listOrderToPrint(client.id)
+        printA4(response);
+    };
+
     const ActionsDropdown = ({ client }) => {
         const navItems = [
             {
@@ -75,6 +81,7 @@ const ListarVendaProduto = () => {
                 label: 'Imprimir A4',
                 icon: 'lnr-printer',
                 color: 'info',
+                onClick: () => handlePrintA4(client),
             },
             {
                 href: '/venda/produto/emitirNfe',
@@ -126,7 +133,7 @@ const ListarVendaProduto = () => {
             color: 'orange',
             onClick: (client) => {
                 // Lógica para a ação de edição
-                alert(`Editar a venda ${client.id}`);
+                navigate(`/venda/produto/editar/${client.id}`);
             },
         },
 

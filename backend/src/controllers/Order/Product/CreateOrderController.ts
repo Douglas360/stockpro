@@ -13,6 +13,16 @@ class CreateOrderController {
         return res.status(201).json(orderResult);
 
     }
+    async listOrderByNumber(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.listOrderByNumber(Number(id));
+
+        return res.status(200).json(orderResult);
+
+    }
     async listOrdersByCustomer(req: Request, res: Response) {
         const { id } = req.params;
 
@@ -44,7 +54,7 @@ class CreateOrderController {
     }
     async listHistorySalesStatus(req: Request, res: Response) {
         const { id } = req.params;
-      
+
         const createOrderService = new CreateOrderService();
 
         const orderResult = await createOrderService.listHistorySalesStatus(Number(id));
@@ -79,6 +89,16 @@ class CreateOrderController {
         const createOrderService = new CreateOrderService();
 
         const orderResult = await createOrderService.cancel(Number(id));
+
+        return res.status(200).json(orderResult);
+
+    }
+    async listOrderToPrint(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const createOrderService = new CreateOrderService();
+
+        const orderResult = await createOrderService.listOrderToPrint(Number(id));
 
         return res.status(200).json(orderResult);
 

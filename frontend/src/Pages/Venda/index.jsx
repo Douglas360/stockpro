@@ -36,6 +36,10 @@ const Venda = () => {
                                 element={<CadastrarVendaProduto />}
                             />
                             <Route
+                                path="/produto/editar/:id"
+                                element={<CadastrarVendaProduto />}
+                            />
+                            <Route
                                 path="/configuracao"
                                 element={<ConfiguracaoJSX />}
                             />

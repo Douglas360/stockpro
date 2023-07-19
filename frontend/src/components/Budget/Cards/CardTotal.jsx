@@ -8,7 +8,11 @@ const CardTotal = ({ data, handleInputChange }) => {
 
     const valorProdutos = data.produtos?.map((item) => item.subtotal);
     const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);
-    const valorFrete = data.valorFrete?.replace(',', '.');
+   //verify type of valorFrete
+   //const valorFrete = data.valorFrete?.replace(',', '.');
+    const valorFrete = data.valorFrete ? data.valorFrete : 0;
+
+
     const valorTotal = valorFrete
         ? parseFloat(valorFrete, 10) + parseFloat(valorProdutosTotal, 10)
         : valorProdutosTotal;

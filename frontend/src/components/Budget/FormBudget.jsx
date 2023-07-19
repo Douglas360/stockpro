@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, Row } from 'reactstrap'
 
 import CardDadosGerais from './Cards/CardDadosGerais'
@@ -11,16 +11,22 @@ import CardObservacao from './Cards/CardObservacao'
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useOrder } from '../../context/OrderContext/useOrder'
 import { CustomSpinner } from '../CustomSpinner'
 
-const FormBudget = ({ url }) => {
-    const { createOrder, loading } = useOrder()
+const FormBudget = ({ url, handleFormSubmit, loading, initialValues, typeForm }) => {
+
+    // const { createOrder, loading } = useOrder()
     const navigate = useNavigate()
     const idOrder = sessionStorage?.getItem('user') || localStorage?.getItem('user')
     const id = JSON.parse(idOrder).id_empresa
     const id_user = JSON.parse(idOrder).id
-    const [data, setData] = useState([]);
+    //const [data, setData] = useState([]);
+    const [data, setData] = useState(initialValues || {});
+
+    useEffect(() => {
+        setData(initialValues)
+    }, [initialValues])
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -36,9 +42,8 @@ const FormBudget = ({ url }) => {
         data.id_empresa = id
         data.id_user = id_user
 
-        await createOrder(data)
+        await handleFormSubmit(data)
         navigate(url)
-      
     };
 
     const handleCancel = () => {
@@ -48,9 +53,10 @@ const FormBudget = ({ url }) => {
         <Form onSubmit={handleSubmit}>
             {
                 loading && <CustomSpinner />
+
             }
 
-            <CardDadosGerais data={data} handleInputChange={handleInputChange} />
+            <CardDadosGerais data={data} handleInputChange={handleInputChange} typeForm={typeForm} />
 
             <CardProduto data={data} handleInputChange={handleInputChange} />
 

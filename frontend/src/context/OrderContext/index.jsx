@@ -97,6 +97,11 @@ export const OrderProvider = ({ children }) => {
 
     };
 
+    //function to list order by id
+    const getOrderById = async (id) => {
+        return handleRequest(api.get(`/list/order/${id}`));
+    };
+
     //function to list all Orders by id_empresa 
     const listAllOrders = async (id_empresa) => {
         return handleRequest(api.get(`/list/order/id_company/${id_empresa}`));
@@ -118,13 +123,18 @@ export const OrderProvider = ({ children }) => {
     };
 
     //function to update a Order Status by id
-    const updateOrderStatus = async (data, id) => {       
+    const updateOrderStatus = async (data, id) => {
         return handleRequest(api.put(`/update/orderstatus/${id}`, data), 'Status da venda atualizado com sucesso');
     };
 
     //function to cancel a Order by id
     const cancelOrder = async (data) => {
         return handleRequest(api.put(`/cancel/order/${data}`), 'Venda cancelada com sucesso');
+    };
+
+    //function to list Order by id to print A4
+    const listOrderToPrint = async (data) => {
+        return handleRequest(api.get(`/print/order/${data}`));
     };
 
 
@@ -138,7 +148,10 @@ export const OrderProvider = ({ children }) => {
                 listHistoryOrder,
                 deleteOrder,
                 updateOrderStatus,
-                cancelOrder
+                cancelOrder,
+                getOrderById,
+                listOrderToPrint,
+
 
 
             }}

@@ -138,8 +138,6 @@ export const SearchBar = ({
             </>
         );
     };
-
-
     const handleConfirm = () => {
         handleDeleteData(selectedItem);
         setDeleteModalOpen(false);
@@ -147,7 +145,6 @@ export const SearchBar = ({
 
     return (
         <>
-
             <Row className="mb-1">
                 {loading && (
                     <div

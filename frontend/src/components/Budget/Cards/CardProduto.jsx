@@ -6,9 +6,10 @@ import { useProduct } from '../../../context/ProductContext/useProduct'
 
 
 const CardProduto = ({ data, handleInputChange }) => {
+
   const { listProducts } = useProduct()
   const [products, setProducts] = useState([])
-  const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+  const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }])
   const [stockQuantities, setStockQuantities] = useState({});
   const [typeDiscount, setTypeDiscount] = useState({}); // State to store the discount type (R$ or %) for each product
   const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
@@ -22,6 +23,11 @@ const CardProduto = ({ data, handleInputChange }) => {
   useEffect(() => {
     loadProducts()
   }, [])
+  useEffect(() => {
+    setProdutos(
+      data?.produtos || [{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }]);
+
+  }, [data?.produtos]);
 
   const tipoVenda = [
     { id: 1, tipo: 'Venda' },
@@ -33,11 +39,10 @@ const CardProduto = ({ data, handleInputChange }) => {
   ]
 
   const handleAddField = () => {
-    setProdutos([...produtos, { numero_item: produtos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }])
+    setProdutos(prevProdutos => [...prevProdutos, { numero_item: prevProdutos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }]);
+  };
 
-  }
-
-  const handleFieldChange = (index, field, value) => {
+  /*const handleFieldChange = (index, field, value) => {
     const updatedFields = [...produtos]
     updatedFields[index][field] = value
     setProdutos(updatedFields)
@@ -57,15 +62,47 @@ const CardProduto = ({ data, handleInputChange }) => {
         setStockQuantities({ ...stockQuantities, [index]: selectedProduct.estoque[0].quantidade }); // Set the stock quantity
       }
     }
-  }
+  }*/
 
-  const handleRemoveField = (index) => {
+  const handleFieldChange = (index, field, value) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index][field] = value;
+
+      if (field === 'produto') {
+        const selectedProduct = products.find(product => product.id_produto === parseInt(value, 10));
+        if (selectedProduct) {
+          updatedFields[index].valor = selectedProduct.valor_venda;
+          updatedFields[index].quantidade = '1'; // Set the quantity as 1
+          updatedFields[index].subtotal = selectedProduct.valor_venda; // Set the subtotal
+          updatedFields[index].tipo = '1'; // Set the type
+          setStockQuantities(prevStockQuantities => ({ ...prevStockQuantities, [index]: selectedProduct.estoque[0]?.quantidade || 0 })); // Set the stock quantity
+        }
+      }
+
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
+
+      return updatedFields;
+    });
+  };
+
+  /*const handleRemoveField = (index) => {
     const updatedFields = [...produtos]
     updatedFields.splice(index, 1)
     setProdutos(updatedFields)
-  }
+  }*/
+  const handleRemoveField = (index) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields.splice(index, 1);
+      return updatedFields;
+    });
+  };
 
-  const handleQuantityChange = (index, value) => {
+  /*const handleQuantityChange = (index, value) => {
     const updatedFields = [...produtos]
     updatedFields[index].quantidade = value
     updatedFields[index].subtotal = value * updatedFields[index].valor
@@ -75,48 +112,106 @@ const CardProduto = ({ data, handleInputChange }) => {
     const updatedData = { ...data }
     updatedData.produtos = updatedFields
     handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-  }
+  }*/
+  const handleQuantityChange = (index, value) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].quantidade = value;
+      updatedFields[index].subtotal = value * updatedFields[index].valor;
 
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
+
+      return updatedFields;
+    });
+  };
+
+  /* const handleDiscountChange = (index, value) => {
+     const updatedFields = [...produtos]
+     updatedFields[index].desconto = value
+ 
+ 
+     if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
+       // Apply discount by subtracting the value directly
+       updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value
+     } else if (typeDiscount[index] === '%') {
+       // Apply discount as a percentage of the total
+       const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100
+       updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount
+     }
+ 
+     setProdutos(updatedFields)
+ 
+     // Update the data object
+     const updatedData = { ...data }
+     updatedData.produtos = updatedFields
+     handleInputChange({ target: { name: 'produtos', value: updatedFields } })
+   }*/
   const handleDiscountChange = (index, value) => {
-    const updatedFields = [...produtos]
-    updatedFields[index].desconto = value
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].desconto = value;
 
+      if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
+        // Apply discount by subtracting the value directly
+        updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value;
+      } else if (typeDiscount[index] === '%') {
+        // Apply discount as a percentage of the total
+        const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100;
+        updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount;
+      }
 
-    if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
-      // Apply discount by subtracting the value directly
-      updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value
-    } else if (typeDiscount[index] === '%') {
-      // Apply discount as a percentage of the total
-      const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100
-      updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount
-    }
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
 
-    setProdutos(updatedFields)
+      return updatedFields;
+    });
+  };
 
-    // Update the data object
-    const updatedData = { ...data }
-    updatedData.produtos = updatedFields
-    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-  }
-
+  /*  const handleValueChange = (index, value) => {
+      const updatedFields = [...produtos]
+      updatedFields[index].valor = value
+      updatedFields[index].subtotal = updatedFields[index].quantidade * value - updatedFields[index].desconto
+      setProdutos(updatedFields)
+  
+      // Update the data object
+      const updatedData = { ...data }
+      updatedData.produtos = updatedFields
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } })
+    }*/
   const handleValueChange = (index, value) => {
-    const updatedFields = [...produtos]
-    updatedFields[index].valor = value
-    updatedFields[index].subtotal = updatedFields[index].quantidade * value - updatedFields[index].desconto
-    setProdutos(updatedFields)
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].valor = value;
+      updatedFields[index].subtotal = updatedFields[index].quantidade * value - updatedFields[index].desconto;
 
-    // Update the data object
-    const updatedData = { ...data }
-    updatedData.produtos = updatedFields
-    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-  }
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
 
-  const handleDiscountTypeChange = (index, value) => {
+      return updatedFields;
+    });
+  };
+  /*const handleDiscountTypeChange = (index, value) => {
     const updatedTypes = { ...typeDiscount }
     updatedTypes[index] = value || 'R$'
     setTypeDiscount(updatedTypes)
     handleDiscountChange(index, produtos[index].desconto)
-  }
+  }*/
+  const handleDiscountTypeChange = (index, value) => {
+    setTypeDiscount(prevTypeDiscount => {
+      const updatedTypes = { ...prevTypeDiscount };
+      updatedTypes[index] = value || 'R$';
+      handleDiscountChange(index, produtos[index].desconto);
+      return updatedTypes;
+    });
+  };
+
   // Function to change the background color of the tooltip based on the stock quantity of the product selected
   const getTooltipColor = (stockQuantity) => {
     if (stockQuantity <= 1) {
@@ -153,19 +248,25 @@ const CardProduto = ({ data, handleInputChange }) => {
           </thead>
           <tbody>
             {produtos.map((produto, index) => (
+
+
               <tr key={index}>
                 <td>
                   <Input
                     required
                     type='select'
                     name='produto'
-                    value={produto.produto}
+                    //value={produto.produto}                 
                     onChange={(e) => handleFieldChange(index, 'produto', e.target.value)}
                   >
-                    <option value=''>Selecione</option>
-                    {products.map((product, innerIndex) => (
+
+                    { /*<option value=''>Selecione</option>*/}
+
+                    {products?.map((product, innerIndex) => (
+
                       // Check if the product has in stock quantity and if it is greater than 0 to show it in the list of products to select from the dropdown list
-                      <option key={innerIndex} value={product.id_produto}>
+                      <option key={product.id_produto} value={product.id_produto}>
+
                         {product.nome}
                       </option>
                     ))}
