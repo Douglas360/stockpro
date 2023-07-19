@@ -9,6 +9,7 @@ import { useOrder } from '../../../context/OrderContext/useOrder';
 import { useNavigate } from 'react-router-dom';
 import { ChangeStatusModal } from './ChangeStatusModal';
 import { printA4 } from '../../../functions/printA4';
+import { dateFormatWithHours } from '../../../functions/getFomatter';
 
 
 const ListarVendaProduto = () => {
@@ -29,6 +30,7 @@ const ListarVendaProduto = () => {
 
     useEffect(() => {
         loadOrders();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleEmitNfeClick = (status, client) => {
@@ -143,7 +145,8 @@ const ListarVendaProduto = () => {
     const clients = orders?.map(({ numero_venda, nome_cliente, data_venda, situacao_venda, valor_total, cor }) => ({
         id: numero_venda,
         nome: nome_cliente,
-        date: new Date(data_venda).toLocaleString('pt-br'),
+        //date: new Date(data_venda).toLocaleString('pt-br'),
+        date: dateFormatWithHours(data_venda),
         status: <div className="ms-auto badge" style={{ backgroundColor: cor }}>{situacao_venda}</div>,
         valor: parseFloat(valor_total).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
     }));

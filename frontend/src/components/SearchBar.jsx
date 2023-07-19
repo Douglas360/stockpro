@@ -37,7 +37,7 @@ export const SearchBar = ({
     loading,
     actions,
     ActionsDropdown,
-    columnsToFilter
+    noActions,
 
 }) => {
 
@@ -74,14 +74,14 @@ export const SearchBar = ({
         // Advanced search logic here
     };
 
-    const columnsTo =  ['nome', 'email', 'telefone', 'celular'];
+    const columnsTo = ['nome', 'email', 'telefone', 'celular'];
 
     const filteredData = rows?.filter((client) =>
         columnsTo.some(
             (column) =>
                 client[column]?.toLowerCase().includes(searchTerm.toLowerCase())
         )
-        
+
     );
 
     /*const filteredData = rows?.filter(
@@ -93,18 +93,21 @@ export const SearchBar = ({
 
     )*/
 
-    const newActions = [
-        ...actions ? actions : [],
-        {
-            label: 'Excluir',
-            icon: faTrashCan,
-            color: 'red',
-            onClick: (client) => {
-                setSelectedItem(client.id);
-                setDeleteModalOpen(true);
+    const newActions = noActions
+        ? actions
+        : [
+            ...(actions ? actions : []),
+            {
+                label: 'Excluir',
+                icon: faTrashCan,
+                color: 'red',
+                onClick: (client) => {
+                    setSelectedItem(client.id);
+                    setDeleteModalOpen(true);
+                },
             },
-        },
-    ];
+        ];
+
 
 
     const renderActions = (client) => {
@@ -120,13 +123,13 @@ export const SearchBar = ({
                             {action.label}
                         </UncontrolledTooltip>
 
-
+                       
                         <FontAwesomeIcon
                             icon={action.icon}
                             id={`${action.label}-${client.id}`}
                             className="me-1 btn-transition"
                             size="xl"
-                            style={{ cursor: 'pointer', color: action.color }}
+                            style={{ cursor: action.cursor || 'pointer', color: action.color }}
                             onClick={() => action.onClick(client)}
                         />
                     </React.Fragment>

@@ -5,13 +5,10 @@ import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap';
 
 const CardTotal = ({ data, handleInputChange }) => {
     const [valorTotalComDesconto, setValorTotalComDesconto] = useState(data.valorTotal);
-
     const valorProdutos = data.produtos?.map((item) => item.subtotal);
-    const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);
-   //verify type of valorFrete
-   //const valorFrete = data.valorFrete?.replace(',', '.');
-    const valorFrete = data.valorFrete ? data.valorFrete : 0;
-
+    const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);  
+    const valorFrete = data.valorFrete?.replace(',', '.');
+    //const valorFrete = data.valorFrete ? data.valorFrete : 0;
 
     const valorTotal = valorFrete
         ? parseFloat(valorFrete, 10) + parseFloat(valorProdutosTotal, 10)
@@ -55,9 +52,6 @@ const CardTotal = ({ data, handleInputChange }) => {
             style: 'currency',
             currency: 'BRL',
         });
-
-
-
     return (
         <Card className="main-card mb-1">
             <CardBody>

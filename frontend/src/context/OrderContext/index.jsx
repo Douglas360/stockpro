@@ -2,12 +2,12 @@ import { createContext, useState } from 'react';
 import { api } from '../../services/api';
 import { toast } from 'react-toastify';
 import { ERROR_MESSAGES } from '../../config/ErrorMessage';
-import { useNavigate } from 'react-router-dom';
+
 
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-    const navigate = useNavigate();
+    /*const navigate = useNavigate();*/
     const [loading, setLoading] = useState(false);
 
     const handleRequest = async (requestPromise, message) => {
@@ -30,7 +30,7 @@ export const OrderProvider = ({ children }) => {
             setLoading(false);
         }
     };
-    const handleRequestCreate = async (requestPromise, successMessage) => {
+   /* const handleRequestCreate = async (requestPromise, successMessage) => {
         try {
             setLoading(true);
             const response = await requestPromise;
@@ -60,16 +60,21 @@ export const OrderProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    };*/
 
 
     //function to create a Order
     const createOrder = async (data) => {
+        console.log(data.descontoValor)
+        const date = new Date(
+            new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+        )
 
         const newData = {
             "orderData": {
                 "numero_venda": parseInt(data.numeroVenda),
-                "data_venda": new Date(),
+                //Pegar horario do BRasil 
+                "data_venda": date,
                 "id_empresa": parseInt(data.id_empresa),
                 "id_cliente": parseInt(data.clienteOrcamento),
                 "id_situacao_venda": parseInt(data.situacaoVendaOrcamento) || 1,
@@ -78,7 +83,7 @@ export const OrderProvider = ({ children }) => {
                 "id_forma_pagamento": parseInt(data.formaPagamentoAvista) || 1,
                 "id_transportadora": parseInt(data.id_transportadora),
                 "valor_total": data.valorTotal,
-                "valor_desconto": data.descontoValor,
+                "valor_desconto": parseFloat(data.descontoValor),
                 "valor_frete": parseFloat(data.valorFrete),
                 "valor_produto": parseFloat(data.valorProdutos),
                 "observacao": data.observacaoOrcamento,

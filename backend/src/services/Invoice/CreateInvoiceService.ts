@@ -104,10 +104,10 @@ class CreateInvoiceService {
         uf_destinatario: order.cliente?.enderecos[0].estado as string,
         pais_destinatario: 'Brasil',
         cep_destinatario: order.cliente?.enderecos[0].cep as string,
-        valor_frete: order.valor_frete as number | 0,
+        //valor_frete: order.valor_frete as number | 0,
+        valor_frete: 0,
         valor_seguro: 0,
-        valor_total: order.valor_total as number,
-        //valor_produtos: order.valor_total as number,      
+        valor_total: order.valor_total as number,        
         valor_produtos: valor_produto as number,
         modalidade_frete: 0,
         items: order.itens.map(item => {
@@ -131,6 +131,13 @@ class CreateInvoiceService {
           }
         })
       }
+      console.log(
+        {
+          "valorFrete": orderMapped.valor_frete,
+          "valorTotal": orderMapped.valor_total,
+          "valorProdutos": orderMapped.valor_produtos,
+        }
+      )
 
       const ref = order?.numero_venda;
       const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;
@@ -187,13 +194,7 @@ class CreateInvoiceService {
           }
         })
       }, 10000)
-
-
-
       return nf
-
-
-
     } catch (error: any) {
       if (error.response && error.response.data && typeof error.response.data === 'object') {
         const { mensagem, erros, mensagem_sefaz } = error.response.data;
@@ -230,7 +231,6 @@ class CreateInvoiceService {
       }
     }
   }
-
   async getInvoice(company_id: number): Promise<any> {
     try {
       const response = await prismaClient.notaFiscal.findMany({
@@ -276,6 +276,85 @@ class CreateInvoiceService {
       throw new Error(error.message);
     }
 
+
+  }
+  async cancelInvoice(id_nfe: string, reason: string): Promise<any> {
+    try {
+      const nf = await prismaClient.notaFiscal.findFirst({
+        where: {
+          ref: id_nfe
+        }
+      });
+
+      if (!nf) {
+        throw new Error('Nota fiscal não encontrada');
+      }
+
+      const url = `https://homologacao.focusnfe.com.br/v2/nfe/${nf.ref}`;
+
+      const cancelData = {
+        justificativa: reason
+      }
+
+      const config: AxiosRequestConfig = {
+        auth: {
+          username: process.env.TOKEN_API_NF as string,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: cancelData
+      };
+
+      const response = await axios.delete(url, config);     
+
+      if (response.data.status === 'erro_cancelamento') {
+        await prismaClient.notaFiscal.update({
+          where: {
+            ref: id_nfe
+          },
+          data: {
+            status: 'erro_cancelamento',
+            status_sefaz: response.data.status_sefaz,
+            mensagem_sefaz: response.data.mensagem_sefaz,
+
+          }
+        })
+      } else if (response.data.status === 'cancelado') {
+        await prismaClient.notaFiscal.update({
+          where: {
+            ref: id_nfe
+          },
+          data: {
+            status: 'cancelada',
+            status_sefaz: response.data.status_sefaz,
+            mensagem_sefaz: response.data.mensagem_sefaz,
+          }
+        })        
+      }     
+
+      return response.data
+
+    } catch (error: any) {
+      //console.log(error.response)
+      if (error.response && error.response.data && typeof error.response.data === 'object') {
+        const { mensagem, erros, mensagem_sefaz } = error.response.data;
+        //console.log(error.response.data)
+        const message = mensagem || erros[0].mensagem || mensagem_sefaz;
+        if(message === 'A nota fiscal já foi cancelada') {
+          await prismaClient.notaFiscal.update({
+            where: {
+              ref: id_nfe
+            },
+            data: {
+              status: 'cancelada'
+            }
+          })
+        }
+        throw new Error(message);
+      }
+    }
 
   }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { faBox, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
@@ -15,19 +15,23 @@ const CardProduto = ({ data, handleInputChange }) => {
   const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
   const id = JSON.parse(idEmpresa).id_empresa
 
-  const loadProducts = async () => {
-    const response = await listProducts(id)
-    setProducts(response)
-  }
+  const loadProducts = useCallback(async () => {
+    const response = await listProducts(id);
+    setProducts(response);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]); // Include 'id' and 'listProducts' in the dependency array
+
 
   useEffect(() => {
-    loadProducts()
-  }, [])
-  useEffect(() => {
+    loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadProducts]); // Add loadProducts to the dependency array
+
+  /*useEffect(() => {
     setProdutos(
       data?.produtos || [{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }]);
 
-  }, [data?.produtos]);
+  }, [data?.produtos]);*/
 
   const tipoVenda = [
     { id: 1, tipo: 'Venda' },
@@ -260,7 +264,7 @@ const CardProduto = ({ data, handleInputChange }) => {
                     onChange={(e) => handleFieldChange(index, 'produto', e.target.value)}
                   >
 
-                    { /*<option value=''>Selecione</option>*/}
+                    <option value=''>Selecione</option>
 
                     {products?.map((product, innerIndex) => (
 

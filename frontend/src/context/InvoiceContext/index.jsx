@@ -1,15 +1,15 @@
 import { createContext, useState } from 'react';
 import { api } from '../../services/api';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+
 
 export const InvoiceContext = createContext();
 
 export const InvoiceProvider = ({ children }) => {
-    const navigate = useNavigate();
+    /*const navigate = useNavigate();*/
     const [loading, setLoading] = useState(false);
 
-    const handleRequestCreate = async (requestPromise, successMessage) => {
+    /*const handleRequestCreate = async (requestPromise, successMessage) => {
         try {
             setLoading(true);
             const response = await requestPromise;
@@ -39,7 +39,7 @@ export const InvoiceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    };*/
 
     const handleRequest = async (requestPromise, message) => {
         try {
@@ -55,7 +55,7 @@ export const InvoiceProvider = ({ children }) => {
             const message =
                 error.response?.data.error || 'Erro desconhecido';
             toast.error(message, {
-                autoClose: 2000,
+                autoClose: 4000,
                 hideProgressBar: true,
             });
         } finally {
@@ -65,7 +65,7 @@ export const InvoiceProvider = ({ children }) => {
 
     //function to create invoice
     const createInvoice = async (data) => {
-        //console.log(data)
+   
         return handleRequest(api.post('/invoice', data), 'Nota fiscal emitida com sucesso');
     };
 
@@ -79,6 +79,13 @@ export const InvoiceProvider = ({ children }) => {
         return handleRequest(api.get('/list/invoice/company_id/' + id_company));
     };
 
+    //function to cancel invoice
+    const cancelInvoice = async (data) => {
+        console.log(data)
+        return handleRequest(api.put(`/invoice/${data.id}`, data), 'Nota fiscal cancelada com sucesso');        
+    };
+
+
 
     return (
         <InvoiceContext.Provider
@@ -86,7 +93,8 @@ export const InvoiceProvider = ({ children }) => {
                 loading,
                 createInvoice,
                 getInvoice,
-                getAllInvoices
+                getAllInvoices,
+                cancelInvoice
 
             }}
         >

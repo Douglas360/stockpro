@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf, faRefresh } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
+import { faFilePdf, faRefresh, faXmarkSquare } from '@fortawesome/free-solid-svg-icons';
+import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, UncontrolledTooltip } from 'reactstrap';
 
-// Import only the necessary components and functions from your custom modules
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import { SearchBar } from '../../../components/SearchBar';
 import { CustomSpinner } from '../../../components/CustomSpinner';
 import { useInvoice } from '../../../context/InvoiceContext/useInvoice';
+import { dateFormatWithHours } from '../../../functions/getFomatter';
 
 export const ListarNotaFiscal = () => {
-    const { getAllInvoices, loading } = useInvoice();
+    const { getAllInvoices, loading, cancelInvoice } = useInvoice();
     const [invoices, setInvoices] = useState([]);
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [cancelReason, setCancelReason] = useState('');
+    const [selectedItem, setSelectedItem] = useState(null);
     const idEmpresa = (localStorage.getItem('user')) || sessionStorage.getItem('user');
-    const id = JSON.parse(idEmpresa).id_empresa;      
+    const id = JSON.parse(idEmpresa).id_empresa;
 
     useEffect(() => {
         const loadInvoice = async () => {
             const responseInvoices = await getAllInvoices(id);
+            console.log(responseInvoices)
             setInvoices(responseInvoices);
         };
 
         loadInvoice();
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const ProcessamentoAutorizadoStatus = () => (
@@ -38,22 +43,52 @@ export const ListarNotaFiscal = () => {
             </span>
         </>
     );
-
-    const ErroAutorizacaoStatus = ({ invoices }) => (
+    const ErroAutorizacaoStatus = ({ numero_nfe }) => (
         <div>
-          <div className="ms-auto badge bg-danger" id="tooltip-erro" style={{ cursor: 'pointer' }}>
-            Erro
-          </div>
-          <UncontrolledTooltip placement="top" target="tooltip-erro">
-            {invoices?.find((invoice) => invoice.status === 'erro_autorizacao')?.mensagem_sefaz}
-          </UncontrolledTooltip>
-        </div>
-      );
+            <div className="ms-auto badge bg-danger" id={`tolltip-${numero_nfe}`} style={{ cursor: 'pointer' }}>
+                Erro
+            </div>
+            <UncontrolledTooltip placement="top" target={`tolltip-${numero_nfe}`}>
+                {invoices
+                    .filter((invoice) => invoice.status === 'erro_autorizacao' && invoice.ref === numero_nfe)
+                    .map((invoice) => invoice.mensagem_sefaz)
+                    .join(', ')}
+            </UncontrolledTooltip>
 
-    const statusInvoice = {
-        'autorizado': <div className="ms-auto badge bg-success">Autorizado</div>,
-        'Processamento autorizado': <ProcessamentoAutorizadoStatus />,
-        'erro_autorizacao': <ErroAutorizacaoStatus invoices={invoices} />
+        </div>
+    );
+
+    const ErroCancelamentoStatus = ({ numero_nfe }) => (
+        <div>
+            <div className="ms-auto badge bg-info" id={`tolltip-${numero_nfe}`} style={{ cursor: 'pointer' }}>
+                ERRO CANC.
+            </div>
+            <UncontrolledTooltip placement="top" target={`tolltip-${numero_nfe}`}>
+
+                {invoices
+                    .filter((invoice) => invoice.status === 'erro_cancelamento' && invoice.ref === numero_nfe)
+                    .map((invoice) => invoice.mensagem_sefaz)
+                    .join(', ')}
+
+            </UncontrolledTooltip>
+        </div>
+    );
+
+    const renderStatus = (status, ref) => {
+        switch (status) {
+            case 'autorizado':
+                return <div className="ms-auto badge bg-success">Autorizado</div>;
+            case 'cancelada':
+                return <div className="ms-auto badge bg-warning">Cancelado</div>;
+            case 'erro_cancelamento':
+                return <ErroCancelamentoStatus numero_nfe={ref} />;
+            case 'Processamento autorizado':
+                return <ProcessamentoAutorizadoStatus />;
+            case 'erro_autorizacao':
+                return <ErroAutorizacaoStatus numero_nfe={ref} />;
+            default:
+                return <div className="ms-auto badge bg-info">Processando</div>;
+        }
     };
     const columns = ['NFe', 'Nº Venda', 'Cliente', 'Data Emissão', 'Situação'];
     const columnsToFilter = ['nome', 'email', 'telefone', 'celular'];
@@ -62,8 +97,9 @@ export const ListarNotaFiscal = () => {
         id: numero_nfe,
         numero_venda: ref,
         nome: nome_cliente,
-        date: new Date(data_emissao).toLocaleString('pt-br') || ":(",
-        status: statusInvoice[status],
+        //date: new Date(data_emissao).toLocaleString('pt-br') || ":(",
+        date: dateFormatWithHours(data_emissao),
+        status: renderStatus(status, ref)
     }));
 
     const handleOpenInvoice = async (id) => {
@@ -72,6 +108,21 @@ export const ListarNotaFiscal = () => {
         window.open(url, '_blank')
 
 
+    };
+
+
+    const handleCancelInvoice = async (id) => {
+        setSelectedItem(id);
+        setCancelModalOpen(true);
+    }
+
+    const handleConfirmCancelInvoice = async (reason) => {
+        const data = {
+            id: selectedItem.numero_venda,
+            reason: reason
+        }
+        await cancelInvoice(data);
+        setCancelModalOpen(false);
     };
 
     const actions = [
@@ -84,6 +135,16 @@ export const ListarNotaFiscal = () => {
                 handleOpenInvoice(client.id);
             },
         },
+        {
+            label: 'Cancelar',
+            icon: faXmarkSquare,
+            cursor: 'pointer',
+            color: 'orange',
+            onClick: (client) => {
+                handleCancelInvoice(client);
+            },
+
+        }
 
     ];
     return (
@@ -92,7 +153,7 @@ export const ListarNotaFiscal = () => {
             subheading="Gerenciar emissão de nota fiscal."
             icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
         />
-            {loading && <CustomSpinner/>}
+            {loading && <CustomSpinner />}
 
             <SearchBar
                 urlNavigate="/venda/produto/cadastrar"
@@ -101,7 +162,33 @@ export const ListarNotaFiscal = () => {
                 rows={order}
                 msgDelete="Nota Fiscal"
                 actions={actions}
-
-            /></div>
+                noActions={true}
+            />
+            {/* Cancel Modal */}
+            <Modal isOpen={cancelModalOpen} toggle={() => setCancelModalOpen(false)}>
+                <ModalHeader toggle={() => setCancelModalOpen(false)}>
+                    <span style={{ fontWeight: 'bold' }}>{`Cancelar Nota Fiscal: ${selectedItem?.numero_venda}`}</span>
+                </ModalHeader>
+                <ModalBody>
+                    <Label style={{ fontWeight: 'bold' }}>Motivo do cancelamento</Label><span className='text-danger'>*</span>
+                    <Input
+                        required
+                        type='textarea'
+                        value={cancelReason}
+                        onChange={(e) => setCancelReason(e.target.value)}
+                        name='cancelReason'
+                        id='cancelReason'
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" onClick={() => setCancelModalOpen(false)}>
+                        Cancelar
+                    </Button>
+                    <Button color="danger" onClick={() => handleConfirmCancelInvoice(cancelReason)}>
+                        Confirmar Cancelamento
+                    </Button>
+                </ModalFooter>
+            </Modal>
+        </div>
     )
 }

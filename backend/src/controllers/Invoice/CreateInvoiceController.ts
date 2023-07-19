@@ -32,6 +32,16 @@ class CreateInvoiceController {
 
     }
 
+    async cancelInvoice(req: Request, res: Response): Promise<Response> {
+        const createInvoiceService = new CreateInvoiceService();
+
+        const { id } = req.params;
+        const { reason } = req.body;
+             const result = await createInvoiceService.cancelInvoice(id, reason);
+        return res.status(200).json(result);
+
+    }
+
 
 
 } export { CreateInvoiceController };

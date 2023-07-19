@@ -19,6 +19,7 @@ const CadastrarVendaProduto = () => {
       }
       loadOrder()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, id])
 
   const initialValues = {
@@ -36,7 +37,7 @@ const CadastrarVendaProduto = () => {
 
   const handleSubmit = async (data) => {
     if (isEditMode) {
-      console.log(data)
+      //await updateOrder(data)
     } else {
       await createOrder(data)
     }

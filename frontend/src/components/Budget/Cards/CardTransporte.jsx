@@ -7,7 +7,7 @@ import { useRegister } from '../../../context/RegisterContext/useRegister'
 const CardTransporte = ({ data, handleInputChange }) => {
     const { listAllCarriers } = useRegister();
     const [carriers, setCarriers] = useState([]);
-
+  
     const loadCarriers = async () => {
         const response = await listAllCarriers(1);
         setCarriers(response);
@@ -15,8 +15,8 @@ const CardTransporte = ({ data, handleInputChange }) => {
 
     useEffect(() => {
         loadCarriers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
 
     return (
         <Card className="main-card mb-1">

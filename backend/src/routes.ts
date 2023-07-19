@@ -82,6 +82,7 @@ const createInvoiceController = new CreateInvoiceController();
 router.post("/invoice", createInvoiceController.create);
 router.get("/list/invoice/:ref", createInvoiceController.getInvoiceData);
 router.get("/list/invoice/company_id/:id", createInvoiceController.getInvoice);
+router.put("/invoice/:id", createInvoiceController.cancelInvoice);
 
 
 

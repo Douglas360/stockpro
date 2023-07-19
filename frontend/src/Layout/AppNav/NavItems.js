@@ -80,7 +80,7 @@ export const EstoqueNav = [
         content: [
             {
                 label: 'Movimentações',
-                to: '/estoque_movimentacao',
+                to: '/estoque/movimentacao',
             },
             {
                 label: 'Ajustes',

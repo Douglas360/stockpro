@@ -94,8 +94,7 @@ export const printA4 = (data) => {
                     body: [
                         [
                             {
-                                text: 'DADOS DO CLIENTE', style: 'title',
-                                colSpan: 2,
+                                text: 'DADOS DO CLIENTE', style: 'title',                                
                                 alignment: 'left',
                                 fillColor: '#e2dddd',
                                 colSpan: 4,

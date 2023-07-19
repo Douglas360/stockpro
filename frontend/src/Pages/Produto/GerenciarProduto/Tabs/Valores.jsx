@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -43,14 +43,17 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
   const [valorVendaSugerido, setValorVendaSugerido] = useState('0,000');
 
 
-  const loadSalePrices = async () => {
+  const loadSalePrices = useCallback(async () => {
     const salePrices = await listSalePrices();
     setLucroSugerido(salePrices);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array, the function will remain constant
+
 
   useEffect(() => {
     loadSalePrices();
-  }, []);
+  }, [loadSalePrices]); // Add loadSalePrices to the dependency array
+
 
   const alertToggle = () => {
     setAlertOpen(false);
@@ -103,8 +106,8 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     outrasDespesas = outrasDespesas ? parseFloat(outrasDespesas) : 0;
 
     const custoFinal = valorCusto + despesasAcessorias + outrasDespesas;
-    data.custoFinal = custoFinal.toFixed(4);
-    return custoFinal.toFixed(4);
+    data.custoFinal = custoFinal.toFixed(2);
+    return custoFinal.toFixed(2);
   };
   const handleAddSalePrice = () => {
     setModal(true);
@@ -115,11 +118,11 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     const custoFinal = handleSumPrice();
     const lucroSug = parseFloat(lucroSugerido?.[0]?.valor);
     const valorVendaSugerido = custoFinal * (1 + lucroSug / 100);
-    setValorVendaSugerido(valorVendaSugerido.toFixed(4));
+    setValorVendaSugerido(valorVendaSugerido.toFixed(2));
 
     const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);
 
-    data.valorVendaUtilizado = valorVendaUtil.toFixed(4)
+    data.valorVendaUtilizado = valorVendaUtil.toFixed(2)
 
   }
 
