@@ -10,6 +10,7 @@ import { CreateSalePriceController } from "./controllers/ProductManagment/SalePr
 import { CreateOrderController } from "./controllers/Order/Product/CreateOrderController";
 import { CreateInvoiceController } from "./controllers/Invoice/CreateInvoiceController";
 import { auth } from "./middleware/auth";
+import { InventoryController } from "./controllers/Inventory/InventoryController";
 
 const router = Router();
 
@@ -83,6 +84,12 @@ router.post("/invoice", createInvoiceController.create);
 router.get("/list/invoice/:ref", createInvoiceController.getInvoiceData);
 router.get("/list/invoice/company_id/:id", createInvoiceController.getInvoice);
 router.put("/invoice/:id", createInvoiceController.cancelInvoice);
+
+//Inventory routes
+const inventoryController = new InventoryController();
+router.get("/inventory/:id", inventoryController.handle);
+
+
 
 
 

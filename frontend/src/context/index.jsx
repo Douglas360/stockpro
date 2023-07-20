@@ -4,6 +4,7 @@ import { RegisterProvider } from './RegisterContext'
 import { ProductProvider } from './ProductContext'
 import { OrderProvider } from './OrderContext'
 import { InvoiceProvider } from './InvoiceContext'
+import { InventoryProvider } from './InventoryContext'
 
 
 
@@ -14,7 +15,9 @@ export const CombinedProvider = ({ children }) => {
                 <ProductProvider>
                     <OrderProvider>
                         <InvoiceProvider>
-                            {children}
+                            <InventoryProvider>
+                                {children}
+                            </InventoryProvider>
                         </InvoiceProvider>
                     </OrderProvider>
                 </ProductProvider>

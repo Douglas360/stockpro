@@ -19,12 +19,12 @@ model User {
   ativo        Boolean   @default(true)
   ultimo_login DateTime?
   avatar       String?
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
   id_empresa   Int
 
-  empresa              Empresa?              @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade, onUpdate: Cascade)
+  empresa              Empresa?                 @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade, onUpdate: Cascade)
   venda                Venda[]
   movimentacao_estoque MovimentacaoEstoque[]
   historico_situacao   HistoricoSituacaoVenda[]
@@ -81,7 +81,7 @@ model Cliente {
   observacao          String?
   avatar              String?
   ativo               Boolean?  @default(true)
-  createdAt           DateTime  @default(now())
+  createdAt           DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt           DateTime  @updatedAt
   deletedAt           DateTime?
   id_empresa          Int
@@ -113,7 +113,7 @@ model Fornecedor {
   observacao String?
   avatar     String?
   ativo      Boolean?  @default(true)
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
   id_empresa Int
@@ -144,7 +144,7 @@ model Transportadora {
   observacao          String?
   avatar              String?
   ativo               Boolean?  @default(true)
-  createdAt           DateTime  @default(now())
+  createdAt           DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt           DateTime  @updatedAt
   deletedAt           DateTime?
   id_empresa          Int
@@ -225,7 +225,7 @@ model Produto {
   vl_fixo_cofins      Float?
   vl_fixo_pis_st      Float?
   vl_fixo_cofins_st   Float?
-  createdAt           DateTime  @default(now())
+  createdAt           DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt           DateTime  @updatedAt
   deletedAt           DateTime?
   id_empresa          Int
@@ -276,7 +276,7 @@ model LucroSugerido {
 
 model Venda {
   id_venda           Int       @id @default(autoincrement())
-  numero_venda       Int      @unique
+  numero_venda       Int       @unique
   data_venda         DateTime
   id_empresa         Int
   id_cliente         Int
@@ -291,7 +291,7 @@ model Venda {
   valor_frete        Float?
   observacao         String?
   observacao_interna String?
-  createdAt          DateTime  @default(now())
+  createdAt          DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?
 
@@ -327,7 +327,7 @@ model MovimentacaoEstoque {
   id_produto        Int
   tipo_movimentacao String // Pode ser "entrada" ou "saida"
   quantidade        Int
-  data_movimentacao DateTime @default(now())
+  data_movimentacao DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   id_usuario        Int
   id_venda          Int?
   descricao         String?
@@ -372,7 +372,7 @@ model SituacaoVenda {
 model HistoricoSituacaoVenda {
   id_historico_situacao_venda Int      @id @default(autoincrement())
   descricao                   String?
-  id_venda                    Int  
+  id_venda                    Int
   id_situacao_venda           Int
   id_usuario                  Int
   data                        DateTime @default(now())

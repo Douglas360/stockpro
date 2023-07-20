@@ -9,6 +9,7 @@ import Venda from '../Pages/Venda';
 import Login from '../Pages/Login';
 import NotaFiscal from '../Pages/NotaFiscal';
 import { useAuth } from '../context/AuthContext/useAuth';
+import Estoque from '../Pages/Estoque';
 
 export const AppRouter = () => {
 
@@ -28,6 +29,7 @@ export const AppRouter = () => {
           <Route path="/orcamento/*" element={<Private><Orcamento /></Private>} />
           <Route path="/venda/*" element={<Private><Venda /></Private>} />
           <Route path="/nota-fiscal/*" element={<Private><NotaFiscal /></Private>} />
+          <Route path="/estoque/*" element={<Private><Estoque /></Private>} />
 
         </Routes>
       </CombinedProvider>

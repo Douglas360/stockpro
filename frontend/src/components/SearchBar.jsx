@@ -123,7 +123,7 @@ export const SearchBar = ({
                             {action.label}
                         </UncontrolledTooltip>
 
-                       
+
                         <FontAwesomeIcon
                             icon={action.icon}
                             id={`${action.label}-${client.id}`}
@@ -132,6 +132,7 @@ export const SearchBar = ({
                             style={{ cursor: action.cursor || 'pointer', color: action.color }}
                             onClick={() => action.onClick(client)}
                         />
+                        
                     </React.Fragment>
                 ))}
 
