@@ -17,7 +17,6 @@ class InventoryService {
                 }
             }
 
-
         });
 
         //return formated inventory
@@ -27,6 +26,7 @@ class InventoryService {
                 id_produto: item.id_produto,
                 tipo_movimentacao: item.tipo_movimentacao,
                 quantidade: item.quantidade,
+                quantidade_atual: item.quantidade_atual,
                 data_movimentacao: item.data_movimentacao,
                 nome_produto: item.produto.nome,
                 descricao: item.descricao

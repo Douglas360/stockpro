@@ -80,6 +80,7 @@ class CreateOrderService {
                 },
             });
 
+            let quantidadeAtual = 0;
             if (newOrder.id_situacao_venda !== 4) {
                 // Update the inventory for each sold item
                 updatedItems = await Promise.all(
@@ -97,6 +98,8 @@ class CreateOrderService {
                             },
                         });
 
+                        quantidadeAtual = updatedInventory.quantidade as number;
+
                         return updatedInventory;
                     })
                 );
@@ -112,6 +115,7 @@ class CreateOrderService {
                                 id_produto,
                                 id_usuario: newOrder.id_user,
                                 quantidade,
+                                quantidade_atual: quantidadeAtual,
                                 tipo_movimentacao: "Saida",
                                 id_venda: newOrder.id_venda,
                                 descricao: `Lançamento da venda nº ${newOrder.numero_venda}`,
@@ -482,6 +486,8 @@ class CreateOrderService {
                 },
             });
 
+            let quantidadeAtual = 0;
+
             if (!previousCanceledOrder) {
                 // Update the inventory for each canceled item
                 await Promise.all(
@@ -499,6 +505,8 @@ class CreateOrderService {
                             },
                         });
 
+                        quantidadeAtual = updatedInventory.quantidade as number;
+
                         return updatedInventory;
                     })
                 );
@@ -514,9 +522,10 @@ class CreateOrderService {
                                 id_produto,
                                 id_usuario: canceledOrder.id_user,
                                 quantidade,
+                                quantidade_atual: quantidadeAtual,
                                 tipo_movimentacao: "Entrada", // Assuming "Entrada" is the movement type for canceling an order
                                 id_venda: canceledOrder.id_venda,
-                                descricao: `Venda ${canceledOrder.numero_venda} cancelada`,
+                                descricao: `Estorno da venda ${canceledOrder.numero_venda}`,
                                 data_movimentacao: new Date(),
                             },
                         });
@@ -553,7 +562,7 @@ class CreateOrderService {
                     },
                     situacao_venda: true,
                     empresa: true,
-                 
+
 
                 },
             });

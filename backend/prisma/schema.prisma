@@ -327,7 +327,8 @@ model MovimentacaoEstoque {
   id_produto        Int
   tipo_movimentacao String // Pode ser "entrada" ou "saida"
   quantidade        Int
-  data_movimentacao DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
+  quantidade_atual  Int?
+  data_movimentacao DateTime @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   id_usuario        Int
   id_venda          Int?
   descricao         String?

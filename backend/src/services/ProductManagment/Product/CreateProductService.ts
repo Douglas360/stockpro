@@ -3,7 +3,7 @@ import { IProduct } from "../../../types/ProductTypes";
 
 class CreateProductService {
     async execute(productData: IProduct) {
-      
+
         try {
             //Validate fields
             if (!productData.nome) {
@@ -56,8 +56,9 @@ class CreateProductService {
                     id_produto: product.id_produto,
                     tipo_movimentacao: "Entrada",
                     quantidade: productWithDetails?.estoque[0].quantidade || 0,
+                    quantidade_atual: productWithDetails?.estoque[0].quantidade || 0,
                     id_usuario: productData.id_usuario || 1,
-                    descricao: "Entrada manual de produto",
+                    descricao: "Saldo Inicial",
 
                 }
             });
@@ -92,6 +93,62 @@ class CreateProductService {
     }
     async update(id: number, productData: IProduct, stockData?: any) {
 
+        // Funções de criação de movimentos de entrada e saída
+        async function createInventoryEntrada(productData: any, stockData: any) {
+
+            await prismaClient.controleEstoque.update({
+                where: {
+                    id_estoque: stockData.id_estoque,
+                },
+                data: {
+                    estoque_min: stockData.estoque_min,
+                    estoque_max: stockData.estoque_max,
+                    quantidade: stockData.quantidade,
+                    data_ultima_entrada: stockData.data_ultima_entrada,
+                },
+            });
+            const quantidadeAtual = stockData.quantidade
+            stockData.quantidade = stockData.quantidade - productData?.estoque[0]?.quantidade;
+            //console.log(productData?.estoque[0]?.quantidade)
+            await prismaClient.movimentacaoEstoque.create({
+                data: {
+                    id_produto: productData.id_produto,
+                    tipo_movimentacao: "Entrada",
+                    quantidade: stockData.quantidade,
+                    quantidade_atual: quantidadeAtual || 0,
+                    id_usuario: productData.id_usuario || 1,
+                    descricao: "Entrada manual de produto",
+                },
+            });
+        }
+
+        async function createInventorySaida(productData: any, stockData: any) {
+
+            await prismaClient.controleEstoque.update({
+                where: {
+                    id_estoque: stockData.id_estoque,
+                },
+                data: {
+                    estoque_min: stockData.estoque_min,
+                    estoque_max: stockData.estoque_max,
+                    quantidade: stockData.quantidade,
+                    data_ultima_saida: stockData.data_ultima_saida,
+                },
+            });
+            const quantidadeAtual = stockData.quantidade
+            stockData.quantidade = stockData.quantidade - productData?.estoque[0]?.quantidade;
+            await prismaClient.movimentacaoEstoque.create({
+                data: {
+                    id_produto: productData.id_produto,
+                    tipo_movimentacao: "Saida",
+                    quantidade: stockData.quantidade,
+                    quantidade_atual: quantidadeAtual || 0,
+                    id_usuario: productData.id_usuario || 1,
+                    descricao: "Saída manual de produto",
+                },
+            });
+        }
+
         try {
             // Check id
             if (!id) throw new Error("id not found")
@@ -101,6 +158,9 @@ class CreateProductService {
                     id_produto: id
                 },
                 data: productData,
+                include: {
+                    estoque: true
+                }
             });
 
             if (stockData) {
@@ -109,51 +169,32 @@ class CreateProductService {
                         id_estoque: stockData.id_estoque
                     }
                 });
+                const existingQuantidade = existingStockData?.quantidade || 0;
+                const estoqueMin = existingStockData?.estoque_min || 0;
+                const estoqueMax = existingStockData?.estoque_max || 0;
 
                 if (
-                    existingStockData?.estoque_min !== stockData.estoque_min ||
-                    existingStockData?.estoque_max !== stockData.estoque_max ||
-                    existingStockData?.quantidade !== stockData.quantidade
+                    estoqueMin !== stockData.estoque_min ||
+                    estoqueMax !== stockData.estoque_max ||
+                    existingQuantidade !== stockData.quantidade
                 ) {
-                    await prismaClient.controleEstoque.update({
-                        where: {
-                            id_estoque: stockData.id_estoque
-                        },
-                        data: {
-                            estoque_min: stockData.estoque_min,
-                            estoque_max: stockData.estoque_max,
-                            quantidade: stockData.quantidade,
-                            data_ultima_entrada: stockData.data_ultima_entrada
-                        }
-                    });
+                    // Verificar se é uma entrada ou saída no inventário
+                    if (stockData.quantidade > existingQuantidade) {
 
-                    //Update movement inventory
-                    await prismaClient.movimentacaoEstoque.create({
-                        data: {
-                            id_produto: product.id_produto,
-                            tipo_movimentacao: "Entrada",
-                            quantidade: stockData.quantidade,
-                            id_usuario: productData.id_usuario || 1,
-                            descricao: "Entrada manual de produto",
-                        }
-                    });
+                        await createInventoryEntrada(product, stockData);
+                    } else {
+                        await createInventorySaida(product, stockData);
+                    }
                 }
             }
 
-
-            //Update movement inventory
-
-
             return product;
+
         } catch (error: any) {
             console.log(error.message)
             throw new Error(error.message);
         }
     }
-
-
-
-
     async getAll(id_empresa: number) {
         try {
             // Check id_empresa

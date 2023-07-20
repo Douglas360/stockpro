@@ -20,6 +20,7 @@ export const AjusteEstoqueProduto = () => {
 
     const loadInventory = async () => {
         const response = await listInventoryById(productId);
+        console.log(response)
         setInventory(response);
     };
 
@@ -114,6 +115,7 @@ export const AjusteEstoqueProduto = () => {
                                         <th>Data/Hora</th>
                                         <th>Tipo</th>
                                         <th>Qnt. movim.</th>
+                                        <th>Qnt. final</th>
                                         <th>Descrição</th>
                                     </tr>
                                 </thead>
@@ -127,6 +129,7 @@ export const AjusteEstoqueProduto = () => {
                                                 <td>{dateFormatWithHours(item.data_movimentacao)}</td>
                                                 <td>{item.tipo_movimentacao}</td>
                                                 <td>{item.quantidade}</td>
+                                                <td>{item.quantidade_atual}</td>
                                                 <td>{item.descricao}</td>
                                             </tr>
                                         )
