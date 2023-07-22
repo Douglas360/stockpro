@@ -111,9 +111,10 @@ export default class AnalyticsDashboard1 extends Component {
                         exit={false}>
                         <div>
                             <PageTitle
-                                heading="Basic Dashboard"
-                                subheading="This is an example dashboard created using build-in elements and components."
-                                icon="pe-7s-car icon-gradient bg-mean-fruit"
+                                heading="Olá, seja bem vindo(a) ao sistema de gestão da sua empresa!"
+                                subheading="Aqui você pode acompanhar o desempenho da sua empresa."
+                                //icon="pe-7s-car icon-gradient bg-mean-fruit"
+                                icon="pe-7s-graph icon-gradient bg-mean-fruit"
                             />
                             <Row>
                                 <Col md="12" lg="6">

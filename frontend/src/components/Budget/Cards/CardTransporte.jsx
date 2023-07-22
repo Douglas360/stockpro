@@ -57,7 +57,7 @@ const CardTransporte = ({ data, handleInputChange }) => {
                                     value={data.id_transportadora}
                                 >
                                     <option value=''>Selecione uma transportadora</option>
-                                    {carriers.map(carrier => (
+                                    {carriers?.map(carrier => (
                                         <option key={carrier.id_transportadora} value={carrier.id_transportadora}>{carrier.nome}</option>
                                     ))}
                                 </Input>

@@ -11,6 +11,8 @@ import { CreateOrderController } from "./controllers/Order/Product/CreateOrderCo
 import { CreateInvoiceController } from "./controllers/Invoice/CreateInvoiceController";
 import { auth } from "./middleware/auth";
 import { InventoryController } from "./controllers/Inventory/InventoryController";
+import { CreateBudgetController } from "./controllers/Budget/CreateBudgetController";
+import { CreateDashboardController } from "./controllers/Dashboard/CreateDashboardController";
 
 const router = Router();
 
@@ -78,6 +80,15 @@ router.put("/update/orderstatus/:id", createOrderController.updateOrderStatus);
 router.get("/list/historysalesstatus/:id", createOrderController.listHistorySalesStatus);
 router.put("/cancel/order/:id", createOrderController.cancelOrder);
 
+//Budget routes
+const createBudgetController = new CreateBudgetController();
+router.post("/budget", createBudgetController.create);
+router.delete("/delete/budget/:id", createBudgetController.delete);
+router.put("/update/budgetstatus/:id", createBudgetController.updateBudgetStatus);
+router.get("/list/budget/id_company/:id", createBudgetController.listBudgetByCompany);
+router.get("/list/historybudgetstatus/:id", createBudgetController.listHistoryBudgetStatus);
+router.get("/print/budget/:id", createBudgetController.listBudgetToPrint);
+
 //Invoice routes
 const createInvoiceController = new CreateInvoiceController();
 router.post("/invoice", createInvoiceController.create);
@@ -88,6 +99,12 @@ router.put("/invoice/:id", createInvoiceController.cancelInvoice);
 //Inventory routes
 const inventoryController = new InventoryController();
 router.get("/inventory/:id", inventoryController.handle);
+
+//Dashboard routes
+const dashboardController = new CreateDashboardController();
+router.get("/dashboard/:id", dashboardController.getTotalConcretizedSales);
+
+
 
 
 

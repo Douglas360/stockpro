@@ -241,8 +241,8 @@ const CardProduto = ({ data, handleInputChange }) => {
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>Produto <span className='text-danger'>*</span></th>
-              <th>Quant. <span className='text-danger'>*</span></th>
+              <th style={{ width: '20%' }}>Produto <span className='text-danger'>*</span></th>
+              <th style={{ width: '8%' }}>Quant. <span className='text-danger'>*</span></th>
               <th>Tipo <span className='text-danger'>*</span></th>
               <th>Valor <span className='text-danger'>*</span></th>
               <th>Desconto</th>
@@ -252,8 +252,6 @@ const CardProduto = ({ data, handleInputChange }) => {
           </thead>
           <tbody>
             {produtos.map((produto, index) => (
-
-
               <tr key={index}>
                 <td>
                   <Input

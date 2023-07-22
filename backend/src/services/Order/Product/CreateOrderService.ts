@@ -1,4 +1,3 @@
-
 import prismaClient from "../../../prisma";
 import { IOrderItem } from "../../../types/OrderItem";
 import { IOrder } from "../../../types/OrderTypes";
@@ -144,8 +143,18 @@ class CreateOrderService {
                 },
 
                 include: {
-                    itens: true,
-                    cliente: true,
+                    //itens: true,
+                    itens: {
+                        include: {
+                            produto: true,
+                        },
+                    },
+                    //cliente: true,
+                    cliente: {
+                        include: {
+                            enderecos: true,
+                        },
+                    },
                     situacao_venda: true,
 
                 },
@@ -562,8 +571,6 @@ class CreateOrderService {
                     },
                     situacao_venda: true,
                     empresa: true,
-
-
                 },
             });
 

@@ -14,10 +14,10 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
   const handleCancel = () => {
     navigate('/produto/gerenciar')
   }
-const handlePesoLiquidChange = (e) => {
+  const handlePesoLiquidChange = (e) => {
     const { value } = e.target
-    const pesoLiquido = value.replace(',','.')
-    
+    const pesoLiquido = value.replace(',', '.')
+
     //Update the data object
     const updatedData = { ...data }
     updatedData.pesoLiquido = pesoLiquido
@@ -25,9 +25,9 @@ const handlePesoLiquidChange = (e) => {
 
   }
 
-const handlePesoBrutoChange = (e) => {
+  const handlePesoBrutoChange = (e) => {
     const { value } = e.target
-    const pesoBruto = value.replace(',','.')
+    const pesoBruto = value.replace(',', '.')
 
     //Update the data object
     const updatedData = { ...data }
@@ -93,7 +93,7 @@ const handlePesoBrutoChange = (e) => {
               />
             </Col>
             <Col md={3}>
-              <Label for='origemProduto'>Origem</Label> <span className='text-danger'>*</span>            
+              <Label for='origemProduto'>Origem</Label> <span className='text-danger'>*</span>
               <Input
                 required
                 type='select'
@@ -194,6 +194,31 @@ const handlePesoBrutoChange = (e) => {
                 <option value='5123'>5123 - Venda de mercadoria adquirida ou recebida de terceiros remetida para industrialização, por conta e ordem do adquirente, sem transitar pelo estabelecimento do adquirente</option>
                 <option value='5124'>5124 - Industrialização efetuada para outra empresa</option>
                 <option value='5125'>5125 - Industrialização efetuada para outra empresa quando a mercadoria recebida para utilização no processo de industrialização não transitar pelo estabelecimento adquirente da mercadoria</option>
+                <option value="6100">6100 - VENDAS DE PRODUÇÃO PRÓPRIA OU DE TERCEIROS</option>
+                <option value="6101">6101 - Venda de produção do estabelecimento</option>
+                <option value="6102">6102 - Venda de mercadoria adquirida ou recebida de terceiros</option>
+                <option value="6103">6103 - Venda de produção do estabelecimento, efetuada fora do estabelecimento</option>
+                <option value="6104">6104 - Venda de mercadoria adquirida ou recebida de terceiros, efetuada fora do estabelecimento</option>
+                <option value="6105">6105 - Venda de produção do estabelecimento que não deva por ele transitar</option>
+                <option value="6106">6106 - Venda de mercadoria adquirida ou recebida de terceiros, que não deva por ele transitar</option>
+                <option value="6107">6107 - Venda de produção do estabelecimento, destinada a não contribuinte</option>
+                <option value="6108">6108 - Venda de mercadoria adquirida ou recebida de terceiros, destinada a não contribuinte</option>
+                <option value="6109">6109 - Venda de produção do estabelecimento, destinada à Zona Franca de Manaus ou Áreas de Livre Comércio</option>
+                <option value="6110">6110 - Venda de mercadoria adquirida ou recebida de terceiros, destinada à Zona Franca de Manaus ou Áreas de Livre Comércio</option>
+                <option value="6111">6111 - Venda de produção do estabelecimento remetida anteriormente em consignação industrial</option>
+                <option value="6112">6112 - Venda de mercadoria adquirida ou recebida de Terceiros remetida anteriormente em consignação industrial</option>
+                <option value="6113">6113 - Venda de produção do estabelecimento remetida anteriormente em consignação mercantil</option>
+                <option value="6114">6114 - Venda de mercadoria adquirida ou recebida de terceiros remetida anteriormente em consignação mercantil</option>
+                <option value="6115">6115 - Venda de mercadoria adquirida ou recebida de terceiros, recebida anteriormente em consignação mercantil</option>
+                <option value="6116">6116 - Venda de produção do estabelecimento originada de encomenda para entrega futura</option>
+                <option value="6117">6117 - Venda de mercadoria adquirida ou recebida de terceiros, originada de encomenda para entrega futura</option>
+                <option value="6118">6118 - Venda de produção do estabelecimento entregue ao destinatário por conta e ordem do adquirente, em venda à ordem</option>
+                <option value="6119">6119 - Venda de mercadoria adquirida ou recebida de terceiros entregue ao destinatário por conta e ordem do adquirente originário, em venda à ordem</option>
+                <option value="6120">6120 - Venda de mercadoria adquirida ou recebida de terceiros entregue ao destinatário pelo vendedor remetente, em venda à ordem</option>
+                <option value="6122">6122 - Venda de produção do estabelecimento remetida para industrialização, por conta e ordem do adquirente, sem transitar pelo estabelecimento do adquirente</option>
+                <option value="6123">6123 - Venda de mercadoria adquirida ou recebida de terceiros remetida para industrialização, por conta e ordem do adquirente, sem transitar pelo estabelecimento do adquirente</option>
+                <option value="6124">6124 - Industrialização efetuada para outra empresa</option>
+                <option value="6125">6125 - Industrialização efetuada para outra empresa quando a mercadoria recebida para utilização no processo de industrialização não transitar pelo estabelecimento adquirente da mercadoria</option>
               </Input>
             </Col>
           </Row>

@@ -18,7 +18,7 @@ const CardObservacao = ({ data, handleInputChange }) => {
           <Col md='6'>
             <Label style={{ fontSize: 16 }}>Observações</Label><br />
             <FormText color='muted' style={{ fontStyle: 'italic' }}>
-              Observações que serão impressas no orçamento
+              Observações que serão impressas no pedido.
             </FormText>
 
             <Input type='textarea' name='observacaoOrcamento' id='observacaoOrcamento' rows='5' value={data.observacaoOrcamento} onChange={handleInputChange} />

@@ -10,7 +10,7 @@ const tabsContent = [
     url: 'gerenciar'
   },
   {
-    title: 'Cadastrar Produtos',   
+    title: 'Cadastrar Produtos',
     url: 'gerenciar/cadastrar'
 
   },
@@ -18,10 +18,10 @@ const tabsContent = [
 ];
 
 
-export const ProdutoJSX = ({onTabSelect}) => {
-  
+export const ProdutoJSX = ({ onTabSelect }) => {
+
   const handleTabSelect = (index) => {
-   
+
     onTabSelect(tabsContent[index].url);
   };
   return (
@@ -31,15 +31,15 @@ export const ProdutoJSX = ({onTabSelect}) => {
         subheading="Produtos cadastrados no sistema."
         icon="pe-7s-box1 icon-gradient bg-amy-crisp"
       />
-     
+
 
       <Tabs
         tabsWrapperClass="body-tabs body-tabs-layout"
         transform={false}
         showInkBar={true}
-        items={tabsContent}       
+        items={tabsContent}
         onChange={handleTabSelect}
-       
+
       />
 
     </>

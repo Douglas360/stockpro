@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Card, CardBody, Form, Row, Col, Label, Input, Table } from 'reactstrap';
-import { useOrder } from '../../../context/OrderContext/useOrder';
-import { CustomSpinner } from '../../../components/CustomSpinner';
+import { CustomSpinner } from './CustomSpinner';
 
-export const ChangeStatusModal = ({ isOpen, toggleModal, data, loadOrders }) => {
-    const { listSalesStatus, updateOrderStatus, loading } = useOrder()
+
+export const ChangeStatusModal = ({ isOpen, toggleModal, data, loadOrders, listSalesStatus, updateOrderStatus, loading }) => {
+  
+    //const { listSalesStatus, updateOrderStatus, loading } = useOrder()
     const [situacaoVenda, setSituacaoVenda] = useState([])
     const [newSituacaoVenda, setNewSituacaoVenda] = useState(data[0]?.id_situacao_venda)
 
@@ -15,6 +16,7 @@ export const ChangeStatusModal = ({ isOpen, toggleModal, data, loadOrders }) => 
 
     useEffect(() => {
         loadSalesStatus()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleSubmit = async (e) => {

@@ -65,7 +65,7 @@ export const OrderProvider = ({ children }) => {
 
     //function to create a Order
     const createOrder = async (data) => {
-        console.log(data.descontoValor)
+    
         const date = new Date(
             new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
         )

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { faSackDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap';
+import { getFormatterInputPrice } from '../../../functions/getFormatterInputPrice';
 
 const CardTotal = ({ data, handleInputChange }) => {
     const [valorTotalComDesconto, setValorTotalComDesconto] = useState(data.valorTotal);
     const valorProdutos = data.produtos?.map((item) => item.subtotal);
-    const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);  
+    const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);
     const valorFrete = data.valorFrete?.replace(',', '.');
     //const valorFrete = data.valorFrete ? data.valorFrete : 0;
 
@@ -32,26 +33,6 @@ const CardTotal = ({ data, handleInputChange }) => {
         setValorTotalComDesconto(valorComDesconto);
     }, [data.descontoPorcentagem, valorTotal]);
 
-    const formattedValorProdutosTotal = isNaN(valorProdutosTotal)
-        ? '' // Define uma string vazia se não for um número válido
-        : parseFloat(valorProdutosTotal).toLocaleString('pt-br', {
-            style: 'currency',
-            currency: 'BRL',
-        });
-
-    const formattedValorTotal = isNaN(valorTotal)
-        ? '' // Define uma string vazia se não for um número válido
-        : parseFloat(valorTotalComDesconto).toLocaleString('pt-br', {
-            style: 'currency',
-            currency: 'BRL',
-        });
-
-    const formattedValorFrete = isNaN(valorFrete)
-        ? '' // Define uma string vazia se não for um número válido
-        : parseFloat(valorFrete).toLocaleString('pt-br', {
-            style: 'currency',
-            currency: 'BRL',
-        });
     return (
         <Card className="main-card mb-1">
             <CardBody>
@@ -96,7 +77,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     id="valorProdutos"
                                     placeholder="Valor dos produtos"
                                     readOnly
-                                    defaultValue={formattedValorProdutosTotal
+                                    defaultValue={getFormatterInputPrice(valorProdutosTotal)
                                     }
                                 />
                             </td>
@@ -107,7 +88,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     id="valorFrete"
                                     placeholder="Valor do frete"
                                     readOnly
-                                    defaultValue={formattedValorFrete}
+                                    defaultValue={getFormatterInputPrice(valorFrete)}
                                 />
                             </td>
                             <td>
@@ -137,7 +118,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     id="valorTotal"
                                     placeholder="Valor total"
                                     readOnly
-                                    value={formattedValorTotal}
+                                    value={getFormatterInputPrice(valorTotal)}
                                 />
                             </td>
                         </tr>

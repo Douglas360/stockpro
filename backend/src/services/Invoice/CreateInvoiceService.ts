@@ -130,14 +130,7 @@ class CreateInvoiceService {
             cofins_situacao_tributaria: '07',
           }
         })
-      }
-      console.log(
-        {
-          "valorFrete": orderMapped.valor_frete,
-          "valorTotal": orderMapped.valor_total,
-          "valorProdutos": orderMapped.valor_produtos,
-        }
-      )
+      }    
 
       const ref = order?.numero_venda;
       const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;

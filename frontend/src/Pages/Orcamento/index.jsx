@@ -36,6 +36,10 @@ const Orcamento = () => {
                                 element={<CadastrarOrcamentoProduto />}
                             />
                             <Route
+                                path="/produto/editar/:id"
+                                element={<CadastrarOrcamentoProduto />}
+                            />
+                            <Route
                                 path="/configuracao"
                                 element={<ConfiguracaoJSX />}
                             />

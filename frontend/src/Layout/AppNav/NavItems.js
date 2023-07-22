@@ -153,7 +153,7 @@ export const ConfiguracaoNav = [
         ]
     }
 ];
-export const SairNav = [
+/*export const SairNav = [
     {
         icon: 'pe-7s-power',
         label: 'Sair',
@@ -165,7 +165,7 @@ export const SairNav = [
         ]
 
     }
-];
+];*/
 
 
 

@@ -7,13 +7,15 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { SearchBar } from '../../../components/SearchBar';
 import { useOrder } from '../../../context/OrderContext/useOrder';
 import { useNavigate } from 'react-router-dom';
-import { ChangeStatusModal } from './ChangeStatusModal';
+
 import { printA4 } from '../../../functions/printA4';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
+import { ChangeStatusModal } from '../../../components/ChangeStatusModal';
 
 
 const ListarVendaProduto = () => {
-    const { listAllOrders, listHistoryOrder, deleteOrder, cancelOrder, loading, listOrderToPrint } = useOrder();
+    const { listAllOrders, listHistoryOrder, deleteOrder, cancelOrder, loading, listOrderToPrint, listSalesStatus, updateOrderStatus } = useOrder();
+
     const [orders, setOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
@@ -64,6 +66,7 @@ const ListarVendaProduto = () => {
 
     const handlePrintA4 = async (client) => {
         const response = await listOrderToPrint(client.id)
+        response.title = 'VENDA'
         printA4(response);
     };
 
@@ -189,6 +192,9 @@ const ListarVendaProduto = () => {
                     toggleModal={toggleChangeStatusModal}
                     data={data}
                     loadOrders={loadOrders}
+                    listSalesStatus={listSalesStatus}
+                    updateOrderStatus={updateOrderStatus}
+                    loading={loading}
 
                 />
 

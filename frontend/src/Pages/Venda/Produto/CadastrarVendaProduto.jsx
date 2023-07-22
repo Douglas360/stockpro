@@ -14,7 +14,7 @@ const CadastrarVendaProduto = () => {
     if (isEditMode) {
       const loadOrder = async () => {
         const response = await getOrderById(id)
-      console.log(response)
+
         setOrder(response)
       }
       loadOrder()
@@ -23,6 +23,7 @@ const CadastrarVendaProduto = () => {
   }, [isEditMode, id])
 
   const initialValues = {
+    title: 'venda',
     numeroVenda: order?.numero_venda,
     clienteOrcamento: order?.id_cliente,
     //formatar data da venda para o formato do input date do html (yyyy-mm-dd) 

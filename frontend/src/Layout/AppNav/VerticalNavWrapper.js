@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import MetisMenu from 'react-metismenu';
 import { MainNav, CadastroNav, ProdutoNav, OrcamentoNav, VendaNav, EstoqueNav, NotaFiscalNav, RelatorioNav, ConfiguracaoNav, SairNav, } from './NavItems';
 
@@ -72,13 +73,14 @@ const Nav = () => {
                 iconNamePrefix=""
                 classNameStateIcon="pe-7s-angle-down"
             />
-            <MetisMenu
+            {/* <MetisMenu
                 content={SairNav}
                 activeLinkFromLocation
                 className="vertical-nav-menu"
                 iconNamePrefix=""
                 classNameStateIcon="pe-7s-angle-down"
-            />
+                LinkComponent={(props) => <CustomMenuItem {...props} />} // Use the custom menu item component
+    />*/}
 
         </>
     );

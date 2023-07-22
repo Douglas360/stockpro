@@ -29,6 +29,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
 
   useEffect(() => {
     loadCustomers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleCodigoBlur = (e) => {
@@ -74,7 +75,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
         </Row>
         <Row className='mb-2'>
           <Col md='3'>
-            <Label style={{ fontWeight: 'bold' }}>Número da venda</Label><span className='text-danger'>*</span>
+            <Label style={{ fontWeight: 'bold' }}>Número {typeForm === 'venda' ? 'da venda' : 'do orçamento'} </Label><span className='text-danger'>*</span>
 
             <InputGroup>
               <Input
@@ -108,7 +109,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               required
             >
               <option value=''>Selecione um cliente</option>
-              {customers.map((customer) => (
+              {customers?.map((customer) => (
                 <option key={customer.id_cliente} value={customer.id_cliente}>
                   {customer.nome}
                 </option>

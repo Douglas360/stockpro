@@ -28,7 +28,7 @@ const TableView = ({ columns, rows, renderActions }) => {
     };
     // Sorting function
     const sortData = (data) => {
-        const sortedData = data.slice().sort((a, b) => {
+        const sortedData = data?.slice().sort((a, b) => {
             // Implement your custom sorting logic based on the sortColumn and sortOrder
             // For example, if sorting by the "Nome" column:
             if (sortColumn === 'nome') {
@@ -104,7 +104,7 @@ const TableView = ({ columns, rows, renderActions }) => {
 
     return (
         <>
-            {currentItems.length === 0 ? (
+            {currentItems?.length === 0 ? (
                 <div className="text-center mt-5">
                     <span className="fs-5">Nenhum registro encontrado... </span>
                     <FontAwesomeIcon icon={faSadTear} size="xl" />
@@ -146,7 +146,7 @@ const TableView = ({ columns, rows, renderActions }) => {
                                 </tr>
                             </thead>
                             <tbody className='text-center items-center justify-center'>
-                                {currentItems.map((client) => (
+                                {currentItems?.map((client) => (
                                     <tr key={client.id}>
                                         {Object.values(client).map((value, index) => (
                                             <td key={index}>{value}</td>
@@ -175,7 +175,7 @@ const TableView = ({ columns, rows, renderActions }) => {
                                 </select>
                             </div>
 
-                            {currentItems.length >= 10 &&
+                            {currentItems?.length >= 10 &&
                                 <Pagination>
                                     <Pagination.Prev
                                         onClick={() => setCurrentPage((prevPage) => prevPage - 1)}

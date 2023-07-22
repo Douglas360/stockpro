@@ -7,11 +7,11 @@ export const InvoiceContext = createContext();
 
 export const InvoiceProvider = ({ children }) => {
     /*const navigate = useNavigate();*/
-    const [loading, setLoading] = useState(false);
+    const [invoiceLoading, setInvoiceLoading] = useState(false);
 
     /*const handleRequestCreate = async (requestPromise, successMessage) => {
         try {
-            setLoading(true);
+            setInvoiceLoading(true);
             const response = await requestPromise;
             console.log(response)
             if (response.data.status) {
@@ -37,13 +37,13 @@ export const InvoiceProvider = ({ children }) => {
                 hideProgressBar: true,
             });
         } finally {
-            setLoading(false);
+            setInvoiceLoading(false);
         }
     };*/
 
     const handleRequest = async (requestPromise, message) => {
         try {
-            setLoading(true);
+            setInvoiceLoading(true);
             const response = await requestPromise;
             toast.success(message, {
                 autoClose: 2000,
@@ -59,13 +59,13 @@ export const InvoiceProvider = ({ children }) => {
                 hideProgressBar: true,
             });
         } finally {
-            setLoading(false);
+            setInvoiceLoading(false);
         }
     };
 
     //function to create invoice
     const createInvoice = async (data) => {
-   
+
         return handleRequest(api.post('/invoice', data), 'Nota fiscal emitida com sucesso');
     };
 
@@ -81,16 +81,13 @@ export const InvoiceProvider = ({ children }) => {
 
     //function to cancel invoice
     const cancelInvoice = async (data) => {
-        console.log(data)
-        return handleRequest(api.put(`/invoice/${data.id}`, data), 'Nota fiscal cancelada com sucesso');        
+
+        return handleRequest(api.put(`/invoice/${data.id}`, data), 'Nota fiscal cancelada com sucesso');
     };
-
-
-
     return (
         <InvoiceContext.Provider
             value={{
-                loading,
+                invoiceLoading,
                 createInvoice,
                 getInvoice,
                 getAllInvoices,
