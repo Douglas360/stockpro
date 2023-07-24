@@ -10,6 +10,7 @@ import Login from '../Pages/Login';
 import NotaFiscal from '../Pages/NotaFiscal';
 import { useAuth } from '../context/AuthContext/useAuth';
 import Estoque from '../Pages/Estoque';
+import Configuracao from '../Pages/Configuracao';
 
 export const AppRouter = () => {
 
@@ -30,6 +31,7 @@ export const AppRouter = () => {
           <Route path="/venda/*" element={<Private><Venda /></Private>} />
           <Route path="/nota-fiscal/*" element={<Private><NotaFiscal /></Private>} />
           <Route path="/estoque/*" element={<Private><Estoque /></Private>} />
+          <Route path="/configuracao/*" element={<Private><Configuracao /></Private>} />
 
         </Routes>
       </CombinedProvider>

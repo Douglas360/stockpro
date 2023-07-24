@@ -7,7 +7,7 @@ const tabsContent = [
     {
         title: 'Listar Vendas de Produtos',
         content: <ListarVendaProduto />,
-        url: 'venda'
+        url: 'produto'
     },
     {
         title: 'Realizar Venda de Produtos',
@@ -26,9 +26,7 @@ export const VendaProdutoJSX = ({ onTabSelect }) => {
                 heading="Venda de produtos"
                 subheading="Venda cadastradas no sistema."
                 icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
-
             />
-
 
             <Tabs
                 tabsWrapperClass="body-tabs body-tabs-layout"
@@ -36,7 +34,6 @@ export const VendaProdutoJSX = ({ onTabSelect }) => {
                 showInkBar={true}
                 items={tabsContent}
                 onChange={handleTabSelect}
-
             />
 
         </>

@@ -136,19 +136,19 @@ export const ConfiguracaoNav = [
         content: [
             {
                 label: 'Gerais',
-                to: '/configuracao_geral',
+                to: '/configuracao/geral',
             },
             {
                 label: 'Usuários',
-                to: '/configuracao_usuario',
+                to: '/configuracao/usuario',
             },
             {
                 label: 'Empresa',
-                to: '/configuracao_empresa',
+                to: '/configuracao/empresa',
             },
             {
                 label: 'Certificado Digital',
-                to: '/configuracao_certificado',
+                to: '/configuracao/certificado-digital',
             }
         ]
     }
