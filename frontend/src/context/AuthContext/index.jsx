@@ -70,6 +70,9 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
+
+
+
     return (
         <AuthContext.Provider
             value={{
@@ -78,6 +81,7 @@ export const AuthProvider = ({ children }) => {
                 isAuthenticated,
                 signIn,
                 signOut,
+               
             }}
         >
             {children}

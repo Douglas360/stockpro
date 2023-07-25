@@ -6,6 +6,7 @@ import { EmpresaJSX } from './Empresa/EmpresaJSX';
 import { GerallJSX } from './Geral/GeralJSX';
 import { CertificadoDigitalJSX } from './CertificadoDigital/CertificadoDigitalJSX';
 import { UsuarioJSX } from './Usuario/Usuario';
+import { CreateUsuario } from './Usuario/CreateUsuario';
 
 
 const Configuracao = () => {
@@ -35,6 +36,14 @@ const Configuracao = () => {
                             <Route
                                 path="/usuario"
                                 element={<UsuarioJSX onTabSelect={handleTabSelect} />}
+                            />
+                            <Route
+                                path="/usuario/cadastrar"
+                                element={<CreateUsuario onTabSelect={handleTabSelect} />}
+                            />
+                            <Route
+                                path="/usuario/editar/:id"
+                                element={<CreateUsuario onTabSelect={handleTabSelect} />}
                             />
                             <Route
                                 path="/certificado-digital"

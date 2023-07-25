@@ -50,10 +50,7 @@ export const OrcamentoNav = [
                 label: 'Produtos',
                 to: '/orcamento/produto',
             },
-            {
-                label: 'Configurações',
-                to: '/orcamento/configuracao',
-            },
+
         ]
     }
 ];
@@ -66,10 +63,7 @@ export const VendaNav = [
                 label: 'Produtos',
                 to: '/venda/produto',
             },
-            {
-                label: 'Configurações',
-                to: '/venda/configuracao',
-            },
+
         ]
     }
 ];
@@ -82,18 +76,7 @@ export const EstoqueNav = [
                 label: 'Movimentações',
                 to: '/estoque/movimentacao',
             },
-            {
-                label: 'Ajustes',
-                to: '/estoque_ajuste',
-            },
-            {
-                label: 'Configurações',
-                to: '/estoque_config',
-            },
-            {
-                label: 'Compras',
-                to: '/estoque_compra',
-            }
+
         ]
     }
 ];
@@ -116,16 +99,13 @@ export const RelatorioNav = [
         content: [
             {
                 label: 'Produtos',
-                to: '/relatorio_produto',
+                to: '/relatorio/produto',
             },
             {
                 label: 'Vendas',
-                to: '/relatorio_venda',
+                to: '/relatorio/venda',
             },
-            {
-                label: 'Compras',
-                to: '/relatorio_compra',
-            },
+
         ]
     }
 ];

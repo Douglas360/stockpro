@@ -6,22 +6,7 @@ import { useAuth } from '../AuthContext/useAuth';
 
 export const DashboardContext = createContext();
 
-export const DashboardProvider = ({ children }) => {   
-  
-    const [orders, setOrders] = useState([]);
-
-    //useEffect to list all orders by id_company
-    useEffect(() => {
-        async function loadOrders() {
-            const response = await listAllOrders(1);
-            console.log(response)
-            setOrders(response);
-        }
-        loadOrders();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-       
-    //
+export const DashboardProvider = ({ children }) => {      
 
     const [loading, setLoading] = useState(false);
 
@@ -52,12 +37,35 @@ export const DashboardProvider = ({ children }) => {
         return handleRequest(api.get(`/dashboard/${id_company}`));
     };
 
+    //function to list inventory by id_company
+    const listInventory = async (id_company) => {
+        return handleRequest(api.get(`/dashboard/inventory/${id_company}`));
+    };
+
+    //function to list inventory movement by id_company
+    const listInventoryMovement = async (id_company) => {
+        return handleRequest(api.get(`/dashboard/inventory/movement/${id_company}`));
+    };
+
+    //function to list sales by id_company
+    const listSales = async (id_company) => {
+        return handleRequest(api.get(`/dashboard/sales/${id_company}`));
+    };
+
+    //function to list budget by id_company
+    const listBudget = async (id_company) => {
+        return handleRequest(api.get(`/dashboard/budgets/${id_company}`));
+    };
+
     return (
         <DashboardContext.Provider
             value={{
-                loading,
-                orders,
-                listAllOrders
+                loading,              
+                listAllOrders,
+                listInventory,
+                listInventoryMovement,
+                listSales,
+                listBudget,
 
 
             }}

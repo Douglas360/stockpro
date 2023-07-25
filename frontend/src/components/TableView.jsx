@@ -71,37 +71,6 @@ const TableView = ({ columns, rows, renderActions }) => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData?.slice(indexOfFirstItem, indexOfLastItem);
 
-
-
-   /* const renderActions = (client) => {
-        return (
-            <div>
-                {actions.map((action, index) => (
-                    <React.Fragment key={index}>
-                        <UncontrolledTooltip
-                            placement="top"
-                            target={`${action.label}-${client.id}`}
-                            style={{ fontSize: '.6rem', padding: '4px 8px' }}
-                        >
-                            {action.label}
-                        </UncontrolledTooltip>
-
-
-                        <FontAwesomeIcon
-                            icon={action.icon}
-                            id={`${action.label}-${client.id}`}
-                            className="mb-2 me-2 btn-transition"
-                            size="xl"
-                            style={{ cursor: 'pointer', color: action.color }}
-                            onClick={() => action.onClick(client)}
-                        />
-                    </React.Fragment>
-                ))}
-            </div>
-        );
-    };*/
-
-
     return (
         <>
             {currentItems?.length === 0 ? (

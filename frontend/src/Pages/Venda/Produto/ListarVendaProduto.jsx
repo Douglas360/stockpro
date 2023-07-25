@@ -131,7 +131,6 @@ const ListarVendaProduto = () => {
     const columns = ['Nº', 'Cliente', 'Data', 'Situação', 'Valor'];
 
     const actions = [
-
         {
             label: 'Editar',
             icon: faEdit,
@@ -141,9 +140,7 @@ const ListarVendaProduto = () => {
                 navigate(`/venda/produto/editar/${client.id}`);
             },
         },
-
     ];
-
 
     const clients = orders?.map(({ numero_venda, nome_cliente, data_venda, situacao_venda, valor_total, cor }) => ({
         id: numero_venda,
@@ -160,9 +157,7 @@ const ListarVendaProduto = () => {
     const toggleChangeStatusModal = () => {
         setShowChangeStatusModal(!showChangeStatusModal);
     };
-
     return (
-
         <>
             <SearchBar
                 urlNavigate="/venda/produto/cadastrar"

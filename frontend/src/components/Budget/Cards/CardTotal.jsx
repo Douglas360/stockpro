@@ -5,10 +5,13 @@ import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap';
 import { getFormatterInputPrice } from '../../../functions/getFormatterInputPrice';
 
 const CardTotal = ({ data, handleInputChange }) => {
+    console.log(data)
     const [valorTotalComDesconto, setValorTotalComDesconto] = useState(data.valorTotal);
     const valorProdutos = data.produtos?.map((item) => item.subtotal);
     const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);
-    const valorFrete = data.valorFrete?.replace(',', '.');
+    //const valorFrete = data.valorFrete?.replace(',', '.');
+    const valorFrete = typeof data.valorFrete === 'string' ? data.valorFrete.replace(',', '.') : 0;
+
     //const valorFrete = data.valorFrete ? data.valorFrete : 0;
 
     const valorTotal = valorFrete
@@ -44,7 +47,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                         </Label>
                     </Col>
                 </Row>
-                <Row>
+                {/*<Row>
                     <Col md="12">
                         <Input
                             type="checkbox"
@@ -56,7 +59,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                         />
                         <Label for="exibeValor">Exibe valor total na impressão</Label>
                     </Col>
-                </Row>
+    </Row>*/}
                 <Table striped bordered hover>
                     <thead>
                         <tr>

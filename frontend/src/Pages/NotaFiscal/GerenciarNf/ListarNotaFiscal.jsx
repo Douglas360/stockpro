@@ -10,7 +10,7 @@ import { useInvoice } from '../../../context/InvoiceContext/useInvoice';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
 
 export const ListarNotaFiscal = () => {
-    const { getAllInvoices, loading, cancelInvoice } = useInvoice();
+    const { getAllInvoices, invoiceLoading, cancelInvoice } = useInvoice();
     const [invoices, setInvoices] = useState([]);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState('');
@@ -152,9 +152,8 @@ export const ListarNotaFiscal = () => {
             heading="Gerenciar Nota Fiscal"
             subheading="Gerenciar emissão de nota fiscal."
             icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
-        />
-            {loading && <CustomSpinner />}
-
+        /> {invoiceLoading && <CustomSpinner />}
+           
             <SearchBar
                 urlNavigate="/venda/produto/cadastrar"
                 columns={columns}

@@ -159,6 +159,60 @@ export const RegisterProvider = ({ children }) => {
         return handleRequest(api.put(`/carrier/${data.id}`, carrierData), 'Transportadora atualizada com sucesso');
     };
 
+    //function to list a Company by id
+    const listCompany = async (data) => {
+        return handleRequest(api.get(`/company/${data}`))
+    };
+
+    //function to update a Company by id
+    const updateCompany = async (id, data) => {
+        const companyData = {
+            "companyData": {
+                "nome": data.razaoSocial,
+                "nome_fantasia": data.nomeFantasia,
+                "cnpj": data.cnpj,
+                "inscr_estadual": data.inscricaoEstadualCliente,
+                //"inscr_municipal": data.inscricaoMunicipalCliente,
+                "cep": data.cep,
+                "logradouro": data.logradouro,
+                "numero": data.numero,
+                "complemento": data.complemento,
+                "bairro": data.bairro,
+                "cidade": data.cidade,
+                "estado": data.estado,
+                "telefone": data.telefone,
+                "email": data.email,
+                "file": data.avatar,
+
+            }
+        }
+
+
+        return handleRequest(api.put(`/company/${id}`, companyData, { file: data.file }), 'Empresa atualizada com sucesso');
+    };
+
+    //FUnction to list user
+    const listUser = async (id_company) => {
+        return handleRequest(api.get(`/list/user/id_company/${id_company}`));
+    };
+
+    //Function to create user
+    const createUser = async (data) => {
+
+        return handleRequest(api.post('/user', data), 'Usuário cadastrado com sucesso');
+    };
+    //function to delete user
+    const deleteUser = async (data) => {
+        return handleRequest(api.delete(`/delete/user/${data}`), 'Usuário deletado com sucesso');
+    };
+    //function to update user
+    const updateUser = async (data) => {
+        return handleRequest(api.put(`/update/user/${data.id}`, data), 'Usuário atualizado com sucesso');
+    };
+    //function to get a user by id
+    const getUserById = async (data) => {
+        return handleRequest(api.get(`/user/${data}`))
+    };
 
     return (
         <RegisterContext.Provider
@@ -180,9 +234,13 @@ export const RegisterProvider = ({ children }) => {
                 listAllCarriers,
                 deleteCarrier,
                 createProduct,
-
-
-
+                listCompany,
+                updateCompany,
+                listUser,
+                createUser,
+                deleteUser,
+                updateUser,
+                getUserById,
             }}
         >
             {children}

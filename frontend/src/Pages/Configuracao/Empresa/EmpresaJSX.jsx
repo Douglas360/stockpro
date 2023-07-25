@@ -1,42 +1,78 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-import { Card, CardBody, Col, Form, FormFeedback, Input, Label, Row, Button } from 'reactstrap';
+import { Card, CardBody, Col, Form, FormFeedback, Input, Label, Row, Button, Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIdCard, faMapMarkerAlt, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faIdCard, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { useRegister } from '../../../context/RegisterContext/useRegister';
+import { CustomSpinner } from '../../../components/CustomSpinner';
 
-// Função de envio simulada (substitua por uma chamada real à API)
-const submitForm = async (data) => {
-  try {
-    // Simulação de chamada à API para salvar os dados no backend
-    console.log('Dados enviados:', data);
-    alert('Dados enviados com sucesso!');
-  } catch (error) {
-    console.error('Erro ao enviar dados:', error);
-    alert('Erro ao enviar dados, tente novamente mais tarde.');
-  }
-};
+
 
 export const EmpresaJSX = () => {
+  const { listCompany, updateCompany, loading } = useRegister();
+  const [company, setCompany] = useState();
+  const id = localStorage.getItem('user') || sessionStorage.getItem('user');
+  const idCompany = JSON.parse(id)?.id_empresa
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(-1);
+
+
+
+  useEffect(() => {
+    const loadCompany = async () => {
+      const response = await listCompany(idCompany);
+      setCompany(response);
+
+      // Set the initial form values here after fetching the company data
+      setFormValues({
+
+        tipoCliente: 'Pessoa Fisica',
+        tipoClienteError: false,
+        nameError: false,
+        razaoSocialError: false,
+        nomeFantasia: response?.nome_fantasia,
+        razaoSocial: response?.nome,
+        logradouro: response?.logradouro,
+        numero: response?.numero,
+        complemento: response?.complemento,
+        bairro: response?.bairro,
+        cidade: response?.cidade,
+        estado: response?.estado,
+        cep: response?.cep,
+        inscrEstadual: response.inscr_estadual,
+        inscrMunicipal: '',
+        cnpj: response?.cnpj,
+        email: response?.email,
+        telefone: response?.telefone,
+        avatar: response?.avatar,
+        ativo: true,
+      });
+    };
+
+    loadCompany();
+  }, []);
+
   const [formValues, setFormValues] = useState({
+
     tipoCliente: '',
     tipoClienteError: false,
     nameError: false,
     razaoSocialError: false,
-    nomeFantasia: '',
-    razaoSocial: '',
+    nomeFantasia: company?.nome_fantasia,
+    razaoSocial: company?.nome,
     logradouro: '',
     numero: '',
     complemento: '',
     bairro: '',
     cidade: '',
-    estado: '',
+    estado: company?.estado,
     cep: '',
     inscrEstadual: '',
     inscrMunicipal: '',
     cnpj: '',
     email: '',
     telefone: '',
-    avatar: '',
+    file: null,
     ativo: true,
   });
 
@@ -63,8 +99,9 @@ export const EmpresaJSX = () => {
     }
   }, []);
 
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
+    const form = new FormData(e.target);
 
     // Verificar se há erros antes de enviar os dados
     const hasErrors = Object.keys(formValues).some((key) => key.endsWith('Error') && formValues[key]);
@@ -73,12 +110,67 @@ export const EmpresaJSX = () => {
       return;
     }
 
-    // Enviar os dados para a API (simulação)
-    submitForm(formValues);
+    let file = form.get('file');
+
+    // Se o usuário não selecionou uma nova imagem, manter a imagem atual
+    if (!file) {
+      file = formValues.file;
+    }
+
+    form.append('file', file)
+
+    const formEntries = Object.fromEntries(form.entries());
+    const formValuesWithfile = {
+      ...formEntries,
+      file,
+    };
+
+    // Enviar os dados para a API 
+    await updateCompany(idCompany, formValuesWithfile);
+    //TODO: Redirecionar para a página de listagem
+
+
+
   }, [formValues]);
+
+  const handleFileChange = useCallback((e) => {
+    setAvatarUrl(null)
+    setUploadProgress(-1);
+    const file = e.target.files[0];
+    setAvatarUrl(URL.createObjectURL(file));
+
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadstart = () => setUploadProgress(0);
+      reader.onprogress = (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          setUploadProgress(progress);
+        }
+      };
+      reader.onloadend = () => setUploadProgress(100);
+      reader.readAsDataURL(file);
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        file: file, // Set the 'file' property to the selected file
+      }));
+    } else {
+      setUploadProgress(0);
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        file: null, // If no file is selected, set the 'avatar' property to null
+      }));
+    }
+
+    e.target.value = '';
+  }, []);
+
+
 
   return (
     <>
+      {loading && <CustomSpinner />}
       <PageTitle
         heading="Dados da Empresa"
         subheading="Dados da empresa cadastrados no sistema."
@@ -110,7 +202,7 @@ export const EmpresaJSX = () => {
                   valid={!formValues.tipoClienteError}
                 >
                   <option value=''>Selecione</option>
-                  <option value='Pessoa Fisica'>Pessoa Física</option>
+                  <option value='Pessoa Fisica' selected>Pessoa Física</option>
                   <option value='Pessoa Juridica' >Pessoa Jurídica</option>
                 </Input>
                 <FormFeedback>
@@ -288,7 +380,7 @@ export const EmpresaJSX = () => {
 
               </Col>
             </Row>
-            <Row>
+            <Row className='mb-3'>
               <Col md='6'>
                 <Label for='email' style={{ fontWeight: 'bold' }}>Email</Label><span className='text-danger'>*</span>
                 <Input
@@ -320,15 +412,42 @@ export const EmpresaJSX = () => {
             <Row>
 
               <Col md='4'>
-                <Label for='avatar' style={{ fontWeight: 'bold' }}>Avatar</Label>
-                <Input
-                  type='text'
-                  name='avatar'
-                  id='avatar'
-                  value={formValues.avatar}
-                  onChange={handleChange}
-                />
+                <Label for='file' style={{ fontWeight: 'bold' }}>Logo da empresa</Label>
+                <Label style={{ width: '200px', height: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', marginLeft: 20, marginTop: 20 }}>
+                  <span style={{ position: 'absolute', opacity: '0.5', ':hover': { opacity: '1' } }}>
+                    <i className="pe-7s-cloud-upload" style={{ fontSize: '5rem' }}></i>
+                  </span>
+                  <Input
+                    type='file'
+                    name='file'
+                    accept="image/png, image/jpeg"
+                    id='file'
+
+                    onChange={handleFileChange}
+                    hidden
+                  />
+                  <Input type="file" name="file" hidden />
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                  ) : (
+                    company?.avatar ? (
+                      <img src={company.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                    ) : (
+                      <span></span>
+                    )
+                  )}
+                </Label>
+                {uploadProgress >= 0 && (
+                  <div className="mt-1 w-3/4">
+                    <Progress animated color='success' value={uploadProgress}>
+                      {uploadProgress}%
+                    </Progress>
+
+                  </div>
+                )}
+
               </Col>
+
             </Row>
             <Row className='mt-3'>
               <Col md='12'>

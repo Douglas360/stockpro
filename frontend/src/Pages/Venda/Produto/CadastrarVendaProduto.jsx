@@ -14,7 +14,7 @@ const CadastrarVendaProduto = () => {
     if (isEditMode) {
       const loadOrder = async () => {
         const response = await getOrderById(id)
-
+        //console.log(response)
         setOrder(response)
       }
       loadOrder()
@@ -33,6 +33,7 @@ const CadastrarVendaProduto = () => {
     produtos: order?.itens,
     valorFrete: order?.valor_frete,
     id_transportadora: order?.id_transportadora,
+    valorProdutos: order?.valor_produto,
   }
 
 

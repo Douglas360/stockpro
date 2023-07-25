@@ -6,6 +6,7 @@ import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Inpu
 import { useNavigate } from 'react-router-dom';
 import { AdvancedSearch } from './AdvancedSearch';
 import TableView from './TableView';
+import { CustomSpinner } from './CustomSpinner';
 
 const DeleteModal = ({ isOpen, toggleModal, handleConfirm }) => {
     return (
@@ -132,7 +133,7 @@ export const SearchBar = ({
                             style={{ cursor: action.cursor || 'pointer', color: action.color }}
                             onClick={() => action.onClick(client)}
                         />
-                        
+
                     </React.Fragment>
                 ))}
 
@@ -150,30 +151,14 @@ export const SearchBar = ({
     return (
         <>
             <Row className="mb-1">
-                {loading && (
-                    <div
-                        style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 50
-                        }}
-                    >
-                        <Spinner style={{ width: '10rem', height: '10rem' }} color="primary" />
-                    </div>
-                )}
+                {loading && <CustomSpinner />}
                 <Col xs={12} sm={6} md={4} lg={3} xl={2}>
                     <Button color="primary" onClick={handleAddClient}>
                         <FontAwesomeIcon icon={faPlusCircle} size='xl' />
                         <span> Adicionar</span>
                     </Button>
                 </Col>
-                <Col xs={12} sm={6} md={4} lg={3} className="d-none d-sm-block">
+               {/* <Col xs={12} sm={6} md={4} lg={3} className="d-none d-sm-block">
                     <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
                         <DropdownToggle caret>
                             <FontAwesomeIcon icon={faGears} size='xl' />
@@ -190,7 +175,7 @@ export const SearchBar = ({
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
-                </Col>
+    </Col>*/}
                 <Col xs={12} sm={12} md={12} lg={7} className="d-flex align-items-center">
                     <div className="d-flex align-items-center justify-content-between flex-grow-1">
                         <div className="flex-grow-1">

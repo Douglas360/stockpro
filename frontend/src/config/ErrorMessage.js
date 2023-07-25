@@ -29,4 +29,5 @@ export const ERROR_MESSAGES = {
     "Code is required": "Código interno é obrigatório",
     "id not found": "Id não encontrado",
     "statusId not found": "Status não encontrado",
+    "Id is required": "Id é obrigatório",
 };
