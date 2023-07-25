@@ -74,5 +74,82 @@ class CreateUserService {
             throw error;
         }
     }
+    async getAll(id_company: number) {
+        try {
+            const users = await prismaClient.user.findMany({
+                where: {
+                    id_empresa: id_company,
+                },
+                include: {
+                    empresa: true,
+                },
+            });
+
+            const users2 = users.map((user) => {
+                return {
+                    id: user.id,
+                    nome: user.nome,
+                    login: user.login,
+                    ativo: user.ativo,
+                }
+            });
+
+
+            return users2;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async delete(id: number) {
+        try {
+            const user = await prismaClient.user.delete({
+                where: {
+                    id: id,
+                },
+            });
+
+            return user;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async update(id: number, userData: IUser) {
+        try {
+
+            const passwordHash = await hash(userData.senha, 8);
+
+            const user = await prismaClient.user.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    nome: userData.nome,
+                    login: userData.login,
+                    email: userData.email,
+                    senha: passwordHash,
+                    ativo: userData.ativo,
+                    id_empresa: userData.id_empresa,
+                    avatar: userData.avatar,                                       
+                },
+            });
+
+            return user;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async getUserById(id: number) {
+        try {
+            const user = await prismaClient.user.findUnique({
+                where: {
+                    id: id,
+                },
+            });
+
+            return user;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 } export { CreateUserService };
 

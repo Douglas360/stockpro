@@ -7,19 +7,35 @@ import { ICompany } from "../../../types/CompanyTypes";
 
 class CompanyController {
     async create(req: Request, res: Response) {
-        const { nome, endereco, cnpj, email, telefone, } = req.body;
+        const { companyData } = req.body;
 
         const companyService = new CompanyService();
 
-        const data: ICompany = {
-            nome,
-            endereco,
-            cnpj,
-            email,
-            telefone,           
-        };
+        const company = await companyService.create(companyData as ICompany);
 
-        const company = await companyService.create(data);
+        return res.json(company);
+    }
+    async listCompanyById(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const companyService = new CompanyService();
+
+        const company = await companyService.listCompanyById(Number(id));
+
+        return res.json(company);
+    }
+    async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { companyData } = req.body;
+        const { file } = req;
+        console.log(req)
+
+        //delete avatar in companyData
+        delete companyData.file
+
+        const companyService = new CompanyService();
+
+        const company = await companyService.update(Number(id), companyData as ICompany, file as any);
 
         return res.json(company);
     }

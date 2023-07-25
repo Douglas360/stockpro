@@ -5,6 +5,7 @@ export interface IUser {
     email: string;
     senha: string;
     avatar?: string | null;
+    ativo?: boolean;
     id_empresa: number;
     updatedAt?: Date;
 }

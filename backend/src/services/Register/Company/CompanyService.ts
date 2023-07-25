@@ -1,6 +1,10 @@
 import prismaClient from "../../../prisma";
 import { ICompany } from "../../../types/CompanyTypes";
 
+interface FileObject {
+    originalname: string;
+    buffer: Buffer;
+}
 
 
 class CompanyService {
@@ -43,6 +47,45 @@ class CompanyService {
             return company;
         } catch (error: any) {
             throw error
+        }
+
+    }
+    async listCompanyById(id: number) {
+        try {
+            if (!id) {
+                throw new Error('Id is required');
+            }
+
+            const company = await prismaClient.empresa.findUnique({
+                where: { id_empresa: id },
+            });
+
+            if (!company) {
+                throw new Error('Company not found');
+            }
+
+            return company;
+        } catch (error: any) {
+            throw error
+        }
+
+    }
+    async update(id: number, empresaData: ICompany, file:FileObject) {
+              
+        try {
+            if (!id) {
+                throw new Error('Id is required');
+            }
+
+            const company = await prismaClient.empresa.update({
+                where: { id_empresa: id },
+                data: empresaData
+            });
+
+            return company;
+        } catch (error: any) {
+
+            throw new Error(error.message)
         }
 
     }

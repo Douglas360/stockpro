@@ -14,11 +14,15 @@ import { InventoryController } from "./controllers/Inventory/InventoryController
 import { CreateBudgetController } from "./controllers/Budget/CreateBudgetController";
 import { CreateDashboardController } from "./controllers/Dashboard/CreateDashboardController";
 
+import { upload } from './config/multer'
+
 const router = Router();
 
 //Company routes
 const companyController = new CompanyController();
 router.post("/company", companyController.create);
+router.get("/company/:id", companyController.listCompanyById);
+router.put("/company/:id", upload.single('file'), companyController.update);
 
 //Auth routes
 const authUserController = new AuthUserController();
@@ -29,6 +33,10 @@ router.post("/session", authUserController.handle);
 //User routes
 const createUserController = new CreateUserController();
 router.post("/user", createUserController.handle);
+router.get("/list/user/id_company/:id", createUserController.getAll);
+router.delete("/delete/user/:id", createUserController.delete);
+router.put("/update/user/:id", createUserController.update);
+router.get("/user/:id", createUserController.getUserById);
 
 //Customer routes
 const createCustomerController = new CreateCustomerController();
@@ -103,6 +111,10 @@ router.get("/inventory/:id", inventoryController.handle);
 //Dashboard routes
 const dashboardController = new CreateDashboardController();
 router.get("/dashboard/:id", dashboardController.getTotalConcretizedSales);
+router.get("/dashboard/inventory/:id", dashboardController.getInventoryValue);
+router.get("/dashboard/inventory/movement/:id", dashboardController.getMovementInventory);
+router.get("/dashboard/sales/:id", dashboardController.getSalesByMonth);
+router.get("/dashboard/budgets/:id", dashboardController.getBudgetsByMonth);
 
 
 
