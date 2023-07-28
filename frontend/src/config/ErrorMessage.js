@@ -30,4 +30,5 @@ export const ERROR_MESSAGES = {
     "id not found": "Id não encontrado",
     "statusId not found": "Status não encontrado",
     "Id is required": "Id é obrigatório",
+    "User have sales or budgets linked": "Usuário tem vendas ou orçamentos vinculados",
 };

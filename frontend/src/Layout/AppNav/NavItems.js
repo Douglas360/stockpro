@@ -98,12 +98,16 @@ export const RelatorioNav = [
         label: 'Relatório',
         content: [
             {
-                label: 'Produtos',
-                to: '/relatorio/produto',
+                label: 'Cadastros',
+                to: '/relatorio/cadastros',
             },
             {
                 label: 'Vendas',
-                to: '/relatorio/venda',
+                to: '/relatorio/vendas',
+            },
+            {
+                label: 'Estoque',
+                to: '/relatorio/estoque',
             },
 
         ]

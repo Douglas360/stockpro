@@ -11,6 +11,7 @@ import NotaFiscal from '../Pages/NotaFiscal';
 import { useAuth } from '../context/AuthContext/useAuth';
 import Estoque from '../Pages/Estoque';
 import Configuracao from '../Pages/Configuracao';
+import Relatorio from '../Pages/Relatorio';
 
 export const AppRouter = () => {
 
@@ -32,6 +33,7 @@ export const AppRouter = () => {
           <Route path="/nota-fiscal/*" element={<Private><NotaFiscal /></Private>} />
           <Route path="/estoque/*" element={<Private><Estoque /></Private>} />
           <Route path="/configuracao/*" element={<Private><Configuracao /></Private>} />
+          <Route path="/relatorio/*" element= {<Private><Relatorio /></Private>} />
 
         </Routes>
       </CombinedProvider>
