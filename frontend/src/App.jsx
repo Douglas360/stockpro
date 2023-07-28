@@ -5,10 +5,7 @@ import { useWindowSize } from 'react-use';
 import { AppRouter } from './routes';
 import { ToastContainer } from 'react-toastify';
 
-
 function Main() {
-
-
     const { width } = useWindowSize();
     const colorScheme = useSelector(state => state.ThemeOptions.colorScheme);
     const enableFixedHeader = useSelector(state => state.ThemeOptions.enableFixedHeader);
@@ -16,8 +13,6 @@ function Main() {
     const enableFixedFooter = useSelector(state => state.ThemeOptions.enableFixedFooter);
     const enableFixedSidebar = useSelector(state => state.ThemeOptions.enableFixedSidebar);
     const enableClosedSidebar = useSelector(state => state.ThemeOptions.enableClosedSidebar);
-
-
     return (
         <Fragment>
             <div className={cx(
@@ -29,7 +24,7 @@ function Main() {
                 { 'sidebar-mobile-open': enableMobileMenu },
             )}>
 
-                <AppRouter />                
+                <AppRouter />
                 <ToastContainer />
             </div>
         </Fragment>

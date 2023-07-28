@@ -5,8 +5,10 @@ import AppSidebar from '../../Layout/AppSidebar';
 import { RelatorioCadastroJSX } from './Cadastro/Cadastro';
 import { Cliente } from './Cadastro/Cliente';
 import { Produto } from './Cadastro/Produto';
-import { RelatorioVendaJSX } from './Venda/Venda';
+
 import { Orcamento } from './Venda/Orcamento';
+import { RelatorioVendaJSX } from './Venda/VendasJSX';
+import { Venda } from './Venda/Venda';
 
 const Relatorio = () => {
     const navigate = useNavigate();
@@ -27,27 +29,31 @@ const Relatorio = () => {
                         <Routes>
                             <Route
                                 path="/"
-                                element={<RelatorioCadastroJSX onTabSelect={handleTabSelect} />}
+                                element={<RelatorioCadastroJSX />}
                             />
                             <Route
                                 path="/cadastros"
-                                element={<RelatorioCadastroJSX onTabSelect={handleTabSelect} />}
+                                element={<RelatorioCadastroJSX />}
                             />
                             <Route
                                 path="/cadastros/clientes"
-                                element={<Cliente onTabSelect={handleTabSelect} />}
+                                element={<Cliente />}
                             />
                             <Route
                                 path="/cadastros/produtos"
-                                element={<Produto onTabSelect={handleTabSelect} />}
+                                element={<Produto />}
                             />
                             <Route
                                 path="/vendas"
-                                element={<RelatorioVendaJSX onTabSelect={handleTabSelect} />}
+                                element={<RelatorioVendaJSX />}
                             />
                             <Route  
                                 path="/vendas/orcamentos"
                                 element={<Orcamento/>}
+                            />
+                            <Route 
+                                path='/vendas/vendas'
+                                element={<Venda/>}
                             />
 
 

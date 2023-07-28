@@ -47,7 +47,7 @@ export const Orcamento = () => {
             //Adicionar data_inicial e data_final no relatório
             response.budgetFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
             response.budgetFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
-                       
+
             RelatorioVenda(response.budgetFormatted)
 
         }

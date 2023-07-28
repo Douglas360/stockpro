@@ -43,6 +43,10 @@ export const ReportProvider = ({ children }) => {
     const getReportBudgets = async (data) => {
         return await handleRequest(api.post(`/report/budget/${data.report?.id_empresa}`, data));
     };
+    //function to get the report about the sales
+    const getReportSales = async (data) => {
+        return await handleRequest(api.post(`/report/sale/${data.report?.id_empresa}`, data));
+    };
 
 
     return (
@@ -52,6 +56,7 @@ export const ReportProvider = ({ children }) => {
                 getReportCustomers,
                 getReportProducts,
                 getReportBudgets,
+                getReportSales,
 
             }}
         >

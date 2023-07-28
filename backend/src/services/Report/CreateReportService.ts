@@ -189,5 +189,69 @@ class CreateReportService {
             throw new Error(error.message);
         }
     }
+    async getSaleReport(id_company: number, report: any): Promise<any> {
+        try {
+            const { data_inicial = null, data_final = null, cliente = null, situacao = null } = report || {};
+
+            const filters: any = {
+                id_empresa: id_company,
+            };
+            // Add optional filters to the query based on user input
+            if (data_inicial && data_final) {
+                filters.data_venda = {
+                    gte: new Date(data_inicial),
+                    lte: new Date(data_final),
+                };
+            }
+            if (cliente) {
+                filters.id_cliente = {
+                    in: Number(cliente),
+                };
+            }
+            if (situacao) {
+                filters.id_situacao_venda = {
+                    in: Number(situacao),
+                };
+            }
+
+            const sales = await prismaClient.venda.findMany({
+                where: filters,
+                include: {
+                    empresa: true,
+                    cliente: true,
+                    situacao_venda: true,
+                },
+                orderBy: {
+                    data_venda: "asc",
+                },
+            });
+
+            if (sales.length === 0) {
+                throw new Error("Nenhuma venda encontrada")
+            }
+
+            const salesFormatted = sales.map((sale) => {
+                return {
+                    numero_venda: sale.numero_venda,
+                    cliente: sale?.cliente?.nome,
+                    data_venda: new Date(sale.data_venda).toLocaleDateString('pt-BR'),
+                    situacao: sale?.situacao_venda?.descricao,
+                    valor_total: sale.valor_total,
+                    nomeEmpresa: sale?.empresa?.nome_fantasia,
+                    cnpjEmpresa: sale?.empresa?.cnpj,
+                    enderecoEmpresa: `${sale?.empresa?.logradouro}, ${sale?.empresa?.numero} - ${sale?.empresa?.bairro} - ${sale?.empresa?.cidade} - ${sale?.empresa?.estado}`,
+                    telefoneEmpresa: sale?.empresa?.telefone,
+                    emailEmpresa: sale?.empresa?.email,
+                    logoEmpresa: sale?.empresa?.avatar,
+                }
+            })
+            //return sales and total rows
+            return salesFormatted
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+
 
 } export { CreateReportService }

@@ -20,7 +20,7 @@ api.interceptors.response.use(
             // For example, redirect to the login page
             window.location.href = "/";
         } else {
-           // console.log(error.response.data.errors)
+            // console.log(error.response.data.errors)
         }
         return Promise.reject(error);
     }

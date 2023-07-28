@@ -46,4 +46,14 @@ class CreateReportController {
 
         return res.json(reportCreated);
     }
+    async getSaleReport(req: Request, res: Response) {
+        const { id } = req.params;
+        const { report } = req.body;
+
+        const createReportService = new CreateReportService();
+
+        const reportCreated = await createReportService.getSaleReport(Number(id), report);
+
+        return res.json(reportCreated);
+    }
 } export { CreateReportController }

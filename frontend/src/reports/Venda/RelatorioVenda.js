@@ -2,7 +2,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import { createFooter } from "../getFooter";
 import { getHeader } from "../getHeader";
 
-export const RelatorioVenda = (data) => {
+export const RelatorioVenda = (data) => {  
     const docDefinition = {
         pageSize: 'A4',
         pageMargins: [20, 10, 20, 20],
@@ -56,7 +56,7 @@ export const RelatorioVenda = (data) => {
                         ...(data || []).map((item) => [
                             { text: item.numero_orcamento, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.cliente, fontSize: 10 }, // Adjust the font size if needed
-                            { text: item.data_orcamento, fontSize: 10 }, // Adjust the font size if needed
+                            { text: item.data_orcamento || item.data_venda, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.situacao, fontSize: 10 }, // Adjust the font size if needed
                             //field formatted as currency brl 
                             { text: item.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 10 }, // Adjust the font size if needed         

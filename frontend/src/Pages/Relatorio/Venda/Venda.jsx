@@ -1,79 +1,133 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useHistory hook
+import React, { useEffect, useState } from 'react'
+import PageTitle from '../../../Layout/AppMain/PageTitle'
+import { Button, Card, CardBody, Col, Form, Input, Label, Row } from 'reactstrap'
+import { CustomSpinner } from '../../../components/CustomSpinner'
+import { useReport } from '../../../context/ReportContext/useReport'
+import { useRegister } from '../../../context/RegisterContext/useRegister'
+import { useOrder } from '../../../context/OrderContext/useOrder'
+import { RelatorioVenda } from '../../../reports/Venda/RelatorioVenda'
 
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquarePollVertical } from '@fortawesome/free-solid-svg-icons';
+export const Venda = () => {
+    const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
+    const id = JSON.parse(idEmpresa).id_empresa
+    const { getReportSales, loading } = useReport()
+    const { listAllCustomers } = useRegister()
+    const { listSalesStatus } = useOrder()
+    const [customers, setCustomers] = useState([])
+    const [situacaoVenda, setSituacaoVenda] = useState([])
 
-export const RelatorioVendaJSX = () => {
-    const navigate = useNavigate()
+    const loadCustomers = async () => {
+        //const id_empresa = user?.id_empresa
+        const response = await listAllCustomers(id)
+        const responseStatus = await listSalesStatus()
+        setCustomers(response)
+        setSituacaoVenda(responseStatus)
 
-    // Function to handle the click event and navigate to the filter screen
-    const handleCardClick = (reportName) => {
-        navigate(`/relatorio/vendas/${reportName}`);
+    }
 
-    };
+    useEffect(() => {
+        loadCustomers()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
-    const CardComponent = ({ title, description, onClick, background }) => {
-        return (
-            <Card className="main-card mb-3" style={{ cursor: 'pointer', backgroundColor: background }} onClick={onClick}>
-                <CardBody>
-                    <h3>{title}</h3>
-                    <span>{description}</span>
-                </CardBody>
-            </Card>
-        )
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        const { data_inicial, data_final, cliente, situacao } = e.target
+        const data = {
+            "report": {
+                data_inicial: data_inicial.value,
+                data_final: data_final.value,
+                cliente: cliente.value,
+                situacao: situacao.value,
+                id_empresa: id
+            }
+        }
+        const response = await getReportSales(data)
+
+        if (response) {
+            //Adicionar data_inicial e data_final no relatório
+            response.data_inicial = new Date(data_inicial?.value).toLocaleDateString('pt-BR')
+            response.data_final = new Date(data_final?.value).toLocaleDateString('pt-BR')
+
+            RelatorioVenda(response)
+
+        }
     }
 
     return (
         <>
-            <Card>
-                <CardHeader className="card-header-tab z-index-6" style={{ backgroundColor: '#f8f9fa', cursor: 'default' }}>
-                    <h4>
-                        <FontAwesomeIcon icon={faSquarePollVertical} />
-                        <span className="ml-2">Relatórios de Cadastros</span>
-                    </h4>
-                </CardHeader>
+            <PageTitle
+                heading={'Relatório de Venda'}
+                subheading="Relatório de Venda "
+                icon="pe-7s-note2 icon-gradient bg-amy-crisp"
+            />
+            <Card className="main-card mb-3">
+                {loading && <CustomSpinner />}
                 <CardBody>
-                    <Row className="mb-3">
-                        <Col md={12} lg={6} xl={6}>
-                            <CardComponent
-                                title="ORÇAMENTOS"
-                                description="Gerar relatório de orçamentos cadastrados"
-                                onClick={() => handleCardClick('orcamentos')}
-                                background="lightblue"
-                            />
+                    <Form onSubmit={handleSubmit}>
+                        <Row className="mb-3">
+                            <Col sm={12} md={6} lg={6} xl={6}>
+                                <Label htmlFor="data_inicial">Período</Label>
+                                <Input
+                                    type="date"
+                                    name="data_inicial"
+                                    id="data_inicial"
+                                />
+                            </Col>
 
-                        </Col>
-                        <Col md={12} lg={6} xl={6}>
-                            <CardComponent
-                                title="VENDAS"
-                                description="Gerar relatório de vendas cadastradas"
-                                onClick={() => handleCardClick('vendas')}
-                                background="lightgreen"
-                            />
-                        </Col>
-                    </Row>
-                    <Row className="mb-3">
-                        <Col md={12} lg={6} xl={6}>
-                            <CardComponent
-                                title="PRODUTOS VENDIDOS"
-                                description="Gerar relatório de produtos vendidos"
-                                onClick={() => handleCardClick('produtos-vendidos')}
-                                background="lightyellow"
-                            />
-                        </Col>
-                        <Col md={12} lg={6} xl={6}>
-                            <CardComponent
-                                title="CLIENTES QUE MAIS COMPRARAM"
-                                description="Gerar relatório de clientes que mais compraram"
-                                onClick={() => handleCardClick('clientes-que-mais-compraram')}
-                                background="lightpink"
-                            />
-                        </Col>
-                    </Row>
+                            <Col sm={12} md={6} lg={6} xl={6}>
+                                <Label htmlFor="data_final">Até</Label>
+                                <Input
+                                    type="date"
+                                    name="data_final"
+                                    id="data_final"
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col sm={12} md={4} lg={4} xl={4}>
+                                <Label>Cliente</Label>
+                                <Input
+                                    type="select"
+                                    name="cliente"
+                                    id="cliente"
+
+                                >
+                                    <option value="">Todos</option>
+                                    {customers?.map((customer) => (
+                                        <option key={customer.id_cliente} value={customer.id_cliente}>
+                                            {customer.nome}
+                                        </option>
+                                    ))}
+                                </Input>
+                            </Col>
+                            <Col sm={12} md={4} lg={4} xl={4}>
+                                <Label>Situação</Label>
+                                <Input
+                                    type="select"
+                                    name="situacao"
+                                    id="situacao"
+
+                                >
+                                    <option value="">Todas</option>
+                                    {situacaoVenda.map((situacao) => (
+                                        <option key={situacao.id_situacao_venda} value={situacao.id_situacao_venda}>
+                                            {situacao.descricao}
+                                        </option>
+                                    ))}
+                                </Input>
+                            </Col>
+                        </Row>
+                        <Button
+                            type="submit"
+                            color="primary"
+                            className="mt-2"
+                        >
+                            Gerar Relatório
+                        </Button>
+                    </Form>
                 </CardBody>
             </Card>
         </>
-    );
-};
+    )
+}
