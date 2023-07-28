@@ -102,13 +102,32 @@ class CreateUserService {
     }
     async delete(id: number) {
         try {
-            const user = await prismaClient.user.delete({
+            // Check if user have any sale or budget linked
+            const user = await prismaClient.user.findUnique({
+                where: {
+                    id: id,
+                },
+                include: {
+                    orcamento: true,
+                    venda: true,
+                },
+            });
+
+            if (user?.orcamento.length !== 0 || user?.venda.length !== 0) {
+                throw new Error("User have sales or budgets linked");
+            }
+
+            // Delete user
+            const userDeleted = await prismaClient.user.delete({
                 where: {
                     id: id,
                 },
             });
 
-            return user;
+
+           
+
+            return userDeleted;
         } catch (error: any) {
             throw new Error(error.message);
         }

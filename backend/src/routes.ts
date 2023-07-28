@@ -15,6 +15,7 @@ import { CreateBudgetController } from "./controllers/Budget/CreateBudgetControl
 import { CreateDashboardController } from "./controllers/Dashboard/CreateDashboardController";
 
 import { upload } from './config/multer'
+import { CreateReportController } from "./controllers/Report/CreateReportController";
 
 const router = Router();
 
@@ -115,6 +116,15 @@ router.get("/dashboard/inventory/:id", dashboardController.getInventoryValue);
 router.get("/dashboard/inventory/movement/:id", dashboardController.getMovementInventory);
 router.get("/dashboard/sales/:id", dashboardController.getSalesByMonth);
 router.get("/dashboard/budgets/:id", dashboardController.getBudgetsByMonth);
+
+//Reports routes
+const reportController = new CreateReportController();
+router.post("/report/customer/:id", reportController.getCustomerReport);
+router.post("/report/product/:id", reportController.getProductReport);
+router.post("/report/budget/:id", reportController.getBudgetReport);
+
+
+
 
 
 
