@@ -11081,8 +11081,8 @@ button,
   transition: width 0.2s;
 }
 .app-header__logo .logo-src {
-  height: 23px;
-  width: 97px;
+  height:16px;
+  width: 88px;
   background: url("utils/images/logo-inverse.png");
 }
 

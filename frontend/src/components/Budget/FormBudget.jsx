@@ -12,8 +12,10 @@ import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CustomSpinner } from '../CustomSpinner'
+import CardProdutoTeste from './Cards/CardProdutoTeste'
 
 const FormBudget = ({ url, handleFormSubmit, loading, initialValues, typeForm }) => {
+    //console.log(initialValues)
 
     // const { createOrder, loading } = useOrder()
     const navigate = useNavigate()
@@ -59,6 +61,7 @@ const FormBudget = ({ url, handleFormSubmit, loading, initialValues, typeForm })
             <CardDadosGerais data={data} handleInputChange={handleInputChange} typeForm={typeForm} />
 
             <CardProduto data={data} handleInputChange={handleInputChange} />
+            {/*<CardProdutoTeste data={data} handleInputChange={handleInputChange} />*/}
 
             <CardTransporte data={data} handleInputChange={handleInputChange} />
 

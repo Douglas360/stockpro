@@ -3,8 +3,12 @@ import { ICustomer } from "../../../types/CustomerTypes";
 
 class CreateCustomerService {
     async create(customerData: ICustomer) {
+
         try {
             // Validate user input
+            if (!customerData.id_empresa) {
+                throw new Error("Company id is required");
+            }
             // Check if email is valid
             if (customerData.email) {
                 const emailRegex = /\S+@\S+\.\S+/;
@@ -100,7 +104,8 @@ class CreateCustomerService {
 
             return customerWithDetails;
         } catch (error: any) {
-            throw error;
+            console.log(error.message)
+            throw new Error(error.message);
         }
     }
     async get(customerId: number) {
@@ -195,7 +200,8 @@ class CreateCustomerService {
 
             return { message: "Customer deleted successfully" };
         } catch (error: any) {
-            throw error;
+            console.log(error.message)
+            throw new Error(error.message);
         }
     }
 }

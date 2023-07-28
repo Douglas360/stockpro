@@ -20,6 +20,8 @@ export const AppRouter = () => {
     return isAuthenticated ? children : <Navigate to="/" replace />
   }
 
+
+
   return (
     <Router>
       <CombinedProvider>
@@ -33,7 +35,7 @@ export const AppRouter = () => {
           <Route path="/nota-fiscal/*" element={<Private><NotaFiscal /></Private>} />
           <Route path="/estoque/*" element={<Private><Estoque /></Private>} />
           <Route path="/configuracao/*" element={<Private><Configuracao /></Private>} />
-          <Route path="/relatorio/*" element= {<Private><Relatorio /></Private>} />
+          <Route path="/relatorio/*" element={<Private><Relatorio /></Private>} />
 
         </Routes>
       </CombinedProvider>

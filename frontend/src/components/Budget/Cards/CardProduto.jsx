@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { faBox, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
 import { useProduct } from '../../../context/ProductContext/useProduct'
-
 
 const CardProduto = ({ data, handleInputChange }) => {
 
@@ -18,19 +17,34 @@ const CardProduto = ({ data, handleInputChange }) => {
   const loadProducts = useCallback(async () => {
     const response = await listProducts(id);
     setProducts(response);
+    console.log('chamou')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Include 'id' and 'listProducts' in the dependency array
-
+  }, [id]);
 
   useEffect(() => {
     loadProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadProducts]); // Add loadProducts to the dependency array
+  }, [loadProducts]); // Add loadProducts to the dependency <array></array>
+
 
   /*useEffect(() => {
-    setProdutos(
-      data?.produtos || [{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }]);
+    loadProducts()
+    if (data?.produtos?.length) {
+      console.log("CHamou no If")
+      setProdutos(
+        data?.produtos.map((produto, index) => ({
+          numero_item: index + 1,
+          produto: produto.produto,
+          quantidade: produto.quantidade,
+          tipo: produto.tipo,
+          valor: produto.valor_unitario,
+          desconto: produto.desconto,
+          subtotal: produto?.valor_total,
+        }))
+      );     
 
+    }
+    console.log("chamou fora do if")
   }, [data?.produtos]);*/
 
   const tipoVenda = [
@@ -41,34 +55,11 @@ const CardProduto = ({ data, handleInputChange }) => {
     { id: 5, tipo: 'Amostra' },
     { id: 6, tipo: 'Outros' }
   ]
-
   const handleAddField = () => {
     setProdutos(prevProdutos => [...prevProdutos, { numero_item: prevProdutos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }]);
   };
-
-  /*const handleFieldChange = (index, field, value) => {
-    const updatedFields = [...produtos]
-    updatedFields[index][field] = value
-    setProdutos(updatedFields)
-
-    // Update the data object
-    const updatedData = { ...data }
-    updatedData.produtos = updatedFields
-    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-
-    if (field === 'produto') {
-      const selectedProduct = products.find((product) => product.id_produto === parseInt(value, 10));
-      if (selectedProduct) {
-        updatedFields[index].valor = selectedProduct.valor_venda
-        updatedFields[index].quantidade = '1' // Set the quantity as 1
-        updatedFields[index].subtotal = selectedProduct.valor_venda // Set the subtotal
-        updatedFields[index].tipo = '1' // Set the type
-        setStockQuantities({ ...stockQuantities, [index]: selectedProduct.estoque[0].quantidade }); // Set the stock quantity
-      }
-    }
-  }*/
-
   const handleFieldChange = (index, field, value) => {
+
     setProdutos(prevProdutos => {
       const updatedFields = [...prevProdutos];
       updatedFields[index][field] = value;
@@ -83,7 +74,6 @@ const CardProduto = ({ data, handleInputChange }) => {
           setStockQuantities(prevStockQuantities => ({ ...prevStockQuantities, [index]: selectedProduct.estoque[0]?.quantidade || 0 })); // Set the stock quantity
         }
       }
-
       // Update the data object
       const updatedData = { ...data };
       updatedData.produtos = updatedFields;
@@ -92,12 +82,6 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedFields;
     });
   };
-
-  /*const handleRemoveField = (index) => {
-    const updatedFields = [...produtos]
-    updatedFields.splice(index, 1)
-    setProdutos(updatedFields)
-  }*/
   const handleRemoveField = (index) => {
     setProdutos(prevProdutos => {
       const updatedFields = [...prevProdutos];
@@ -105,22 +89,11 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedFields;
     });
   };
-
-  /*const handleQuantityChange = (index, value) => {
-    const updatedFields = [...produtos]
-    updatedFields[index].quantidade = value
-    updatedFields[index].subtotal = value * updatedFields[index].valor
-    setProdutos(updatedFields)
-
-    // Update the data object
-    const updatedData = { ...data }
-    updatedData.produtos = updatedFields
-    handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-  }*/
   const handleQuantityChange = (index, value) => {
     setProdutos(prevProdutos => {
       const updatedFields = [...prevProdutos];
       updatedFields[index].quantidade = value;
+      console.log(updatedFields)
       updatedFields[index].subtotal = value * updatedFields[index].valor;
 
       // Update the data object
@@ -132,27 +105,7 @@ const CardProduto = ({ data, handleInputChange }) => {
     });
   };
 
-  /* const handleDiscountChange = (index, value) => {
-     const updatedFields = [...produtos]
-     updatedFields[index].desconto = value
- 
- 
-     if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
-       // Apply discount by subtracting the value directly
-       updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value
-     } else if (typeDiscount[index] === '%') {
-       // Apply discount as a percentage of the total
-       const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100
-       updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount
-     }
- 
-     setProdutos(updatedFields)
- 
-     // Update the data object
-     const updatedData = { ...data }
-     updatedData.produtos = updatedFields
-     handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-   }*/
+
   const handleDiscountChange = (index, value) => {
     setProdutos(prevProdutos => {
       const updatedFields = [...prevProdutos];
@@ -175,18 +128,6 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedFields;
     });
   };
-
-  /*  const handleValueChange = (index, value) => {
-      const updatedFields = [...produtos]
-      updatedFields[index].valor = value
-      updatedFields[index].subtotal = updatedFields[index].quantidade * value - updatedFields[index].desconto
-      setProdutos(updatedFields)
-  
-      // Update the data object
-      const updatedData = { ...data }
-      updatedData.produtos = updatedFields
-      handleInputChange({ target: { name: 'produtos', value: updatedFields } })
-    }*/
   const handleValueChange = (index, value) => {
     setProdutos(prevProdutos => {
       const updatedFields = [...prevProdutos];
@@ -201,12 +142,6 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedFields;
     });
   };
-  /*const handleDiscountTypeChange = (index, value) => {
-    const updatedTypes = { ...typeDiscount }
-    updatedTypes[index] = value || 'R$'
-    setTypeDiscount(updatedTypes)
-    handleDiscountChange(index, produtos[index].desconto)
-  }*/
   const handleDiscountTypeChange = (index, value) => {
     setTypeDiscount(prevTypeDiscount => {
       const updatedTypes = { ...prevTypeDiscount };
@@ -215,7 +150,6 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedTypes;
     });
   };
-
   // Function to change the background color of the tooltip based on the stock quantity of the product selected
   const getTooltipColor = (stockQuantity) => {
     if (stockQuantity <= 1) {
@@ -258,17 +192,17 @@ const CardProduto = ({ data, handleInputChange }) => {
                     required
                     type='select'
                     name='produto'
-                    //value={produto.produto}                 
+                    value={produto.produto.nome}
                     onChange={(e) => handleFieldChange(index, 'produto', e.target.value)}
                   >
-
-                    <option value=''>Selecione</option>
+                    <option key={produto.produto.id_produto} value={produto.produto.id_produto}>{produto.produto.nome}</option>
+                    {products?.map((product, innerIndex) => (
+                      <option key={product.id_produto} value={product.id_produto}>{product.nome}</option>
+                    ))}
 
                     {products?.map((product, innerIndex) => (
-
                       // Check if the product has in stock quantity and if it is greater than 0 to show it in the list of products to select from the dropdown list
                       <option key={product.id_produto} value={product.id_produto}>
-
                         {product.nome}
                       </option>
                     ))}
@@ -344,9 +278,9 @@ const CardProduto = ({ data, handleInputChange }) => {
                 </td>
                 <td>
                   <Input
-                    type='number'
+                    type='text'
                     name='subtotal'
-                    value={parseFloat(produto?.subtotal).toFixed(2)}
+                    value={produto?.subtotal}
                     onChange={(e) => handleFieldChange(index, 'subtotal', e.target.value)}
                   />
                 </td>

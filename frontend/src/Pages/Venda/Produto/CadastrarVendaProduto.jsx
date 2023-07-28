@@ -34,8 +34,10 @@ const CadastrarVendaProduto = () => {
     valorFrete: order?.valor_frete,
     id_transportadora: order?.id_transportadora,
     valorProdutos: order?.valor_produto,
+    valorTotal: order?.valor_total,
+    observacaoOrcamento: order?.observacao,
+    observacaoInternaOrcamento: order?.observacao_interna,
   }
-
 
   const handleSubmit = async (data) => {
     if (isEditMode) {

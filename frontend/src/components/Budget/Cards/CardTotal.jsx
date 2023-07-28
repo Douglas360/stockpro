@@ -5,7 +5,7 @@ import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap';
 import { getFormatterInputPrice } from '../../../functions/getFormatterInputPrice';
 
 const CardTotal = ({ data, handleInputChange }) => {
-    console.log(data)
+    //console.log(data)
     const [valorTotalComDesconto, setValorTotalComDesconto] = useState(data.valorTotal);
     const valorProdutos = data.produtos?.map((item) => item.subtotal);
     const valorProdutosTotal = valorProdutos?.reduce((acc, item) => acc + item, 0);

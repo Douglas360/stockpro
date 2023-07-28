@@ -19,9 +19,7 @@ export const AuthProvider = ({ children }) => {
         if (storedUser && token) {
             setUser(JSON.parse(storedUser));
             api.defaults.headers['Authorization'] = `Bearer ${token}`;
-          
-        } else {
-            console.log("first")
+
         }
     }, []);
 
@@ -81,7 +79,7 @@ export const AuthProvider = ({ children }) => {
                 isAuthenticated,
                 signIn,
                 signOut,
-               
+
             }}
         >
             {children}

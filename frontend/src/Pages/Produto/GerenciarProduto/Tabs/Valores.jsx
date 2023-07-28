@@ -90,12 +90,12 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     if (typeof valorCusto === 'string') {
       valorCusto = valorCusto.replace(',', '.')
     }
-    //let despesasAcessorias = data.despesasAcessorias?.replace(',', '.');
+   
     let despesasAcessorias = data.despesasAcessorias
     if (typeof despesasAcessorias === 'string') {
       despesasAcessorias = despesasAcessorias.replace(',', '.')
     }
-    //let outrasDespesas = data.outrasDespesas?.replace(',', '.');
+    
     let outrasDespesas = data.outrasDespesas
     if (typeof outrasDespesas === 'string') {
       outrasDespesas = outrasDespesas.replace(',', '.')
@@ -115,12 +115,13 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
   };
 
   const handleCalculateSalePrice = () => {
-    const custoFinal = handleSumPrice();
+    const custoFinal = handleSumPrice();   
     const lucroSug = parseFloat(lucroSugerido?.[0]?.valor);
     const valorVendaSugerido = custoFinal * (1 + lucroSug / 100);
     setValorVendaSugerido(valorVendaSugerido.toFixed(2));
 
     const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);
+    console.log(valorVendaUtil)
 
     data.valorVendaUtilizado = valorVendaUtil.toFixed(2)
 

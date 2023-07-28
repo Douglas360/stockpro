@@ -22,7 +22,7 @@ class CreateCustomerController {
             observacaoCliente,
             enderecos,
             contatos
-        } = req.body;
+        } = req.body;      
 
         const customerData: ICustomer = {
             id_empresa,
