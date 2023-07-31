@@ -33,6 +33,20 @@ class CreateUserService {
                 throw new Error("User with this email already exists");
             }
 
+            // Check if login and empresa linked user already exists
+            const loginAlreadyExists = await prismaClient.user.findFirst({
+                where: {
+                    login: userData.login,
+                    id_empresa: userData.id_empresa,
+                },
+            });
+            if (loginAlreadyExists) {
+                throw new Error("User with this login already exists");
+            }
+
+
+
+
             // Check if empresa exists
             const empresa = await prismaClient.empresa.findUnique({
                 where: { id_empresa: userData.id_empresa },
@@ -71,7 +85,8 @@ class CreateUserService {
 
 
         } catch (error: any) {
-            throw error;
+            console.log(error.message);
+            throw new Error(error.message);
         }
     }
     async getAll(id_company: number) {

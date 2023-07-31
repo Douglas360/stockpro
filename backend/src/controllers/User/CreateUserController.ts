@@ -4,8 +4,7 @@ import { IUser } from "../../types/UserTypes";
 
 class CreateUserController {
     async handle(req: Request, res: Response) {
-        const { nome, login, email, senha, id_empresa } = req.body;
-        console.log(nome, login, email, senha, id_empresa)
+        const { nome, login, email, senha, id_empresa } = req.body;       
 
         const data: IUser = {
             nome,

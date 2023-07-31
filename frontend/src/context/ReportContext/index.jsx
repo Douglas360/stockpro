@@ -47,6 +47,10 @@ export const ReportProvider = ({ children }) => {
     const getReportSales = async (data) => {
         return await handleRequest(api.post(`/report/sale/${data.report?.id_empresa}`, data));
     };
+    //function to get the report about the products sold
+    const getReportProductsSold = async (data) => {
+        return await handleRequest(api.post(`/report/sale/product/${data.report?.id_empresa}`, data));
+    };
 
 
     return (

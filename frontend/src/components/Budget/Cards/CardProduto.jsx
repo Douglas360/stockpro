@@ -3,28 +3,33 @@ import { faBox, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
 import { useProduct } from '../../../context/ProductContext/useProduct'
+import { useAuth } from '../../../context/AuthContext/useAuth'
 
 const CardProduto = ({ data, handleInputChange }) => {
 
   const { listProducts } = useProduct()
+  const { user } = useAuth()
   const [products, setProducts] = useState([])
   const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }])
   const [stockQuantities, setStockQuantities] = useState({});
   const [typeDiscount, setTypeDiscount] = useState({}); // State to store the discount type (R$ or %) for each product
-  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
-  const id = JSON.parse(idEmpresa).id_empresa
+  //const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
+  //const id = JSON.parse(idEmpresa).id_empresa
+  const idCompany = user?.id_empresa
 
   const loadProducts = useCallback(async () => {
-    const response = await listProducts(id);
+    const response = await listProducts(idCompany);
     setProducts(response);
     console.log('chamou')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [idCompany]);
 
   useEffect(() => {
-    loadProducts();
+    if (idCompany) {
+      loadProducts();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadProducts]); // Add loadProducts to the dependency <array></array>
+  }, [idCompany]); // Add loadProducts to the dependency <array></array>
 
 
   /*useEffect(() => {
@@ -200,12 +205,12 @@ const CardProduto = ({ data, handleInputChange }) => {
                       <option key={product.id_produto} value={product.id_produto}>{product.nome}</option>
                     ))}
 
-                    {products?.map((product, innerIndex) => (
+                    {/*products?.map((product, innerIndex) => (
                       // Check if the product has in stock quantity and if it is greater than 0 to show it in the list of products to select from the dropdown list
                       <option key={product.id_produto} value={product.id_produto}>
                         {product.nome}
                       </option>
-                    ))}
+                    ))*/}
                   </Input>
                 </td>
                 <td>

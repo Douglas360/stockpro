@@ -123,6 +123,7 @@ router.post("/report/customer/:id", reportController.getCustomerReport);
 router.post("/report/product/:id", reportController.getProductReport);
 router.post("/report/budget/:id", reportController.getBudgetReport);
 router.post("/report/sale/:id", reportController.getSaleReport);
+router.post("/report/sale/product/:id", reportController.getProductsSalesReport);
 
 
 

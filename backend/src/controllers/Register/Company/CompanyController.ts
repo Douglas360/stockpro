@@ -28,8 +28,7 @@ class CompanyController {
         const { id } = req.params;
         const { companyData } = req.body;
         const { file } = req;
-        console.log(req)
-
+      
         //delete avatar in companyData
         delete companyData.file
 

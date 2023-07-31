@@ -10,6 +10,9 @@ import { Orcamento } from './Venda/Orcamento';
 import { RelatorioVendaJSX } from './Venda/VendasJSX';
 import { Venda } from './Venda/Venda';
 
+import {ClientesMaisCompra} from './Venda/ClientesMaisCompra';
+import { ProdutosVendidos } from './Venda/ProdutosVendidos';
+
 const Relatorio = () => {
     const navigate = useNavigate();
 
@@ -47,13 +50,21 @@ const Relatorio = () => {
                                 path="/vendas"
                                 element={<RelatorioVendaJSX />}
                             />
-                            <Route  
+                            <Route
                                 path="/vendas/orcamentos"
-                                element={<Orcamento/>}
+                                element={<Orcamento />}
                             />
-                            <Route 
+                            <Route
                                 path='/vendas/vendas'
-                                element={<Venda/>}
+                                element={<Venda />}
+                            />
+                            <Route
+                                path='/vendas/produtos-vendidos'
+                                element={<ProdutosVendidos />}
+                            />
+                            <Route
+                                path='/vendas/clientes-que-mais-compraram'
+                                element={<ClientesMaisCompra />}
                             />
 
 

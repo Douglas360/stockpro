@@ -251,6 +251,94 @@ class CreateReportService {
             throw new Error(error.message);
         }
     }
+    //Generate report of all products sales by month
+    async getProductsSalesReport(id_company: number, report: any): Promise<any> {
+        try {
+            const { data_inicial = null, data_final = null, produto = null, cliente = null, situacao = null } = report || {};
+
+            const filters: any = {
+                id_empresa: id_company,
+            };
+            // Add optional filters to the query based on user input
+            if (data_inicial && data_final) {
+                filters.data_venda = {
+                    gte: new Date(data_inicial),
+                    lte: new Date(data_final),
+                };
+            }
+            if (produto) {
+                filters.itens = {
+                    some: {
+                        id_produto: {
+                            in: Number(produto),
+                        },
+                    },
+                };
+            }
+            if (cliente) {
+                filters.id_cliente = {
+                    in: Number(cliente),
+                };
+            }
+            if (situacao) {
+                filters.id_situacao_venda = {
+                    in: Number(situacao),
+                };
+            }
+
+            const sales = await prismaClient.venda.findMany({
+                where: filters,
+                include: {
+                    empresa: true,
+                    cliente: true,
+                    situacao_venda: true,
+                    itens: {
+                        include: {
+                            produto: true,
+                        }
+                    }
+                },
+                orderBy: {
+                    data_venda: "asc",
+                },
+            });
+
+            if (sales.length === 0) {
+                throw new Error("Nenhuma venda encontrada")
+            }
+
+            const productsMap: { [key: number]: { id_produto: number; nome_produto: string; quantidade: number; valor_total: number } } = {};
+
+            sales.forEach((sale) => {
+                sale.itens.forEach((item) => {
+                    const { id_produto, produto, quantidade, valor_total } = item;
+                    if (id_produto && produto) {
+                        if (productsMap[id_produto]) {
+                            productsMap[id_produto].quantidade += quantidade;
+                            productsMap[id_produto].valor_total += valor_total;
+                        } else {
+                            productsMap[id_produto] = {
+                                id_produto,
+                                nome_produto: produto.nome || '',
+                                quantidade,
+                                valor_total,
+                            };
+                        }
+                    }
+                });
+            });
+
+            const productsSales = Object.values(productsMap);
+
+            // Restante do código...
+
+            return productsSales;
+
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
 
 
 

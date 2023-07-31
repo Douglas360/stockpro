@@ -66,7 +66,7 @@ class CreateDashboardService {
                     }
                 }
             });
-
+           
             const movementInventory2 = movementInventory.map((product) => {
                 return {
                     id: product.id_produto,

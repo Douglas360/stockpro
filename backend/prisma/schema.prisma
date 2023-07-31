@@ -14,7 +14,7 @@ model User {
   id           Int       @id @default(autoincrement())
   nome         String?
   email        String    @unique
-  login        String    @unique
+  login        String    
   senha        String
   ativo        Boolean   @default(true)
   ultimo_login DateTime?

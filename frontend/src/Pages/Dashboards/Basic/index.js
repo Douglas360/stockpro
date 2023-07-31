@@ -17,6 +17,7 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 import { useDashboard } from '../../../context/DashboardContext/useDashboard';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
 import { CustomSpinner } from '../../../components/CustomSpinner';
+import { useAuth } from '../../../context/AuthContext/useAuth';
 
 const InventoryTable = ({ data }) => {
     return (
@@ -31,7 +32,7 @@ const InventoryTable = ({ data }) => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((product, index) => {
+                {data?.map((product, index) => {
                     const minThreshold = product.quantidade_minima; // Limiar mínimo para acionar a cor amarela
                     const percentage = (product.quantidade / product.quantidade_maxima) * 100;
                     let color;
@@ -80,7 +81,7 @@ const InventoryMovementTable = ({ data }) => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((product, index) => {
+                {data?.map((product, index) => {
                     return (
                         <tr key={index}
                             className={`text-center ${product.tipo_movimentacao === 'Entrada' ? 'text-success' : 'text-danger'}`}
@@ -110,7 +111,7 @@ const SalesTable = ({ data }) => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((sale, index) => {
+                {data?.map((sale, index) => {
                     return (
                         <tr key={index} className='text-center' style={{ fontSize: 13 }}>
                             <td>{sale.id}</td>
@@ -138,22 +139,29 @@ const AnalyticsDashboard1 = () => {
     const [budget, setBudget] = useState([]);
     const [activeTab1, setActiveTab1] = useState('11');
     const [activeTab2, setActiveTab2] = useState('12');
+    const { user } = useAuth();
+    const idCompany = user?.id_empresa;
+
+    const fetchData = async () => {
+        const response = await listInventory(idCompany);
+        const responseMovement = await listInventoryMovement(idCompany);
+        const responseSales = await listSales(idCompany);
+        const responseBudget = await listBudget(idCompany);
+
+        setInventory(response);
+        setInventoryMovement(responseMovement);
+        setSales(responseSales);
+        setBudget(responseBudget);
+
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await listInventory(1);
-            const responseMovement = await listInventoryMovement(1);
-            const responseSales = await listSales(1);
-            const responseBudget = await listBudget(1);
+        if (idCompany) {
+            fetchData();
+        }
 
-            setInventory(response);
-            setInventoryMovement(responseMovement);
-            setSales(responseSales);
-            setBudget(responseBudget);
 
-        };
-        fetchData();
-    }, []);
+    }, [idCompany]);
 
     const toggle1 = (tab) => {
         if (activeTab1 !== tab) {

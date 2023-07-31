@@ -9,9 +9,12 @@ interface FileObject {
 
 class CompanyService {
     async create(empresaData: ICompany) {
+      
         try {
             // Validate user input
             //Check if email is valid
+            if(!empresaData.email) throw new Error("Email is required")
+
             const emailRegex = /\S+@\S+\.\S+/;
             if (!emailRegex.test(empresaData.email)) {
                 throw new Error("Invalid email format");
@@ -46,7 +49,7 @@ class CompanyService {
 
             return company;
         } catch (error: any) {
-            throw error
+            throw new Error(error.message)
         }
 
     }
