@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, Card, CardBody, Col, Form, FormFeedback, FormGroup, Input, InputGroup, InputGroupText, Label, Row, Spinner, UncontrolledAlert, UncontrolledTooltip } from 'reactstrap'
 import { faIdCard, faMapMarkerAlt, faPenToSquare, faPhone, faPlusCircle, faSave, faSearch, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -27,7 +27,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
             {
                 tipo_endereco: '',
                 cep: '',
-                rua: ':)',
+                rua: '',
                 numero: '',
                 complemento: '',
                 bairro: '',
@@ -41,7 +41,12 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
     const [contatosCliente, setContatosCliente] = useState(initialValues?.contatos || [
         { tipo_contato: '', nome: '', observacao: '' }
     ])
-
+    useEffect(() => {
+        if (initialValues) {
+            setEnderecosCliente(initialValues?.enderecos?.map((endereco) => ({ ...endereco })))
+            setContatosCliente(initialValues?.contatos?.map((contato) => ({ ...contato })))
+        }
+    }, [initialValues])
 
 
     const navigate = useNavigate()
@@ -318,12 +323,13 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                             </FormFeedback>
                         </Col>
                         <Col md='3'>
-                            <Label for='situacaoCliente' style={{ fontWeight: 'bold' }}>Situação do {title} </Label>
-                            <Input type='select' name='situacaoCliente' id='situacaoCliente'>
-                                <option value='0'>Selecione</option>
-                                <option value='1' selected>Ativo</option>
-                                <option value='2'>Inativo</option>
+                            <Label for='situacaoCliente' style={{ fontWeight: 'bold' }}>Situação do {title} </Label><span className='text-danger'>*</span>
+                            <Input type='select' name='situacaoCliente' id='situacaoCliente' required>
+                                <option value={true}>Ativo</option>
+                                <option value={false}>Inativo</option>
                             </Input>
+
+
                         </Col>
                         <Col md='3'>
                             <Label for='nomeCliente' style={{ fontWeight: 'bold' }}>Nome {tipoCliente === 'Pessoa Juridica' ? 'fantasia' : ''} </Label><span className='text-danger'>*</span>

@@ -59,7 +59,8 @@ class CreateCustomerController {
     async update(req: Request, res: Response) {
         const { customerData } = req.body;
         const { id } = req.params;
-       
+        
+        customerData.ativo = customerData.ativo === 'true' ? true : false;
 
         const createCustomerService = new CreateCustomerService();
         const customer = await createCustomerService.update(Number(id), customerData);

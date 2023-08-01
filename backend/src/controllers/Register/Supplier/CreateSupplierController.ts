@@ -21,8 +21,10 @@ class CreateSupplierController {
             inscricaoSuframaCliente,
             observacaoCliente,
             enderecos,
-            contatos
+            contatos,
+            //situacaoCliente
         } = req.body;
+        //console.log(situacaoCliente)
 
         const supplierData: ISupplier = {
             id_empresa,
@@ -41,7 +43,8 @@ class CreateSupplierController {
             telefone: telefoneCliente,
             observacao: observacaoCliente,
             endereco: enderecos,
-            contato: contatos
+            contato: contatos,
+            //ativo: situacaoCliente === '1' ? true : false
 
         };
 
@@ -60,14 +63,14 @@ class CreateSupplierController {
     async update(req: Request, res: Response) {
         //By Id in search params of request
         const { id } = req.params;
-        const {supplierData} = req.body;
+        const { supplierData } = req.body;
+
+        supplierData.ativo = supplierData.ativo === 'true' ? true : false;
 
         const createSupplierService = new CreateSupplierService();
         const supplier = await createSupplierService.update(Number(id), supplierData);
         return res.json(supplier);
     }
-       
-
     async getAll(req: Request, res: Response) {
         //By Id in search params of request
         const { id } = req.query;

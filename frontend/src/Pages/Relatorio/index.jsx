@@ -12,13 +12,10 @@ import { Venda } from './Venda/Venda';
 
 import {ClientesMaisCompra} from './Venda/ClientesMaisCompra';
 import { ProdutosVendidos } from './Venda/ProdutosVendidos';
+import { Fornecedor } from './Cadastro/Fornecedor';
+import { Transportadora } from './Cadastro/Transportadora';
 
 const Relatorio = () => {
-    const navigate = useNavigate();
-
-    const handleTabSelect = (url) => {
-        navigate(url); // Update the URL with the selected tab URL         
-    };
 
     return (
         <>
@@ -45,6 +42,14 @@ const Relatorio = () => {
                             <Route
                                 path="/cadastros/produtos"
                                 element={<Produto />}
+                            />
+                            <Route 
+                                path="/cadastros/fornecedores"
+                                element={<Fornecedor />}
+                            />
+                            <Route
+                                path="/cadastros/transportadoras"
+                                element={<Transportadora />}
                             />
                             <Route
                                 path="/vendas"

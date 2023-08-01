@@ -26,7 +26,7 @@ const CadastrarTransportadora = () => {
         //if is edit mode, pass id to data
         if (isEditMode) {
             data.id = id
-
+        
             await updateCarrier(data)
         } else {
             await createCarrier(data)

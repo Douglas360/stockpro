@@ -107,8 +107,7 @@ class CreateSupplierService {
                 include: {
                     enderecos: true,
                     contatos: true,
-                },
-               
+                },               
             });
 
             if (!supplier) {
@@ -121,6 +120,7 @@ class CreateSupplierService {
         }
     }
     async update(supplierId: number, supplierData: ISupplier) {
+       
         try {
             const existingSupplier = await prismaClient.fornecedor.findUnique({
                 where: { id_fornecedor: supplierId },

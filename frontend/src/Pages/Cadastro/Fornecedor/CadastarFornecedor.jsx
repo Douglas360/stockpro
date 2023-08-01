@@ -15,7 +15,7 @@ const CadastrarFornecedor = () => {
         if (isEditMode) {
             const loadSupplier = async () => {
                 const response = await getSupplierById(id)
-                console.log(response)
+                //console.log(response)
                 setSupplier(response)
             }
             loadSupplier()

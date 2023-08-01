@@ -31,7 +31,7 @@ class CreateReportController {
         } else if (report.ativo === 'false') {
             report.ativo = false;
         }
-        console.log(report)
+
         const reportCreated = await createReportService.getProductReport(Number(id), report);
 
         return res.json(reportCreated);
@@ -63,6 +63,40 @@ class CreateReportController {
         const createReportService = new CreateReportService();
 
         const reportCreated = await createReportService.getProductsSalesReport(Number(id), report);
+
+        return res.json(reportCreated);
+    }
+    async getSupplierReport(req: Request, res: Response) {
+        const { id } = req.params;
+        const { report } = req.body;
+
+        const createReportService = new CreateReportService();
+
+        // ativo string to boolean conversion
+        if (report.ativo === 'true') {
+            report.ativo = true;
+        } else if (report.ativo === 'false') {
+            report.ativo = false;
+        }
+
+        const reportCreated = await createReportService.getSupplierReport(Number(id), report);
+
+        return res.json(reportCreated);
+    }
+    async getCarrierReport(req: Request, res: Response) {
+        const { id } = req.params;
+        const { report } = req.body;
+
+        const createReportService = new CreateReportService();
+
+        // ativo string to boolean conversion
+        if (report.ativo === 'true') {
+            report.ativo = true;
+        } else if (report.ativo === 'false') {
+            report.ativo = false;
+        }
+
+        const reportCreated = await createReportService.getCarrierReport(Number(id), report);
 
         return res.json(reportCreated);
     }

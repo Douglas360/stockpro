@@ -251,6 +251,122 @@ class CreateReportService {
             throw new Error(error.message);
         }
     }
+    async getSupplierReport(id_company: number, report: any): Promise<any> {       
+        try {
+            const { ativo = null, nome = null, email = null } = report || {};
+
+            const filters: any = {
+                id_empresa: id_company,
+            };
+
+            // Add optional filters to the query based on user input
+            if (typeof ativo === 'boolean') {
+             
+                filters.ativo = ativo;
+            }
+            if (nome) {
+                filters.nome = {
+                    contains: nome,
+                };
+            }
+            if (email) {
+                filters.email = {
+                    contains: email,
+                };
+            }
+
+            const suppliers = await prismaClient.fornecedor.findMany({
+                where: filters,
+                include: {
+                    empresa: true,
+                },
+            });
+
+            if (suppliers.length === 0) {
+                throw new Error("Nenhum fornecedor encontrado")
+            }
+
+            const suppliersFormatted = suppliers.map((supplier) => {
+                return {
+                    id_fornecedor: supplier.id_fornecedor,
+                    nome: supplier.nome,
+                    tipo_fornecedor: supplier.tipo_fornecedor,
+                    cnpj: supplier.cnpj,
+                    razao_social: supplier.razao_social,
+                    email: supplier.email,
+                    telefone: supplier.telefone,
+                    nomeEmpresa: supplier?.empresa?.nome_fantasia,
+                    cnpjEmpresa: supplier?.empresa?.cnpj,
+                    enderecoEmpresa: `${supplier?.empresa?.logradouro}, ${supplier?.empresa?.numero} - ${supplier?.empresa?.bairro} - ${supplier?.empresa?.cidade} - ${supplier?.empresa?.estado}`,
+                    telefoneEmpresa: supplier?.empresa?.telefone,
+                    emailEmpresa: supplier?.empresa?.email,
+                    logoEmpresa: supplier?.empresa?.avatar,
+                }
+            })
+
+            return suppliersFormatted;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async getCarrierReport(id_company: number, report: any): Promise<any> {
+        try {
+            const { ativo = null, nome = null, email = null } = report || {};
+            
+            const filters: any = {
+                id_empresa: id_company,
+            };
+
+            // Add optional filters to the query based on user input
+            if (typeof ativo === 'boolean') {
+                filters.ativo = ativo;
+            }
+            if (nome) {
+                filters.nome = {
+                    contains: nome,
+                };
+            }
+            if (email) {
+                filters.email = {
+                    contains: email,
+                };
+            }
+
+            const carrier = await prismaClient.transportadora.findMany({
+                where: filters,
+                include: {
+                    empresa: true,
+                },
+            });
+
+            if (carrier.length === 0) {
+                throw new Error("Nenhuma transportadora encontrada")
+            }
+
+            const carrierFormatted = carrier.map((carrer) => {
+                return {
+                    id_transportadora: carrer.id_transportadora,
+                    nome: carrer.nome,
+                    tipo_transportadora: carrer.tipo_transportadora,
+                    cnpj: carrer.cnpj,
+                    razao_social: carrer.razao_social,
+                    email: carrer.email,
+                    telefone: carrer.telefone,
+                    nomeEmpresa: carrer?.empresa?.nome_fantasia,
+                    cnpjEmpresa: carrer?.empresa?.cnpj,
+                    enderecoEmpresa: `${carrer?.empresa?.logradouro}, ${carrer?.empresa?.numero} - ${carrer?.empresa?.bairro} - ${carrer?.empresa?.cidade} - ${carrer?.empresa?.estado}`,
+                    telefoneEmpresa: carrer?.empresa?.telefone,
+                    emailEmpresa: carrer?.empresa?.email,
+                    logoEmpresa: carrer?.empresa?.avatar,
+                }
+            })
+
+            return carrierFormatted;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
     //Generate report of all products sales by month
     async getProductsSalesReport(id_company: number, report: any): Promise<any> {
         try {

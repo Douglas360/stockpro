@@ -24,6 +24,8 @@ class CreateCarrierController {
             contatos
         } = req.body;
 
+
+
         const carrierData: ICarrier = {
             id_empresa,
             nome: nomeCliente,
@@ -59,6 +61,8 @@ class CreateCarrierController {
     async update(req: Request, res: Response) {
         const { carrierData } = req.body;
         const { id } = req.params;
+        
+        carrierData.ativo = carrierData.ativo === 'true' ? true : false;
        
         const createCarrierService = new CreateCarrierService();
         const carrier = await createCarrierService.update(Number(id), carrierData);

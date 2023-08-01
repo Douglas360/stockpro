@@ -51,6 +51,7 @@ export const RegisterProvider = ({ children }) => {
             "customerData": {
                 "nome": data.nomeCliente || data.razaoSocialCliente,
                 "tipo_cliente": data.tipoCliente,
+                "ativo": data.situacaoCliente, // "ativo" ou "inativo
                 "cpf": data.cpfCliente,
                 "cnpj": data.cnpjCliente,
                 "email": data.emailCliente,
@@ -83,10 +84,12 @@ export const RegisterProvider = ({ children }) => {
 
     //function to update a Supplier by id
     const updateSupplier = async (data) => {
+
         const supplierData = {
             "supplierData": {
                 "nome": data.nomeCliente || data.razaoSocialCliente,
                 "tipo_fornecedor": data.tipoCliente,
+                "ativo": data.situacaoCliente, // "ativo" ou "inativo
                 "cpf": data.cpfCliente,
                 "cnpj": data.cnpjCliente,
                 "email": data.emailCliente,
@@ -144,6 +147,7 @@ export const RegisterProvider = ({ children }) => {
             "carrierData": {
                 "nome": data.nomeCliente || data.razaoSocialCliente,
                 "tipo_transportadora": data.tipoCliente,
+                "ativo": data.situacaoCliente, // "ativo" ou "inativo
                 "cpf": data.cpfCliente,
                 "cnpj": data.cnpjCliente,
                 "email": data.emailCliente,
