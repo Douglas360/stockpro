@@ -84,7 +84,8 @@ export const RegisterProvider = ({ children }) => {
 
     //function to update a Supplier by id
     const updateSupplier = async (data) => {
-
+        console.log(data.enderecos)
+     
         const supplierData = {
             "supplierData": {
                 "nome": data.nomeCliente || data.razaoSocialCliente,
@@ -100,12 +101,12 @@ export const RegisterProvider = ({ children }) => {
                 "inscricao_municipal": data.inscricaoMunicipalCliente,
                 "inscricao_suframa": data.inscricaoSuframaCliente,
                 "tipo_contribuinte": data.tipoContribuinteCliente,
+                "observacao": data.observacaoCliente,
+                //"enderecos": data.enderecos,
             }
         }
         return handleRequest(api.put(`/supplier/${data.id}`, supplierData), 'Fornecedor atualizado com sucesso');
     };
-
-
     //function to list all Suppliers by company id in query params
     const listAllSuppliers = async (data) => {
         return handleRequest(api.get(`/list/supplier/id_company?id=${data}`))

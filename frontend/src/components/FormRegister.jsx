@@ -36,6 +36,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
             },
         ]
     );
+    const [tipoContribuinte, setTipoContribuinte] = useState(initialValues?.tipo_contribuinte || '0')
 
 
     const [contatosCliente, setContatosCliente] = useState(initialValues?.contatos || [
@@ -45,6 +46,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
         if (initialValues) {
             setEnderecosCliente(initialValues?.enderecos?.map((endereco) => ({ ...endereco })))
             setContatosCliente(initialValues?.contatos?.map((contato) => ({ ...contato })))
+            setTipoContribuinte(initialValues?.tipo_contribuinte)
         }
     }, [initialValues])
 
@@ -168,13 +170,15 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
         const idEmpresa = user?.id_empresa;
         event.preventDefault();
         const form = new FormData(event.target);
-        const value = Object.fromEntries(form.entries());
+        const value = Object.fromEntries(form.entries());       
 
         value.enderecos = enderecosCliente;
         value.contatos = contatosCliente;
         value.id_empresa = idEmpresa;
-        value.inscricaoEstadualCliente = inscricaoEstadual;
-
+        value.tipo_contribuinte = tipoContribuinte;
+        if (inscricaoEstadual) {
+            value.inscricaoEstadualCliente = inscricaoEstadual;
+        }
         handleFormSubmit(value);
     }, [user, enderecosCliente, contatosCliente, handleFormSubmit]);
 
@@ -269,7 +273,6 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
         ));
     }, [contatosCliente, handleContatoChange, handleRemoveContato]);
 
-
     return (
         <Card className='main-card mb-3'>
             <CardBody>
@@ -328,8 +331,6 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                                 <option value={true}>Ativo</option>
                                 <option value={false}>Inativo</option>
                             </Input>
-
-
                         </Col>
                         <Col md='3'>
                             <Label for='nomeCliente' style={{ fontWeight: 'bold' }}>Nome {tipoCliente === 'Pessoa Juridica' ? 'fantasia' : ''} </Label><span className='text-danger'>*</span>
@@ -430,14 +431,10 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                                     <Label for='inscricaoEstadualCliente' style={{ fontWeight: 'bold' }}>Inscrição estadual </Label> <span className='text-danger'>*</span>
                                     <InputGroup>
                                         <Input required type='text' name='inscricaoEstadualCliente' id='inscricaoEstadualCliente'
-
                                             disabled={checked}
                                             defaultValue={initialValues?.inscricao_estadual || ''}
                                             value={checked ? 'ISENTO' : inscricaoEstadual}
                                             onChange={(e) => { setInscricaoEstadual(e.target.value) }}
-
-
-
                                         />
                                         <InputGroupText addonType="append">
                                             <Input
@@ -455,14 +452,18 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                             <Row>
                                 <Col md='3'>
                                     <Label for='tipoContribuinteCliente' style={{ fontWeight: 'bold' }}>Tipo de contribuinte </Label>
-                                    <Input type='select' name='tipoContribuinteCliente' id='tipoContribuinteCliente'
-                                        defaultValue={initialValues?.tipo_contribuinte}
-                                    //value={checked ? '2' : '0'}
+                                    <Input
+                                        type='select'
+                                        name='tipoContribuinteCliente'
+                                        id='tipoContribuinteCliente'
+                                        value={tipoContribuinte}
+                                        onChange={(e) => { setTipoContribuinte(e.target.value) }}
                                     >
-                                        <option value='0'>Selecione</option>
-                                        <option value='1'>Contribuinte ICMS</option>
-                                        <option value='2'>Contribuinte ISENTO</option>
-                                        <option value='3'>Não contribuinte</option>
+
+                                        <option value={0}>Selecione</option>
+                                        <option value={1}>Contribuinte ICMS</option>
+                                        <option value={2}>Contribuinte ISENTO</option>
+                                        <option value={3}>Não contribuinte</option>
                                     </Input>
                                 </Col>
                                 <Col md='3'>
