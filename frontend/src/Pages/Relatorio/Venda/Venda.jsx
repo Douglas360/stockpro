@@ -46,10 +46,15 @@ export const Venda = () => {
 
         if (response) {
             //Adicionar data_inicial e data_final no relatório
-            response.data_inicial = new Date(data_inicial?.value).toLocaleDateString('pt-BR')
-            response.data_final = new Date(data_final?.value).toLocaleDateString('pt-BR')
+            if (data_inicial.value && data_final.value) {
+                response.salesFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
+                response.salesFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
 
-            RelatorioVenda(response)
+            }
+
+            response.salesFormatted.tipo_relatorio='venda'
+            response.salesFormatted.valor_total = response.valor_total
+            RelatorioVenda(response.salesFormatted)
 
         }
     }

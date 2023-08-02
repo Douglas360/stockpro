@@ -30,42 +30,42 @@ export const OrderProvider = ({ children }) => {
             setLoading(false);
         }
     };
-   /* const handleRequestCreate = async (requestPromise, successMessage) => {
-        try {
-            setLoading(true);
-            const response = await requestPromise;
-
-            if (response.data.status) {
-                const errorMessage =
-                    response.data.mensagem_sefaz || 'Erro desconhecido Sefaz';
-
-                toast.error(errorMessage, {
-                    autoClose: 5000,
-                    hideProgressBar: true,
-                });
-            } else {
-                toast.success(successMessage, {
-                    autoClose: 2000,
-                });
-                navigate(`/nota-fiscal/${response.data.id_nota_fiscal}`);
-            }
-            return response.data;
-        } catch (error) {
-            console.log(error);
-            const errorMessage = error.response?.data.error || 'Erro desconhecido';
-            toast.error(errorMessage, {
-                autoClose: 3000,
-                hideProgressBar: true,
-            });
-        } finally {
-            setLoading(false);
-        }
-    };*/
+    /* const handleRequestCreate = async (requestPromise, successMessage) => {
+         try {
+             setLoading(true);
+             const response = await requestPromise;
+ 
+             if (response.data.status) {
+                 const errorMessage =
+                     response.data.mensagem_sefaz || 'Erro desconhecido Sefaz';
+ 
+                 toast.error(errorMessage, {
+                     autoClose: 5000,
+                     hideProgressBar: true,
+                 });
+             } else {
+                 toast.success(successMessage, {
+                     autoClose: 2000,
+                 });
+                 navigate(`/nota-fiscal/${response.data.id_nota_fiscal}`);
+             }
+             return response.data;
+         } catch (error) {
+             console.log(error);
+             const errorMessage = error.response?.data.error || 'Erro desconhecido';
+             toast.error(errorMessage, {
+                 autoClose: 3000,
+                 hideProgressBar: true,
+             });
+         } finally {
+             setLoading(false);
+         }
+     };*/
 
 
     //function to create a Order
     const createOrder = async (data) => {
-    
+
         const date = new Date(
             new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
         )

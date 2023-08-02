@@ -44,10 +44,14 @@ export const Orcamento = () => {
         }
         const response = await getReportBudgets(data)
         if (response) {
-            //Adicionar data_inicial e data_final no relatório
-            response.budgetFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
-            response.budgetFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
+            if (data_inicial.value && data_final.value) {
+                response.budgetFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
+                response.budgetFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
 
+            }
+
+            response.budgetFormatted.tipo_relatorio='orcamento'
+            response.budgetFormatted.valor_total = response.valor_total
             RelatorioVenda(response.budgetFormatted)
 
         }

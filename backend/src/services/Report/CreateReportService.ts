@@ -160,12 +160,16 @@ class CreateReportService {
                     data_orcamento: "asc",
                 },
             });
-
+    
             if (budgets.length === 0) {
-                throw new Error("Nenhum orçamento encontrado")
+                throw new Error("Nenhum orçamento encontrado");
             }
-
+    
+            let totalValue = 0; // Variable to store the total value of all budgets
+    
             const budgetFormatted = budgets.map((budget) => {
+                totalValue += budget.valor_total; // Calculate the total value
+    
                 return {
                     numero_orcamento: budget.numero_orcamento,
                     cliente: budget?.cliente?.nome,
@@ -178,13 +182,19 @@ class CreateReportService {
                     telefoneEmpresa: budget?.empresa?.telefone,
                     emailEmpresa: budget?.empresa?.email,
                     logoEmpresa: budget?.empresa?.avatar,
-
-
-                }
-            })
-            //return budgets and total rows
-            return { budgetFormatted, total: budgets.length };
-        } catch (error: any) {
+                };
+            });
+    
+            // Format valor_total with two decimal places for each budget
+            budgetFormatted.forEach((budget) => {
+                budget.valor_total = Number(budget.valor_total.toFixed(2));
+            });
+    
+            // Format the totalValue with two decimal places
+            totalValue = Number(totalValue.toFixed(2));
+    
+            // Return the budgetFormatted array and the totalValue
+            return { budgetFormatted, valor_total: totalValue };        } catch (error: any) {
             console.log(error.message)
             throw new Error(error.message);
         }
@@ -225,11 +235,11 @@ class CreateReportService {
                     data_venda: "asc",
                 },
             });
-
+    
             if (sales.length === 0) {
-                throw new Error("Nenhuma venda encontrada")
+                throw new Error("Nenhum produto encontrado")
             }
-
+    
             const salesFormatted = sales.map((sale) => {
                 return {
                     numero_venda: sale.numero_venda,
@@ -244,14 +254,23 @@ class CreateReportService {
                     emailEmpresa: sale?.empresa?.email,
                     logoEmpresa: sale?.empresa?.avatar,
                 }
-            })
-            //return sales and total rows
-            return salesFormatted
+            });
+    
+            // Calculate the total value from the sales data
+            const totalValue = sales.reduce((total, sale) => total + sale.valor_total, 0);
+    
+           
+    
+            // Return salesFormatted along with the totalValue
+            return {
+                salesFormatted,
+                valor_total:totalValue,
+            };
         } catch (error: any) {
             throw new Error(error.message);
         }
     }
-    async getSupplierReport(id_company: number, report: any): Promise<any> {       
+    async getSupplierReport(id_company: number, report: any): Promise<any> {
         try {
             const { ativo = null, nome = null, email = null } = report || {};
 
@@ -261,7 +280,7 @@ class CreateReportService {
 
             // Add optional filters to the query based on user input
             if (typeof ativo === 'boolean') {
-             
+
                 filters.ativo = ativo;
             }
             if (nome) {
@@ -312,7 +331,7 @@ class CreateReportService {
     async getCarrierReport(id_company: number, report: any): Promise<any> {
         try {
             const { ativo = null, nome = null, email = null } = report || {};
-            
+
             const filters: any = {
                 id_empresa: id_company,
             };
@@ -366,8 +385,6 @@ class CreateReportService {
             throw new Error(error.message);
         }
     }
-
-    //Generate report of all products sales by month
     async getProductsSalesReport(id_company: number, report: any): Promise<any> {
         try {
             const { data_inicial = null, data_final = null, produto = null, cliente = null, situacao = null } = report || {};
@@ -402,6 +419,7 @@ class CreateReportService {
                 };
             }
 
+
             const sales = await prismaClient.venda.findMany({
                 where: filters,
                 include: {
@@ -420,22 +438,23 @@ class CreateReportService {
             });
 
             if (sales.length === 0) {
-                throw new Error("Nenhuma venda encontrada")
+                throw new Error("Nenhuma venda encontrada");
             }
 
-            const productsMap: { [key: number]: { id_produto: number; nome_produto: string; quantidade: number; valor_total: number } } = {};
+            const productsMap: { [key: string]: { codigo_interno: string; nome_produto: string; quantidade: number; valor_total: number } } = {};
 
             sales.forEach((sale) => {
                 sale.itens.forEach((item) => {
-                    const { id_produto, produto, quantidade, valor_total } = item;
-                    if (id_produto && produto) {
-                        if (productsMap[id_produto]) {
-                            productsMap[id_produto].quantidade += quantidade;
-                            productsMap[id_produto].valor_total += valor_total;
+                    const { produto, quantidade, valor_total } = item;
+                    if (produto?.codigo_interno) {
+                        const { codigo_interno, nome } = produto;
+                        if (productsMap[codigo_interno]) {
+                            productsMap[codigo_interno].quantidade += quantidade;
+                            productsMap[codigo_interno].valor_total += valor_total;
                         } else {
-                            productsMap[id_produto] = {
-                                id_produto,
-                                nome_produto: produto.nome || '',
+                            productsMap[codigo_interno] = {
+                                codigo_interno,
+                                nome_produto: nome || '',
                                 quantidade,
                                 valor_total,
                             };
@@ -443,19 +462,139 @@ class CreateReportService {
                     }
                 });
             });
-
+    
             const productsSales = Object.values(productsMap);
-
-            // Restante do código...
-
-            return productsSales;
+    
+            // Add empresa information to each product sale object
+            const productsSalesWithEmpresa = productsSales.map((productSale) => {
+                const { codigo_interno } = productSale;
+                const sale = sales.find((sale) => sale.itens.some((item) => item.produto?.codigo_interno === codigo_interno));
+    
+                return {
+                    ...productSale,
+                    nomeEmpresa: sale?.empresa?.nome_fantasia || 'N/A',
+                    cnpjEmpresa: sale?.empresa?.cnpj || 'N/A',
+                    enderecoEmpresa: `${sale?.empresa?.logradouro}, ${sale?.empresa?.numero} - ${sale?.empresa?.bairro} - ${sale?.empresa?.cidade} - ${sale?.empresa?.estado}`,
+                    telefoneEmpresa: sale?.empresa?.telefone || 'N/A',
+                    emailEmpresa: sale?.empresa?.email || 'N/A',
+                    logoEmpresa: sale?.empresa?.avatar || null,
+                };
+            });
+    
+            // Calculate the total quantities and total value
+            const quantidade_total = productsSales.reduce((total, sale) => total + sale.quantidade, 0);
+            const valor_total = productsSales.reduce((total, sale) => total + sale.valor_total, 0);
+    
+            // Add the total quantities and total value to the result object
+            const result = {
+                productsSalesWithEmpresa,
+                quantidade_total,
+                valor_total,
+            };
+    
+            return result;
 
         } catch (error: any) {
             throw new Error(error.message);
         }
     }
+    //get customers who buy the most from the company
+    async getCustomersSalesReport(id_company: number, report: any): Promise<any> {
+        try {
+            const { data_inicial = null, data_final = null, cliente = null, situacao = null, orderBy = null } = report || {};
+
+            const filters: any = {
+                id_empresa: id_company,
+            };
+            // Add optional filters to the query based on user input
+            if (data_inicial && data_final) {
+                filters.data_venda = {
+                    gte: new Date(data_inicial),
+                    lte: new Date(data_final),
+                };
+            }
+            if (cliente) {
+                filters.id_cliente = {
+                    in: Number(cliente),
+                };
+            }
+            if (situacao) {
+                filters.id_situacao_venda = {
+                    in: Number(situacao),
+                };
+            }
+
+            const sales = await prismaClient.venda.findMany({
+                where: filters,
+                include: {
+                    empresa: true,
+                    cliente: true,
+                    situacao_venda: true,
+                },               
+            });
+
+            if (sales.length === 0) {
+                throw new Error("Nenhuma venda encontrada");
+            }
+            
+            const customersMap: { [key: number]: { id_cliente: number; nome_cliente: string; valor_total: number; quantidade_vendas: number } } = {};
+
+            sales.forEach((sale) => {
+                const { id_cliente, cliente, valor_total } = sale;
+                if (id_cliente && cliente) {
+                    if (customersMap[id_cliente]) {
+                        customersMap[id_cliente].valor_total += valor_total;
+                        customersMap[id_cliente].quantidade_vendas += 1; // Increment the sale count for the customer
+                    } else {
+                        customersMap[id_cliente] = {
+                            id_cliente,
+                            nome_cliente: cliente.nome || '',
+                            valor_total,
+                            quantidade_vendas: 1, // Set the sale count to 1 for the new customer
+                        };
+                    }
+                }
+            });
+
+            const customersSales = Object.values(customersMap);
+
+            // Add empresa information to each customer sale object
+            const customersSalesWithEmpresa = customersSales.map((customerSale) => {
+                const { id_cliente } = customerSale;
+                const sale = sales.find((sale) => sale.id_cliente === id_cliente);
+
+                return {
+                    ...customerSale,
+                    nomeEmpresa: sale?.empresa?.nome_fantasia || 'N/A',
+                    cnpjEmpresa: sale?.empresa?.cnpj || 'N/A',
+                    enderecoEmpresa: `${sale?.empresa?.logradouro}, ${sale?.empresa?.numero} - ${sale?.empresa?.bairro} - ${sale?.empresa?.cidade} - ${sale?.empresa?.estado}`,
+                    telefoneEmpresa: sale?.empresa?.telefone || 'N/A',
+                    emailEmpresa: sale?.empresa?.email || 'N/A',
+                    logoEmpresa: sale?.empresa?.avatar || null,
+                };
+            });
+
+            // Sort the customersSalesWithEmpresa array based on the orderBy parameter          
+            if (orderBy === 1) {
+                // Sort by quantidade_vendas in ascending order
+                customersSalesWithEmpresa.sort((a, b) => a.quantidade_vendas - b.quantidade_vendas);
+            } else if (orderBy === 2) {
+                // Sort by valor_total in ascending order
+                customersSalesWithEmpresa.sort((a, b) => a.valor_total - b.valor_total);
+            }
+
+            // Format valor_total with two decimal places
+            customersSalesWithEmpresa.forEach((customer) => {
+                customer.valor_total = Number(customer.valor_total.toFixed(2));
+            });
+
+            return customersSalesWithEmpresa;
 
 
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
 
 
 } export { CreateReportService }

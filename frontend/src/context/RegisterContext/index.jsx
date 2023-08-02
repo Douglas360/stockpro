@@ -62,6 +62,7 @@ export const RegisterProvider = ({ children }) => {
                 "inscricao_municipal": data.inscricaoMunicipalCliente,
                 "inscricao_suframa": data.inscricaoSuframaCliente,
                 "tipo_contribuinte": data.tipoContribuinteCliente,
+                "observacao": data.observacaoCliente,
             }
         }
         return handleRequest(api.put(`/customer/${data.id}`, customerData), 'Cliente atualizado com sucesso');
@@ -83,8 +84,7 @@ export const RegisterProvider = ({ children }) => {
     };
 
     //function to update a Supplier by id
-    const updateSupplier = async (data) => {
-        console.log(data.enderecos)
+    const updateSupplier = async (data) => {      
      
         const supplierData = {
             "supplierData": {
@@ -159,6 +159,7 @@ export const RegisterProvider = ({ children }) => {
                 "inscricao_municipal": data.inscricaoMunicipalCliente,
                 "inscricao_suframa": data.inscricaoSuframaCliente,
                 "tipo_contribuinte": data.tipoContribuinteCliente,
+                "observacao": data.observacaoCliente,
             }
         }
         return handleRequest(api.put(`/carrier/${data.id}`, carrierData), 'Transportadora atualizada com sucesso');

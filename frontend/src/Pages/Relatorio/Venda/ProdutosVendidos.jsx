@@ -5,14 +5,14 @@ import { CustomSpinner } from '../../../components/CustomSpinner'
 import { useReport } from '../../../context/ReportContext/useReport'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
 import { useOrder } from '../../../context/OrderContext/useOrder'
-import { RelatorioVenda } from '../../../reports/Venda/RelatorioVenda'
 import { useAuth } from '../../../context/AuthContext/useAuth'
 import { useProduct } from '../../../context/ProductContext/useProduct'
+import { RelatorioProdutoMaisVendido } from '../../../reports/Venda/RelatorioProdutoMaisVendidos'
 
 export const ProdutosVendidos = () => {
     const { user } = useAuth()
     const { listProducts } = useProduct()
-    const { getReportBudgets, loading } = useReport()
+    const { getReportProductsSold, loading } = useReport()
     const { listAllCustomers } = useRegister()
     const { listSalesStatus } = useOrder()
     const idCompany = user?.id_empresa
@@ -52,13 +52,19 @@ export const ProdutosVendidos = () => {
                 id_empresa: idCompany
             }
         }
-        const response = await getReportBudgets(data)
+        const response = await getReportProductsSold(data)
         if (response) {
+            console.log(response)
             //Adicionar data_inicial e data_final no relatório
-            response.budgetFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
-            response.budgetFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
+            if (data_inicial.value && data_final.value) {
+                response.salesFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
+                response.salesFormatted.data_final = new Date(data_final.value).toLocaleDateString('pt-BR')
 
-            RelatorioVenda(response.budgetFormatted)
+            }
+            response.productsSalesWithEmpresa.quantidade_total = response.quantidade_total
+            response.productsSalesWithEmpresa.valor_total = response.valor_total
+
+            RelatorioProdutoMaisVendido(response.productsSalesWithEmpresa)
 
         }
     }

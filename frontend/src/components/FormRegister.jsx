@@ -170,7 +170,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
         const idEmpresa = user?.id_empresa;
         event.preventDefault();
         const form = new FormData(event.target);
-        const value = Object.fromEntries(form.entries());       
+        const value = Object.fromEntries(form.entries());
 
         value.enderecos = enderecosCliente;
         value.contatos = contatosCliente;

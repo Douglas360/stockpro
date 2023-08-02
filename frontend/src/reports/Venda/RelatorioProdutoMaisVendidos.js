@@ -2,8 +2,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import { createFooter } from "../getFooter";
 import { getHeader } from "../getHeader";
 
-export const RelatorioVenda = (data) => {
-
+export const RelatorioProdutoMaisVendido = (data) => {
     const docDefinition = {
         pageSize: 'A4',
         pageMargins: [20, 10, 20, 20],
@@ -18,7 +17,7 @@ export const RelatorioVenda = (data) => {
                     body: [
                         [
                             {
-                                text: `Relatórios de orçamentos ${data?.tipo_relatorio}`,
+                                text: 'Relatórios de produtos mais vendidos',
                                 fontSize: 16,
                                 bold: true,
 
@@ -45,31 +44,27 @@ export const RelatorioVenda = (data) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['auto', '*', '*', '*', '*',],
+                    widths: ['auto', '*', 'auto', '*'],
                     body: [
                         [
                             { text: 'Cód', bold: true },
-                            { text: 'Cliente', bold: true },
-                            { text: 'Data', bold: true },
-                            { text: 'Situação', bold: true },
+                            { text: 'Nome', bold: true },
+                            { text: 'Quantidade', bold: true },
                             { text: 'Valor total', bold: true },
                         ],
                         ...(data || []).map((item) => [
-                            { text: item.numero_orcamento, fontSize: 10 }, // Adjust the font size if needed
-                            { text: item.cliente, fontSize: 10 }, // Adjust the font size if needed
-                            { text: item.data_orcamento || item.data_venda, fontSize: 10 }, // Adjust the font size if needed
-                            { text: item.situacao, fontSize: 10 }, // Adjust the font size if needed
-                            //field formatted as currency brl 
+                            { text: item.codigo_interno, fontSize: 10 }, // Adjust the font size if needed
+                            { text: item.nome_produto, fontSize: 10 }, // Adjust the font size if needed
+                            { text: item.quantidade, fontSize: 10, alignment: 'center',  }, // Adjust the font size if needed                            
                             { text: item.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 10 }, // Adjust the font size if needed         
 
                         ]),
                         [
-                            {  }, // Empty cell spanning four columns
-                            {  },
-                            {  },
-                            { text: 'Total', bold: true, fontSize: 14, alignment: 'right' },
+                            {},
+                            { text: 'Total', bold: true, fontSize: 12, alignment: 'right' },
                             // TotalValue cell, if totalValue is zero, show an empty string.
-                            { text: data?.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 14, bold: true,},
+                            { text: data?.quantidade_total, fontSize: 12, bold: true, alignment: 'center', },
+                            { text: data?.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 12, bold: true, },
                         ]
                     ],
                 },

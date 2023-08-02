@@ -60,6 +60,9 @@ export const ReportProvider = ({ children }) => {
         return await handleRequest(api.post(`/report/carrier/${data.report?.id_empresa}`, data));
     };
 
+    const getReportCustomerBuy = async (data) => {
+        return await handleRequest(api.post(`/report/customer/sale/${data.report?.id_empresa}`, data));
+    };
 
     return (
         <ReportContext.Provider
@@ -72,6 +75,7 @@ export const ReportProvider = ({ children }) => {
                 getReportProductsSold,
                 getReportSuppliers,
                 getReportCarriers,
+                getReportCustomerBuy,
 
             }}
         >
