@@ -4,7 +4,7 @@ import { getHeader } from "../getHeader";
 
 export const RelatorioVenda = (data) => {
 
-    const docDefinition = {
+    const docDefinition = {      
         pageSize: 'A4',
         pageMargins: [20, 10, 20, 20],
         pageOrientation: 'landscape',
@@ -18,7 +18,7 @@ export const RelatorioVenda = (data) => {
                     body: [
                         [
                             {
-                                text: `Relatórios de orçamentos ${data?.tipo_relatorio}`,
+                                text: `Relatórios de ${data?.tipo_relatorio}`,
                                 fontSize: 16,
                                 bold: true,
 
@@ -79,5 +79,15 @@ export const RelatorioVenda = (data) => {
 
     };
 
-    pdfMake.createPdf(docDefinition).open();
+    //pdfMake.createPdf(docDefinition).open();
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+     // Open the PDF in a new tab and set the title
+     pdfDocGenerator.getBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const tab = window.open();
+        tab.document.write(`<iframe src="${url}" frameborder="0" style="width: 100%; height: 100vh;"></iframe>`);
+        tab.document.title = "Relatorio de Venda";    
+        tab.document.close();
+    });
 };

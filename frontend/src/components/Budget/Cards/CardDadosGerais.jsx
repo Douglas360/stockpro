@@ -4,23 +4,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } from 'reactstrap'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
 import { useOrder } from '../../../context/OrderContext/useOrder'
+import { useAuth } from '../../../context/AuthContext/useAuth'
 
 const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
 
 
   const { listAllCustomers } = useRegister()
+  const { user } = useAuth()
   const { listSalesStatus } = useOrder()
   const [customers, setCustomers] = useState([])
   const [numeroVenda, setNumeroVenda] = useState(data?.numeroVenda)
-  const [codigoError, setCodigoError] = useState(false)
-  const [customerError, setCustomerError] = useState(false)
-  const idEmpresa = sessionStorage?.getItem('user') || localStorage?.getItem('user')
-  const id = JSON.parse(idEmpresa).id_empresa
   const [situacaoVenda, setSituacaoVenda] = useState([])
+  const [inputErrors, setInputErrors] = useState({
+    codigoError: false,
+    customerError: false,
+    dateError: false,
+    situacaoError: false,
+  });
+
+  const idCompany = user?.id_empresa
 
   const loadCustomers = async () => {
     //const id_empresa = user?.id_empresa
-    const response = await listAllCustomers(id)
+    const response = await listAllCustomers(idCompany)
     const responseStatus = await listSalesStatus()
     setCustomers(response)
     setSituacaoVenda(responseStatus)
@@ -28,27 +34,20 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
   }
 
   useEffect(() => {
-    loadCustomers()
+    if (idCompany) {
+      loadCustomers()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [idCompany])
 
-  const handleCodigoBlur = (e) => {
-    const { value } = e.target
-    if (value.length < 1) {
-      setCodigoError(true)
-    } else {
-      setCodigoError(false)
-    }
-  }
-  const handleCustomerBlur = (e) => {
-    const { value } = e.target
-    if (value.length < 1) {
-      setCustomerError(true)
-    } else {
-      setCustomerError(false)
-    }
-  }
 
+  const handleInputBlur = (name, value) => {
+    if (value.trim() === '') {
+      setInputErrors((prevErrors) => ({ ...prevErrors, [name]: true }));
+    } else {
+      setInputErrors((prevErrors) => ({ ...prevErrors, [name]: false }));
+    }
+  };
   const generateCode = () => {
 
     const randomCode = Math.floor(100000 + Math.random() * 900000)
@@ -60,6 +59,17 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
     updatedData.numeroVenda = randomCode.toString()
     handleInputChange({ target: { name: 'numeroVenda', value: randomCode.toString() } })
 
+    if (inputErrors.codigoError) {
+      setInputErrors((prevErrors) => ({ ...prevErrors, codigoError: false }));
+    }
+  }
+  const handleCodigoChange = (e) => {
+    const { value } = e.target
+    setNumeroVenda(value)
+    //update the data object
+    const updatedData = { ...data }
+    updatedData.numeroVenda = value
+    handleInputChange({ target: { name: 'numeroVenda', value: value } })
   }
 
   return (
@@ -80,16 +90,16 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
             <InputGroup>
               <Input
                 required
-                type='text'
+                type='number'
                 name='numeroVenda'
                 id='numeroVenda'
-                placeholder='Numero da Venda'
+                placeholder='Numero Venda'
                 defaultValue={data?.numeroVenda || ''}
                 value={numeroVenda}
-                onChange={(e) => setNumeroVenda(e.target.value)}
-                onBlur={handleCodigoBlur}
-                invalid={codigoError}
-                valid={!codigoError}
+                onChange={handleCodigoChange}
+                onBlur={(e) => handleInputBlur('codigoError', e.target.value)}
+                invalid={inputErrors.codigoError}
+                valid={!inputErrors.codigoError}
               />
               <Button color='secondary' onClick={generateCode}>
                 <FontAwesomeIcon icon={faRandom} size='sm' style={{ marginRight: 3 }} />
@@ -103,9 +113,9 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               id='clienteOrcamento'
               value={data?.clienteOrcamento || ''}
               onChange={handleInputChange}
-              onBlur={handleCustomerBlur}
-              invalid={customerError}
-              valid={!customerError}
+              onBlur={(e) => handleInputBlur('customerError', e.target.value)}
+              invalid={inputErrors.customerError}
+              valid={!inputErrors.customerError}
               required
             >
               <option value=''>Selecione um cliente</option>
@@ -118,19 +128,34 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
           </Col>
           <Col md='4'>
             <Label style={{ fontWeight: 'bold' }}>Data</Label><span className='text-danger'>*</span>
-            <Input type='date' name='dataOrcamento' id='dataOrcamento' value={data?.dataOrcamento || ''} onChange={handleInputChange} />
+            <Input
+              type='date'
+              name='dataOrcamento'
+              id='dataOrcamento'
+              value={data?.dataOrcamento || ''}
+              onChange={handleInputChange}
+              onBlur={(e) => handleInputBlur('dateError', e.target.value)}
+              invalid={inputErrors.dateError}
+              valid={!inputErrors.dateError}
+              required
+
+            />
           </Col>
         </Row>
 
         <Row className='mb-2'>
           <Col md='4'>
-            <Label>Situação</Label>
+            <Label style={{ fontWeight: 'bold' }}>Situação</Label><span className='text-danger'>*</span>
             <Input type='select'
               name='situacaoVendaOrcamento'
               id='situacaoVendaOrcamento'
               value={data?.situacaoVendaOrcamento || ''}
               defaultValue={1}
               onChange={handleInputChange}
+              onBlur={(e) => handleInputBlur('situacaoError', e.target.value)}
+              invalid={inputErrors.situacaoError}
+              valid={!inputErrors.situacaoError}
+              required
             >
               <option value=''>Selecione</option>
               {situacaoVenda.map((situacao) => (

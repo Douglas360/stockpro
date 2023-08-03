@@ -9,6 +9,13 @@ class CreateOrderService {
         try {
             const { itens, ...rest } = orderData;
 
+          
+
+            if (!orderData.numero_venda){
+                console.log(orderData.numero_venda)
+                throw new Error("Order number not found or invalid")
+            }
+
 
             // Perform additional checks on each order item if needed
             for (const item of itens) {
