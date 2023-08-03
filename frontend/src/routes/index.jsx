@@ -19,9 +19,6 @@ export const AppRouter = () => {
     const { isAuthenticated } = useAuth()
     return isAuthenticated ? children : <Navigate to="/" replace />
   }
-
-
-
   return (
     <Router>
       <CombinedProvider>

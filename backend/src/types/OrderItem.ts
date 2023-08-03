@@ -4,4 +4,5 @@ export interface IOrderItem {
   quantidade: number;
   valor_unitario: number;
   valor_total: number;
+  valor_desconto?: number;
 }

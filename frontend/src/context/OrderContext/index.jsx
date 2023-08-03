@@ -94,10 +94,28 @@ export const OrderProvider = ({ children }) => {
                     "quantidade": parseInt(produto.quantidade),
                     "valor_unitario": produto.valor,
                     "valor_total": produto.subtotal
+                })),
+                "pagamentos": data?.pagamentoParcelado?.map((pagamento) => ({
+                    "id_forma_pagamento": parseInt(pagamento.formaPagamentoParcelado),
+                    "valor": parseFloat(pagamento.valorParcela),
+                    "vencimento": new Date(pagamento.vencimentoParcela),
+                    "observacao": pagamento.observacaoParcela,
+                    "venda": true,
+                    "parcelado": true,
+
                 }))
+                    || [{
+                        "id_forma_pagamento": parseInt(data.formaPagamentoAvista) || 1,
+                        "valor": parseFloat(data.valorAvista),
+                        "vencimento": new Date(data.vencimentoAvista),
+                        "venda": true,
+                        "parcelado": false,
+                        "observacao": data.observacaoAvista,
+
+                    }]
             }
         }
-        //console.log(newData)
+
         return handleRequest(api.post('/order', newData), 'Venda cadastrada com sucesso');
 
     };
@@ -141,6 +159,11 @@ export const OrderProvider = ({ children }) => {
     const listOrderToPrint = async (data) => {
         return handleRequest(api.get(`/print/order/${data}`));
     };
+    //function to list type of payment
+    const listTypePayment = async () => {
+        return handleRequest(api.get('/formpayment'));
+    };
+
 
 
     return (
@@ -156,6 +179,7 @@ export const OrderProvider = ({ children }) => {
                 cancelOrder,
                 getOrderById,
                 listOrderToPrint,
+                listTypePayment
 
 
 

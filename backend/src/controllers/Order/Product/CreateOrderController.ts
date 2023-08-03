@@ -5,9 +5,8 @@ import { CreateOrderService } from '../../../services/Order/Product/CreateOrderS
 class CreateOrderController {
     async create(req: Request, res: Response) {
         const { orderData } = req.body;
-
         
-        const createOrderService = new CreateOrderService();
+        const createOrderService = new CreateOrderService();          
 
         const orderResult = await createOrderService.create(orderData);
 

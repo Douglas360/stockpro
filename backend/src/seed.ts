@@ -38,6 +38,42 @@ async function main() {
         await prismaClient.lucroSugerido.create({ data: valor });
     }
 
+    const formaPagamento = [
+        {
+            descricao: 'Dinheiro',
+            ativo: true,
+        },
+        {
+            descricao: 'Cartão de crédito',
+            ativo: true,
+        },
+        {
+            descricao: 'Cartão de débito',
+            ativo: true,
+        },
+        {
+            descricao: 'Pix',
+            ativo: true,
+        },
+        {
+            descricao: 'Transferência',
+            ativo: true,
+        },
+        {
+            descricao: 'Boleto',
+            ativo: true,
+        },
+        {
+            descricao: 'Cheque',
+            ativo: true,
+        },
+    ]
+
+    for (const forma of formaPagamento) {
+        await prismaClient.formaPagamento.create({ data: forma });
+    }
+
+
 }
 
 main()

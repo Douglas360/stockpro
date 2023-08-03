@@ -14,7 +14,7 @@ model User {
   id           Int       @id @default(autoincrement())
   nome         String?
   email        String    @unique
-  login        String    
+  login        String
   senha        String
   ativo        Boolean   @default(true)
   ultimo_login DateTime?
@@ -308,6 +308,7 @@ model Venda {
   itens                    ItemVenda[]
   movimentacao_estoque     MovimentacaoEstoque[]
   historico_situacao_venda HistoricoSituacaoVenda[]
+  pagamento                Pagamento[]
   situacao_venda           SituacaoVenda            @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_venda")
@@ -456,4 +457,32 @@ model HistoricoSituacaoOrcamento {
   usuario        User          @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_historico_situacao_orcamento")
+}
+
+model FormaPagamento {
+  id_forma_pagamento Int      @id @default(autoincrement())
+  descricao          String?
+  ativo              Boolean? @default(true)
+
+  pagamento Pagamento[]
+
+  @@map("t_forma_pagamento")
+}
+
+model Pagamento {
+  id_pagamento       Int       @id @default(autoincrement())
+  id_venda           Int
+  parcelado          Boolean // Indica se o pagamento é parcelado ou à vista
+  venda              Boolean //Indica se é venda ou orçamento
+  id_forma_pagamento Int // ID da forma de pagamento (1=PIX, 2=BOLETO, etc.)
+  vencimento         DateTime
+  valor              Float
+  realizado          Boolean   @default(false)
+  data_realizado     DateTime? // Data em que o pagamento foi realizado, pode ser nula se ainda não foi realizado
+  observacao         String?
+
+  vendas          Venda          @relation(fields: [id_venda], references: [id_venda], onDelete: Cascade, onUpdate: Cascade)
+  forma_pagamento FormaPagamento @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("t_pagamento")
 }

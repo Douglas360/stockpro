@@ -18,4 +18,17 @@ export interface IOrder {
     observacao_interna: string;
     itens: IOrderItem[];
     movimentacoesEstoque?: MovimentacaoEstoque[];
+    pagamentos?: IPayment[];
+}
+
+export interface IPayment {
+    id_forma_pagamento: number;
+    valor: number;
+    parcelado: boolean;
+    venda: boolean;
+    vencimento: Date;
+    realizado?: boolean;
+    data_realizado?: Date;
+    observacao?: string;
+
 }

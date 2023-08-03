@@ -16,6 +16,7 @@ import { CreateDashboardController } from "./controllers/Dashboard/CreateDashboa
 
 import { upload } from './config/multer'
 import { CreateReportController } from "./controllers/Report/CreateReportController";
+import { FormPaymentController } from "./controllers/FormPayment/FormPaymentController";
 
 const router = Router();
 
@@ -128,6 +129,9 @@ router.post("/report/supplier/:id", reportController.getSupplierReport);
 router.post("/report/carrier/:id", reportController.getCarrierReport);
 router.post("/report/customer/sale/:id", reportController.getCustomersSalesReport);
 
+//Type of payment routes
+const createTypeOfPaymentController = new FormPaymentController();
+router.get("/formpayment", createTypeOfPaymentController.list);
 
 
 

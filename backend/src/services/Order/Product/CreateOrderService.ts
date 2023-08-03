@@ -4,15 +4,14 @@ import { IOrder } from "../../../types/OrderTypes";
 
 class CreateOrderService {
     async create(orderData: IOrder): Promise<any> {
+
         let order
         let updatedItems;
         try {
-            const { itens, ...rest } = orderData;
+            const { itens, pagamentos, ...rest } = orderData;
 
-          
+            if (!orderData.numero_venda) {
 
-            if (!orderData.numero_venda){
-                console.log(orderData.numero_venda)
                 throw new Error("Order number not found or invalid")
             }
 
@@ -58,6 +57,8 @@ class CreateOrderService {
                 throw new Error(`Order number already exists`);
             }
 
+
+
             // Create the order
             const newOrder = order = await prismaClient.venda.create({
                 data: {
@@ -70,9 +71,35 @@ class CreateOrderService {
                 include: {
                     itens: true,
 
+
                 },
 
             });
+
+            // Create the payments
+            console.log(pagamentos)
+            if (pagamentos) {
+                await Promise.all(
+                    pagamentos.map(async (pagamento) => {
+                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+
+                        // Create the payment
+                        await prismaClient.pagamento.create({
+                            data: {
+                                id_forma_pagamento,
+                                valor,
+                                venda,
+                                parcelado,
+                                vencimento,
+                                observacao,
+                                id_venda: newOrder.id_venda,
+                            },
+                        });
+                    })
+                );
+
+            }
+
 
             //Update history of the product sales       
             await prismaClient.historicoSituacaoVenda.create({
@@ -136,6 +163,7 @@ class CreateOrderService {
 
             return order;
         } catch (error: any) {
+            console.log(error.message)
             throw new Error(error.message);
         }
     }
@@ -171,6 +199,7 @@ class CreateOrderService {
 
             return order;
         } catch (error: any) {
+            console.log(error.message)
             throw new Error(error.message);
         }
     }
