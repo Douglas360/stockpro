@@ -16,6 +16,13 @@ export interface IOrder {
     valor_frete?: number;
     observacao: string;
     observacao_interna: string;
+    cep?: string;
+    logradouro?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    cidade?: string;
+    estado?: string;
     itens: IOrderItem[];
     movimentacoesEstoque?: MovimentacaoEstoque[];
     pagamentos?: IPayment[];

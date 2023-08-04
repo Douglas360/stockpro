@@ -158,7 +158,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               required
             >
               <option value=''>Selecione</option>
-              {situacaoVenda.map((situacao) => (
+              {situacaoVenda?.map((situacao) => (
                 <option key={situacao.id_situacao_venda} value={situacao.id_situacao_venda}>
                   {situacao.descricao}
                 </option>

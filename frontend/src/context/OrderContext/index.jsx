@@ -65,7 +65,7 @@ export const OrderProvider = ({ children }) => {
 
     //function to create a Order
     const createOrder = async (data) => {
-
+        //console.log(data)
         const date = new Date(
             new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
         )
@@ -73,7 +73,6 @@ export const OrderProvider = ({ children }) => {
         const newData = {
             "orderData": {
                 "numero_venda": parseInt(data.numeroVenda),
-                //Pegar horario do BRasil 
                 "data_venda": date,
                 "id_empresa": parseInt(data.id_empresa),
                 "id_cliente": parseInt(data.clienteOrcamento),
@@ -88,10 +87,20 @@ export const OrderProvider = ({ children }) => {
                 "valor_produto": parseFloat(data.valorProdutos),
                 "observacao": data.observacaoOrcamento,
                 "observacao_interna": data.observacaoInternaOrcamento,
+                "cep": data.cep,
+                "logradouro": data.logradouro,
+                "numero": data.numero,
+                "complemento": data.complemento,
+                "bairro": data.bairro,
+                "cidade": data.cidade,
+                "estado": data.estado,
                 "itens": data.produtos?.map((produto) => ({
                     "id_produto": parseInt(produto.produto),
                     "numero_item": parseInt(produto.numero_item), // "numero_item": "1
                     "quantidade": parseInt(produto.quantidade),
+                    "id_tipo_venda": parseInt(produto.tipo),
+                    "desconto": parseFloat(produto.desconto),
+                    "tipo_desconto": produto.tipo_desconto,
                     "valor_unitario": produto.valor,
                     "valor_total": produto.subtotal
                 })),
@@ -115,7 +124,7 @@ export const OrderProvider = ({ children }) => {
                     }]
             }
         }
-
+        //console.log(newData)
         return handleRequest(api.post('/order', newData), 'Venda cadastrada com sucesso');
 
     };
@@ -163,6 +172,10 @@ export const OrderProvider = ({ children }) => {
     const listTypePayment = async () => {
         return handleRequest(api.get('/formpayment'));
     };
+    //function to list type of sale
+    const listTypeSale = async () => {
+        return handleRequest(api.get('/typesale'));
+    };
 
 
 
@@ -179,7 +192,8 @@ export const OrderProvider = ({ children }) => {
                 cancelOrder,
                 getOrderById,
                 listOrderToPrint,
-                listTypePayment
+                listTypePayment,
+                listTypeSale
 
 
 

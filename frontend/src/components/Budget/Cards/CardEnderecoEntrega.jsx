@@ -18,7 +18,6 @@ const CardEnderecoEntrega = ({ data, handleInputChange }) => {
     }
 
   }
-
   return (
     <Card className="main-card mb-1">
       <CardBody>

@@ -3,18 +3,24 @@ import { faTruckFast } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Card, CardBody, Col, Input, Label, Row, Table } from 'reactstrap'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
+import { useAuth } from '../../../context/AuthContext/useAuth'
 
 const CardTransporte = ({ data, handleInputChange }) => {
     const { listAllCarriers } = useRegister();
+    const {user} = useAuth();
     const [carriers, setCarriers] = useState([]);
+
+    const idCompany = user?.id_empresa;
   
     const loadCarriers = async () => {
-        const response = await listAllCarriers(1);
+        const response = await listAllCarriers(idCompany);
         setCarriers(response);
     }
 
     useEffect(() => {
+       if(idCompany){
         loadCarriers();
+         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

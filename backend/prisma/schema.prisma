@@ -297,6 +297,13 @@ model Venda {
   valor_frete        Float?
   observacao         String?
   observacao_interna String?
+  cep                String?
+  logradouro         String?
+  numero             String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  estado             String?
   createdAt          DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?
@@ -365,19 +372,31 @@ model ItemOrcamento {
 }
 
 model ItemVenda {
-  id_item_venda  Int   @id @default(autoincrement())
+  id_item_venda  Int    @id @default(autoincrement())
   id_venda       Int
   id_produto     Int
+  id_tipo_venda  Int?
+  desconto       Float?
+  tipo_desconto  String?
   numero_item    Int?
   quantidade     Int
   valor_unitario Float
   valor_total    Float
 
-  venda Venda @relation(fields: [id_venda], references: [id_venda], onDelete: Cascade, onUpdate: Cascade)
-
-  produto Produto @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
+  venda     Venda      @relation(fields: [id_venda], references: [id_venda], onDelete: Cascade, onUpdate: Cascade)
+  tipoVenda TipoVenda? @relation(fields: [id_tipo_venda], references: [id_tipo_venda], onDelete: NoAction, onUpdate: NoAction)
+  produto   Produto    @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_item_venda")
+}
+
+model TipoVenda {
+  id_tipo_venda Int         @id @default(autoincrement())
+  descricao     String?
+  ativo         Boolean?    @default(true)
+  itemVenda     ItemVenda[]
+
+  @@map("t_tipo_venda")
 }
 
 model MovimentacaoEstoque {

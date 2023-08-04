@@ -4,11 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card, CardBody, Col, Input, InputGroup, Label, Row, Table, UncontrolledTooltip } from 'reactstrap'
 import { useProduct } from '../../../context/ProductContext/useProduct'
 import { useAuth } from '../../../context/AuthContext/useAuth'
+import { useOrder } from '../../../context/OrderContext/useOrder'
 
 const CardProduto = ({ data, handleInputChange }) => {
 
   const { listProducts } = useProduct()
   const { user } = useAuth()
+  const { listTypeSale } = useOrder()
+  const [tipoVenda, setTipoVenda] = useState([])
   const [products, setProducts] = useState([])
   const [produtos, setProdutos] = useState([{ numero_item: 1, produto: '', quantidade: '', tipo: '1', valor: '', desconto: '', subtotal: '' }])
   const [stockQuantities, setStockQuantities] = useState({});
@@ -18,7 +21,9 @@ const CardProduto = ({ data, handleInputChange }) => {
 
   const loadProducts = useCallback(async () => {
     const response = await listProducts(idCompany);
+    const responseTypeSale = await listTypeSale();
     setProducts(response);
+    setTipoVenda(responseTypeSale)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idCompany]);
@@ -30,14 +35,6 @@ const CardProduto = ({ data, handleInputChange }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idCompany]); // Add loadProducts to the dependency <array></array>
 
-  const tipoVenda = [
-    { id: 1, tipo: 'Venda' },
-    { id: 2, tipo: 'Troca' },
-    { id: 3, tipo: 'Devolução' },
-    { id: 4, tipo: 'Bonificação' },
-    { id: 5, tipo: 'Amostra' },
-    { id: 6, tipo: 'Outros' }
-  ]
   const handleAddField = () => {
     setProdutos(prevProdutos => [...prevProdutos, { numero_item: prevProdutos.length + 1, produto: '', quantidade: '', tipo: '', valor: '', desconto: '', subtotal: '' }]);
   };
@@ -54,53 +51,11 @@ const CardProduto = ({ data, handleInputChange }) => {
           updatedFields[index].quantidade = '1'; // Set the quantity as 1
           updatedFields[index].subtotal = selectedProduct.valor_venda; // Set the subtotal
           updatedFields[index].tipo = '1'; // Set the type
+          updatedFields[index].tipo_desconto = typeDiscount[index] || 'R$'; // Set the discount type
+
           setStockQuantities(prevStockQuantities => ({ ...prevStockQuantities, [index]: selectedProduct.estoque[0]?.quantidade || 0 })); // Set the stock quantity
         }
       }
-      // Update the data object
-      const updatedData = { ...data };
-      updatedData.produtos = updatedFields;
-      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
-
-      return updatedFields;
-    });
-  };
-  const handleRemoveField = (index) => {
-    setProdutos(prevProdutos => {
-      const updatedFields = [...prevProdutos];
-      updatedFields.splice(index, 1);
-      return updatedFields;
-    });
-  };
-  const handleQuantityChange = (index, value) => {
-    setProdutos(prevProdutos => {
-      const updatedFields = [...prevProdutos];
-      updatedFields[index].quantidade = value;
-      console.log(updatedFields)
-      updatedFields[index].subtotal = value * updatedFields[index].valor;
-
-      // Update the data object
-      const updatedData = { ...data };
-      updatedData.produtos = updatedFields;
-      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
-
-      return updatedFields;
-    });
-  };
-  const handleDiscountChange = (index, value) => {
-    setProdutos(prevProdutos => {
-      const updatedFields = [...prevProdutos];
-      updatedFields[index].desconto = value;
-
-      if (!typeDiscount[index] || typeDiscount[index] === 'R$') { // Check if no type is selected or if the selected type is R$
-        // Apply discount by subtracting the value directly
-        updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - value;
-      } else if (typeDiscount[index] === '%') {
-        // Apply discount as a percentage of the total
-        const discount = (updatedFields[index].quantidade * updatedFields[index].valor * value) / 100;
-        updatedFields[index].subtotal = updatedFields[index].quantidade * updatedFields[index].valor - discount;
-      }
-
       // Update the data object
       const updatedData = { ...data };
       updatedData.produtos = updatedFields;
@@ -123,14 +78,66 @@ const CardProduto = ({ data, handleInputChange }) => {
       return updatedFields;
     });
   };
-  const handleDiscountTypeChange = (index, value) => {
-    setTypeDiscount(prevTypeDiscount => {
-      const updatedTypes = { ...prevTypeDiscount };
-      updatedTypes[index] = value || 'R$';
-      handleDiscountChange(index, produtos[index].desconto);
-      return updatedTypes;
+  const handleRemoveField = (index) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields.splice(index, 1);
+      return updatedFields;
     });
   };
+  const handleQuantityChange = (index, value) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].quantidade = value;
+
+      updatedFields[index].subtotal = value * updatedFields[index].valor;
+
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
+
+      return updatedFields;
+    });
+  };
+  const handleDiscountChange = (index, value) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].desconto = value;
+
+      const valor = updatedFields[index].valor || 0;
+      const quantidade = updatedFields[index].quantidade || 0;
+      const tipoDesconto = updatedFields[index].tipo_desconto;
+
+      if (!tipoDesconto || tipoDesconto === 'R$') {
+        updatedFields[index].subtotal = quantidade * valor - value;
+      } else if (tipoDesconto === '%') {
+        const discount = (quantidade * valor * value) / 100;
+        updatedFields[index].subtotal = quantidade * valor - discount;
+      }
+
+      // Update the data object
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+      handleInputChange({ target: { name: 'produtos', value: updatedFields } });
+
+      return updatedFields;
+    });
+  };
+
+  const handleDiscountTypeChange = (index, value) => {
+    setProdutos(prevProdutos => {
+      const updatedFields = [...prevProdutos];
+      updatedFields[index].tipo_desconto = value || 'R$';
+
+      // Recalculate the discount when the type is changed
+      handleDiscountChange(index, updatedFields[index].desconto);
+
+      return updatedFields;
+    });
+  };
+
+
   // Function to change the background color of the tooltip based on the stock quantity of the product selected
   const getTooltipColor = (stockQuantity) => {
     if (stockQuantity <= 1) {
@@ -209,12 +216,12 @@ const CardProduto = ({ data, handleInputChange }) => {
                     required
                     type='select'
                     name='tipo'
-                    value={produto.tipo}
+                    value={produto.tipoVenda}
                     onChange={(e) => handleFieldChange(index, 'tipo', e.target.value)}
                   >
-                    <option value=''>Selecione</option>
+                    
                     {tipoVenda.map((tipo, innerIndex) => (
-                      <option key={innerIndex} value={tipo.id}>{tipo.tipo}</option>
+                      <option key={innerIndex} value={tipo.id_tipo_venda}>{tipo.descricao}</option>
                     ))}
                   </Input>
                 </td>

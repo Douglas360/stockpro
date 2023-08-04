@@ -73,6 +73,16 @@ async function main() {
         await prismaClient.formaPagamento.create({ data: forma });
     }
 
+    const tipoVenda = [
+        { descricao: 'Venda', ativo: true },
+        { descricao: 'Troca', ativo: true },
+        { descricao: 'Devolução', ativo: true },
+        { descricao: 'Outros', ativo: true },
+    ]
+
+    for (const tipo of tipoVenda) {
+        await prismaClient.tipoVenda.create({ data: tipo });
+    }
 
 }
 

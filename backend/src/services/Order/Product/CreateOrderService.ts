@@ -56,9 +56,6 @@ class CreateOrderService {
             if (orderExists) {
                 throw new Error(`Order number already exists`);
             }
-
-
-
             // Create the order
             const newOrder = order = await prismaClient.venda.create({
                 data: {
@@ -75,9 +72,6 @@ class CreateOrderService {
                 },
 
             });
-
-            // Create the payments
-            console.log(pagamentos)
             if (pagamentos) {
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
@@ -99,8 +93,6 @@ class CreateOrderService {
                 );
 
             }
-
-
             //Update history of the product sales       
             await prismaClient.historicoSituacaoVenda.create({
                 data: {
@@ -182,6 +174,7 @@ class CreateOrderService {
                     itens: {
                         include: {
                             produto: true,
+                            tipoVenda: true,
                         },
                     },
                     //cliente: true,
@@ -191,6 +184,8 @@ class CreateOrderService {
                         },
                     },
                     situacao_venda: true,
+                    pagamento: true,
+
 
                 },
             });
@@ -203,7 +198,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listOrdersByCompany(companyId: number): Promise<any> {
         try {
             const orders = await prismaClient.venda.findMany({
@@ -250,7 +244,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listOrdersByDateRange(startDate: Date, endDate: Date): Promise<any> {
         try {
             const orders = await prismaClient.venda.findMany({
@@ -270,7 +263,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listOrdersByCustomer(customerId: number): Promise<any> {
         try {
             const orders = await prismaClient.venda.findMany({
@@ -287,7 +279,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listOrdersByStatus(statusId: number): Promise<any> {
         try {
             const orders = await prismaClient.venda.findMany({
@@ -304,7 +295,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listSalesStatus(): Promise<any> {
         try {
             const salesStatus = await prismaClient.situacaoVenda.findMany({
@@ -318,7 +308,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listHistorySalesStatus(id: number): Promise<any> {
         try {
             // Check id
@@ -359,7 +348,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async updateOrderStatus(id: number, statusId: number, descricao?: string): Promise<any> {
 
         try {
@@ -487,7 +475,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async cancel(orderId: number): Promise<any> {
         try {
             // Check if the order exists
@@ -583,7 +570,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
     async listOrderToPrint(orderId: number): Promise<any> {
         try {
             // Check id
