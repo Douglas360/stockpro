@@ -1,19 +1,25 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../Layout/AppMain/PageTitle'
 import FormBudget from '../../../components/Budget/FormBudget'
 import { useParams } from 'react-router-dom'
 import { useBudget } from '../../../context/BudgetContext/useBudget'
 
 const CadastrarOrcamentoProduto = () => {
-  const { createBudget, loading } = useBudget()
+  const { createBudget, getBudgetById, loading } = useBudget()
   const { id } = useParams()
-  //const [budget, setBudget] = useState({})
+  const [budget, setBudget] = useState({})
   const isEditMode = !!id
 
   useEffect(() => {
     if (isEditMode) {
-      //getBudget(id)
+      const loadBudget = async () => {
+        const response = await getBudgetById(id)
+        console.log(response)
+        setBudget(response)
+      }
+      loadBudget()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode])
 
 
@@ -25,6 +31,7 @@ const CadastrarOrcamentoProduto = () => {
     }
   }
 
+  
   const initialValues = {
     title: 'orçamento',
     numeroVenda: '',

@@ -95,6 +95,7 @@ router.put("/cancel/order/:id", createOrderController.cancelOrder);
 const createBudgetController = new CreateBudgetController();
 router.post("/budget", createBudgetController.create);
 router.delete("/delete/budget/:id", createBudgetController.delete);
+router.get("/list/budget/:id", createBudgetController.listBudgetByNumber);
 router.put("/update/budgetstatus/:id", createBudgetController.updateBudgetStatus);
 router.get("/list/budget/id_company/:id", createBudgetController.listBudgetByCompany);
 router.get("/list/historybudgetstatus/:id", createBudgetController.listHistoryBudgetStatus);

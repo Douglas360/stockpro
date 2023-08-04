@@ -340,6 +340,13 @@ model Orcamento {
   valor_frete        Float?
   observacao         String?
   observacao_interna String?
+  cep                String?
+  logradouro         String?
+  numero             String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  estado             String?
   createdAt          DateTime  @default(dbgenerated("SWITCHOFFSET(GETDATE(), '-03:00')"))
   updatedAt          DateTime  @updatedAt
   deletedAt          DateTime?
@@ -350,29 +357,32 @@ model Orcamento {
   transportadora               Transportadora?              @relation(fields: [id_transportadora], references: [id_transportadora], onDelete: NoAction, onUpdate: NoAction)
   itens                        ItemOrcamento[]
   historico_situacao_orcamento HistoricoSituacaoOrcamento[]
-  situacao_venda               SituacaoVenda                @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
+  pagamento                    PagamentoOrcamento[]
+  situacao_venda SituacaoVenda @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_orcamento")
 }
 
 model ItemOrcamento {
-  id_item_orcamento Int   @id @default(autoincrement())
+  id_item_orcamento Int     @id @default(autoincrement())
   id_orcamento      Int
   id_produto        Int
+  id_tipo_venda     Int?
+  desconto          Float?
+  tipo_desconto     String?
   numero_item       Int?
   quantidade        Int
   valor_unitario    Float
   valor_total       Float
 
-  orcamento Orcamento @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)
-
+  orcamento Orcamento @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)  
   produto Produto @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_item_orcamento")
 }
 
 model ItemVenda {
-  id_item_venda  Int    @id @default(autoincrement())
+  id_item_venda  Int     @id @default(autoincrement())
   id_venda       Int
   id_produto     Int
   id_tipo_venda  Int?
@@ -484,6 +494,7 @@ model FormaPagamento {
   ativo              Boolean? @default(true)
 
   pagamento Pagamento[]
+  orcamento PagamentoOrcamento[]
 
   @@map("t_forma_pagamento")
 }
@@ -504,4 +515,20 @@ model Pagamento {
   forma_pagamento FormaPagamento @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_pagamento")
+}
+
+model PagamentoOrcamento {
+  id_pagamento       Int       @id @default(autoincrement())
+  id_orcamento       Int
+  parcelado          Boolean // Indica se o pagamento é parcelado ou à vista
+  venda              Boolean //Indica se é venda ou orçamento
+  id_forma_pagamento Int // ID da forma de pagamento (1=PIX, 2=BOLETO, etc.)
+  vencimento         DateTime
+  valor              Float 
+  observacao         String?
+
+  orcamento       Orcamento      @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)
+  forma_pagamento FormaPagamento @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("t_pagamento_orcamento")
 }

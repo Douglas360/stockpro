@@ -5,7 +5,7 @@ import { IOrderItem } from "../../types/OrderItem";
 class CreateBudgetService {
     async create(orderData: IBudget): Promise<any> {
         try {
-            const { itens, ...rest } = orderData;
+            const { itens, pagamentos, ...rest } = orderData;
 
             // Perform additional checks on each order item if needed
             for (const item of itens) {
@@ -45,6 +45,27 @@ class CreateBudgetService {
                 },
 
             });
+            if (pagamentos) {
+                await Promise.all(
+                    pagamentos.map(async (pagamento) => {
+                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+
+                        // Create the payment
+                        await prismaClient.pagamentoOrcamento.create({
+                            data: {
+                                id_forma_pagamento,
+                                valor,
+                                venda,
+                                parcelado,
+                                vencimento,
+                                observacao,
+                                id_orcamento: newBudget.id_orcamento,
+                            },
+                        });
+                    })
+                );
+
+            }
 
             //Update history of the product sales       
             await prismaClient.historicoSituacaoOrcamento.create({
@@ -65,6 +86,36 @@ class CreateBudgetService {
             throw new Error(error.message);
         }
     }
+    async listBudgetByNumber(id: number): Promise<any> {
+        try {
+            const budget = await prismaClient.orcamento.findFirst({
+                where: { numero_orcamento: id },
+                include: {
+                    itens: {
+                        include: {
+                            produto: true,
+                        },
+                    },
+                    cliente: {
+                        include: {
+                            enderecos: true,
+                        },
+                    },
+                    situacao_venda: true,
+                    empresa: true,
+                    pagamento: true,
+                },
+
+            });
+
+            return budget;
+
+        } catch (error: any) {
+            throw new Error(error.message);
+
+        }
+    }
+
     async listBudgetByCompany(id: number): Promise<any> {
         try {
             const budget = await prismaClient.orcamento.findMany({

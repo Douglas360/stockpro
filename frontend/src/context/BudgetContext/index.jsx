@@ -58,15 +58,44 @@ export const BudgetProvider = ({ children }) => {
                 "valor_produto": parseFloat(data.valorProdutos),
                 "observacao": data.observacaoOrcamento,
                 "observacao_interna": data.observacaoInternaOrcamento,
+                "cep": data.cep,
+                "logradouro": data.logradouro,
+                "numero": data.numero,
+                "complemento": data.complemento,
+                "bairro": data.bairro,
+                "cidade": data.cidade,
+                "estado": data.estado,
                 "itens": data.produtos?.map((produto) => ({
                     "id_produto": parseInt(produto.produto),
                     "numero_item": parseInt(produto.numero_item), // "numero_item": "1
                     "quantidade": parseInt(produto.quantidade),
+                    "id_tipo_venda": parseInt(produto.tipo),
+                    "desconto": parseFloat(produto.desconto),
+                    "tipo_desconto": produto.tipo_desconto,
                     "valor_unitario": produto.valor,
                     "valor_total": produto.subtotal
+                })),
+                "pagamentos": data?.pagamentoParcelado?.map((pagamento) => ({
+                    "id_forma_pagamento": parseInt(pagamento.formaPagamentoParcelado),
+                    "valor": parseFloat(pagamento.valorParcela),
+                    "vencimento": new Date(pagamento.vencimentoParcela),
+                    "observacao": pagamento.observacaoParcela,
+                    "venda": false,
+                    "parcelado": true,
+
                 }))
+                    || [{
+                        "id_forma_pagamento": parseInt(data.formaPagamentoAvista) || 1,
+                        "valor": parseFloat(data.valorAvista),
+                        "vencimento": new Date(data.vencimentoAvista),
+                        "venda": false,
+                        "parcelado": false,
+                        "observacao": data.observacaoAvista,
+
+                    }]
             }
         }
+        //console.log(newData)
         return handleRequest(api.post('/budget', newData), 'Orçamento cadastrado com sucesso');
     };
 
@@ -92,9 +121,13 @@ export const BudgetProvider = ({ children }) => {
 
     //function to update a status budget
     const updateStatusBudget = async (data, id) => {
-      
         return handleRequest(api.put(`/update/budgetstatus/${id}`, data), 'Status do orçamento atualizado com sucesso');
     };
+    //function to list Budget by id
+    const getBudgetById = async (id) => {
+        return handleRequest(api.get(`/list/budget/${id}`));
+    };
+
 
     return (
         <BudgetContext.Provider
@@ -106,6 +139,7 @@ export const BudgetProvider = ({ children }) => {
                 listBudgetToPrint,
                 updateStatusBudget,
                 listHistoryBudget,
+                getBudgetById,
 
             }}
         >

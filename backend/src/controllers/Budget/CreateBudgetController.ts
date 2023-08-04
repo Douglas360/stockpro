@@ -4,6 +4,7 @@ import { CreateBudgetService } from "../../services/Budget/CreateBudgetService";
 class CreateBudgetController {
     async create(request: Request, response: Response) {
         const { budgetData } = request.body;
+        console.log(budgetData)
       
         const createBudgetService = new CreateBudgetService();
 
@@ -11,6 +12,16 @@ class CreateBudgetController {
 
         return response.json(budget);
     }
+    async listBudgetByNumber(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const createBudgetService = new CreateBudgetService();
+
+        const budget = await createBudgetService.listBudgetByNumber(Number(id));
+
+        return response.json(budget);
+    }
+            
     async listBudgetByCompany(request: Request, response: Response) {
         const { id } = request.params;
 
