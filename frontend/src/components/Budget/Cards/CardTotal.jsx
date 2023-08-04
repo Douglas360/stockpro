@@ -66,7 +66,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                             <th>Produtos</th>
                             <th>Frete</th>
                             <th>Desconto (R$)</th>
-                            <th>Desconto (%)</th>
+                          {/*  <th>Desconto (%)</th>*/}
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -104,7 +104,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     onChange={handleInputChange}
                                 />
                             </td>
-                            <td>
+                           {/* <td>
                                 <Input
                                     type="text"
                                     name="descontoPorcentagem"
@@ -113,7 +113,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                                     onChange={handleInputChange}
                                     value={data.descontoPorcentagem}
                                 />
-                            </td>
+                                </td>*/}
                             <td>
                                 <Input
                                     type="text"
