@@ -49,9 +49,10 @@ export const deleteFile = async (filePath: string): Promise<void | Error> => {
     });
 
     const deleteParams = {
-        Bucket: 'siag.com.br',
+        Bucket: 'stockpro.com.br',
         Key: filePath,
     };
+    
 
     try {
         await s3.send(new DeleteObjectCommand(deleteParams));

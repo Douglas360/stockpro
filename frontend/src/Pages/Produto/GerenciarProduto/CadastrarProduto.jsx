@@ -11,7 +11,7 @@ import { Fornecedores } from './Tabs/Fornecedores';
 import { useProduct } from '../../../context/ProductContext/useProduct';
 import { CustomSpinner } from '../../../components/CustomSpinner';
 import { useAuth } from '../../../context/AuthContext/useAuth';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CadastrarProduto = () => {
   const [data, setData] = useState(product || []);
@@ -28,7 +28,7 @@ const CadastrarProduto = () => {
     if (isEditMode) {
       const loadProduct = async () => {
         const response = await getProduct(id)
-       
+
         setProduct({
           id_produto: response?.id_produto,
           nomeProduto: response.nome,
@@ -69,6 +69,7 @@ const CadastrarProduto = () => {
           valorFixoCofins: response.vl_fixo_cofins,
           valorFixoPisSt: response.vl_fixo_pis_st,
           valorFixoCofinsSt: response.vl_fixo_cofins_st,
+          fileUrl: response?.FotoProduto[0]?.caminho,
         })
         setData({
           ...data,
@@ -111,6 +112,7 @@ const CadastrarProduto = () => {
           valorFixoCofins: response.vl_fixo_cofins,
           valorFixoPisSt: response.vl_fixo_pis_st,
           valorFixoCofinsSt: response.vl_fixo_cofins_st,
+          fileUrl: response?.FotoProduto[0]?.caminho,
 
 
         })
@@ -137,23 +139,68 @@ const CadastrarProduto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     //if is edit mode, pass id to data
+    const formData = new FormData();
+
+    formData.append('id_empresa', id_empresa);
+    formData.append('id_produto', data.id_produto);
+    formData.append('id_estoque', data.id_estoque);
+    formData.append('id_usuario', Number(id_usuario));
+    formData.append('nomeProduto', data.nomeProduto);
+    formData.append('codigoInterno', data.codigoInterno);
+    formData.append('codigoBarra', data.codigoBarra);
+    formData.append('movimentaEstoque', data.movimentaEstoque);
+    formData.append('habilitarNf', data.habilitarNf);
+    formData.append('validade', data.validade);
+    formData.append('pesoProduto', data.pesoProduto);
+    formData.append('alturaProduto', data.alturaProduto);
+    formData.append('larguraProduto', data.larguraProduto);
+    formData.append('comprimentoProduto', data.comprimentoProduto);
+    formData.append('camposExtras', JSON.stringify(data.camposExtras));
+    formData.append('descricaoProduto', data.descricaoProduto);
+    formData.append('ativo', data.produtoAtivo);
+    formData.append('valorCusto', data.valorCusto);
+    formData.append('despesasAcessorias', data.despesasAcessorias);
+    formData.append('outrasDespesas', data.outrasDespesas);
+    formData.append('custoFinal', data.custoFinal);
+    formData.append('valorVendaUtilizado', data.valorVendaUtilizado);
+    formData.append('estoqueMinimo', data.estoqueMinimo);
+    formData.append('estoqueMaximo', data.estoqueMaximo);
+    formData.append('estoqueAtual', data.estoqueAtual);
+    formData.append('codigoNcm', data.codigoNcm);
+    formData.append('codigoCest', data.codigoCest);
+    formData.append('codigoBeneficio', data.codigoBeneficio);
+    formData.append('origemProduto', data.origemProduto);
+    formData.append('pesoLiquido', data.pesoLiquido);
+    formData.append('pesoBruto', data.pesoBruto);
+    formData.append('numeroFci', data.numeroFci);
+    formData.append('VrAproxTribut', data.VrAproxTribut);
+    formData.append('valorFixoPis', data.valorFixoPis);
+    formData.append('valorFixoCofins', data.valorFixoCofins);
+    formData.append('valorFixoPisSt', data.valorFixoPisSt);
+    formData.append('valorFixoCofinsSt', data.valorFixoCofinsSt);
+    formData.append('cfop', data.cfop);
+    formData.append('fornecedor', data.fornecedor);
+    formData.append('file', data.file);
+
     if (isEditMode) {
 
-      const newData = {
+      await updateProduct(formData, data.id_produto);
 
-        "productData": {
-          ...data
-        }
-
-      }
-
-      await updateProduct(newData)
     } else {
-      await createProduct(data)
 
+      await createProduct(formData)
     }
 
   };
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0]; // Capturar o primeiro arquivo selecionado
+    
+    setData((prevData) => ({
+      ...prevData,
+      file: selectedFile, // Atualizar o estado com o arquivo selecionado
+    }));
+  };
+
 
   const Loading = () => {
     return (
@@ -184,7 +231,7 @@ const CadastrarProduto = () => {
     },
     {
       title: 'Fotos',
-      content: <Fotos data={data} handleInputChange={handleInputChange} handleSubmit={handleSubmit} Loading={Loading} />,
+      content: <Fotos data={data} handleFileChange={handleFileChange} handleSubmit={handleSubmit} Loading={Loading} />,
     },
     {
       title: 'Fiscal',

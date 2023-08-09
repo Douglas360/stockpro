@@ -14,7 +14,7 @@ const CadastrarOrcamentoProduto = () => {
     if (isEditMode) {
       const loadBudget = async () => {
         const response = await getBudgetById(id)
-        console.log(response)
+        
         setBudget(response)
       }
       loadBudget()

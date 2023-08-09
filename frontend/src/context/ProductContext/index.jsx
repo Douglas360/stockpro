@@ -42,8 +42,10 @@ export const ProductProvider = ({ children }) => {
     };
 
     //function to update a Product by id
-    const updateProduct = async (data) => {
-        return handleRequest(api.put(`/product/${data.productData.id_produto}`, data), 'Produto atualizado com sucesso');
+    const updateProduct = async (data, id) => {
+        console.log(data)
+        //return handleRequest(api.put(`/product/${data.productData.id_produto}`, data), 'Produto atualizado com sucesso');
+        return handleRequest(api.put(`/product/${id}`, data), 'Produto atualizado com sucesso');
     };
 
     //function to list all Products 
@@ -65,6 +67,11 @@ export const ProductProvider = ({ children }) => {
     const listSalePrices = async () => {
         return handleRequest(api.get('/list/saleprice'));
     };
+    //function to delete file
+    const deleteFile = async (id) => {
+        return handleRequest(api.delete(`/delete/product/file/${id}`), 'Arquivo deletado com sucesso');
+    };
+
 
     return (
         <ProductContext.Provider
@@ -77,6 +84,7 @@ export const ProductProvider = ({ children }) => {
                 deleteProduct,
                 createSalePrice,
                 listSalePrices,
+                deleteFile,
 
 
 

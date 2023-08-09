@@ -67,11 +67,12 @@ router.delete("/delete/carrier/:id", createCarrierController.delete);
 
 //Product routes
 const createProductController = new CreateProductController();
-router.post("/product", createProductController.create);
+router.post("/product", upload.single('file'), createProductController.create);
 router.get("/product/:id", createProductController.get);
-router.put("/product/:id", createProductController.update);
+router.put("/product/:id",  upload.single('file'), createProductController.update);
 router.get("/list/product/id_company?:id", createProductController.getAll);
 router.delete("/delete/product/:id", createProductController.delete);
+router.delete("/delete/product/file/:id", createProductController.deleteFile);
 
 //SalePrice routes
 const createSalePriceController = new CreateSalePriceController();

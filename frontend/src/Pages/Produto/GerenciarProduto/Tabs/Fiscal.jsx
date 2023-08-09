@@ -36,11 +36,6 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
 
   }
 
-
-
-
-
-
   return (
     <Card className='main-card mb-3'>
       <CardBody>

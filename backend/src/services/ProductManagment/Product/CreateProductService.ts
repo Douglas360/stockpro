@@ -1,8 +1,14 @@
 import prismaClient from "../../../prisma";
 import { IProduct } from "../../../types/ProductTypes";
+import { deleteFile, uploadFile } from "../../../config/multer";
+
+interface FileObject {
+    originalname: string;
+    buffer: Buffer;
+}
 
 class CreateProductService {
-    async execute(productData: IProduct) {
+    async execute(productData: IProduct, file?: FileObject, folderName?: string) {
 
         try {
             //Validate fields
@@ -25,20 +31,40 @@ class CreateProductService {
                 throw new Error("Product already exists");
             }
 
+
+            //const fileUrl: string | Error = `http://stockpro.com.br.s3-website-us-east-1.amazonaws.com/fotos/${folderName}`
+            let fileUrl
+
+            if (file && folderName) {
+                fileUrl = await uploadFile(file, folderName);
+
+            }
+
             //productData without id_usuario
             const productDataWithoutIdUser = {
                 ...productData,
-                id_usuario: undefined
+                id_usuario: undefined,
             }
+            //return productDataWithoutIdUser
 
             const product = await prismaClient.produto.create({
                 data: productDataWithoutIdUser,
                 include: {
                     campos: true,
                     estoque: true,
-                    fornecedor: true
+                    fornecedor: true,
+
                 }
             });
+
+            if (file) {
+                await prismaClient.fotoProduto.create({
+                    data: {
+                        id_produto: product.id_produto,
+                        caminho: fileUrl as string
+                    }
+                });
+            }
 
             const productWithDetails = await prismaClient.produto.findFirst({
                 where: {
@@ -64,6 +90,8 @@ class CreateProductService {
             });
 
             return productWithDetails;
+
+
         } catch (error: any) {
             console.log(error)
             throw new Error(error.message);
@@ -82,7 +110,8 @@ class CreateProductService {
                 },
                 include: {
                     campos: true,
-                    estoque: true
+                    estoque: true,
+                    FotoProduto: true
                 }
             });
             if (!product) throw new Error("Product not found")
@@ -91,7 +120,7 @@ class CreateProductService {
             throw new Error(error.message);
         }
     }
-    async update(id: number, productData: IProduct, stockData?: any) {
+    async update(id: number, productData: IProduct, stockData?: any, newFile?: FileObject, folderName?: string,) {
 
         // Funções de criação de movimentos de entrada e saída
         async function createInventoryEntrada(productData: any, stockData: any) {
@@ -150,8 +179,21 @@ class CreateProductService {
         }
 
         try {
+
             // Check id
             if (!id) throw new Error("id not found")
+            if (!productData.id_empresa) throw new Error("id_empresa not found")
+            if (!stockData.id_estoque) throw new Error("id_estoque not found")
+
+            // Check if product already exists in database
+            const productAlreadyExists = await prismaClient.produto.findFirst({
+                where: {
+                    id_produto: id
+                }
+            });
+            if (!productAlreadyExists) {
+                throw new Error("Product not found");
+            }
 
             const product = await prismaClient.produto.update({
                 where: {
@@ -188,6 +230,30 @@ class CreateProductService {
                 }
             }
 
+            if (newFile && folderName) {
+                const file = await prismaClient.fotoProduto.findFirst({
+                    where: {
+                        id_produto: product.id_produto
+                    }
+                });
+                if (file) {
+                    const fileUrl = file?.caminho?.split("/");
+                    const fileKey = `fotos/produtos/${fileUrl?.[fileUrl.length - 1]}`;
+                    await deleteFile(fileKey);
+                }
+                const fileUrl = await uploadFile(newFile, folderName);
+                await prismaClient.fotoProduto.update({
+                    where: {
+                        id_foto_produto: file?.id_foto_produto
+                    },
+                    data: {
+                        caminho: fileUrl as string
+                    }
+                });
+            }
+
+
+
             return product;
 
         } catch (error: any) {
@@ -216,6 +282,30 @@ class CreateProductService {
             throw new Error(error.message);
         }
     }
+    async deleteFile(id: number) {
+        try {
+            const product = await prismaClient.fotoProduto.findFirst({
+                where: {
+                    id_produto: id
+                }
+            });
+            if (!product) throw new Error("Product not found");
+            const fileUrl = product?.caminho?.split("/");
+            const fileKey = `fotos/produtos/${fileUrl?.[fileUrl.length - 1]}`;
+            await deleteFile(fileKey);
+            await prismaClient.fotoProduto.delete({
+                where: {
+                    id_foto_produto: product.id_foto_produto
+                }
+            });
+
+            return { message: "Photo deleted successfully" }
+
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+
+    }
     async delete(id: number) {
         try {
             // Search product by codigo_interno and delete it from database 
@@ -226,6 +316,20 @@ class CreateProductService {
 
 
             });
+
+            //deleteFile from S3 bucket 
+            const file = await prismaClient.fotoProduto.findFirst({
+                where: {
+                    id_produto: product?.id_produto
+                }
+            });
+
+            if (file) {
+                const fileUrl = file?.caminho?.split("/");
+                const fileKey = `fotos/produtos/${fileUrl?.[fileUrl.length - 1]}`;
+                await deleteFile(fileKey);
+            }
+
             if (!product) throw new Error("Product not found");
             await prismaClient.movimentacaoEstoque.deleteMany({
                 where: {
@@ -236,16 +340,9 @@ class CreateProductService {
                 where: {
                     id_produto: product.id_produto
                 },
-
-
             });
 
-
-
-
             return { message: "Product deleted successfully" }
-
-
 
 
         } catch (error: any) {

@@ -1,4 +1,4 @@
-import { CamposExtra, ControleEstoque, Fornecedor } from "@prisma/client";
+import { CamposExtra, ControleEstoque, FotoProduto } from "@prisma/client";
 
 export interface IProduct {
     nome: string;
@@ -43,4 +43,7 @@ export interface IProduct {
     id_fornecedor?: number | null;
     id_usuario?: number | null;
     cfop?: string | null;
+    file?: {
+        create: FotoProduto[];
+    } | undefined;
 }

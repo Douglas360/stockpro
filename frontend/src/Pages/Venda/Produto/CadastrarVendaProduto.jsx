@@ -14,7 +14,7 @@ const CadastrarVendaProduto = () => {
     if (isEditMode) {
       const loadOrder = async () => {
         const response = await getOrderById(id)
-        console.log(response)
+       
         setOrder(response)
       }
       loadOrder()

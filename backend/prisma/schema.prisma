@@ -243,8 +243,19 @@ model Produto {
   item_venda           ItemVenda[]
   item_orcamento       ItemOrcamento[]
   movimentacao_estoque MovimentacaoEstoque[]
+  FotoProduto          FotoProduto[]
 
   @@map("t_produto")
+}
+
+model FotoProduto {
+  id_foto_produto Int     @id @default(autoincrement())
+  id_produto      Int
+  caminho         String?
+
+  produto Produto @relation(fields: [id_produto], references: [id_produto], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("t_foto_produto")
 }
 
 model ControleEstoque {
@@ -358,7 +369,7 @@ model Orcamento {
   itens                        ItemOrcamento[]
   historico_situacao_orcamento HistoricoSituacaoOrcamento[]
   pagamento                    PagamentoOrcamento[]
-  situacao_venda SituacaoVenda @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
+  situacao_venda               SituacaoVenda                @relation(fields: [id_situacao_venda], references: [id_situacao_venda], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_orcamento")
 }
@@ -375,8 +386,8 @@ model ItemOrcamento {
   valor_unitario    Float
   valor_total       Float
 
-  orcamento Orcamento @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)  
-  produto Produto @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
+  orcamento Orcamento @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)
+  produto   Produto   @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_item_orcamento")
 }
@@ -518,13 +529,13 @@ model Pagamento {
 }
 
 model PagamentoOrcamento {
-  id_pagamento       Int       @id @default(autoincrement())
+  id_pagamento       Int      @id @default(autoincrement())
   id_orcamento       Int
   parcelado          Boolean // Indica se o pagamento é parcelado ou à vista
   venda              Boolean //Indica se é venda ou orçamento
   id_forma_pagamento Int // ID da forma de pagamento (1=PIX, 2=BOLETO, etc.)
   vencimento         DateTime
-  valor              Float 
+  valor              Float
   observacao         String?
 
   orcamento       Orcamento      @relation(fields: [id_orcamento], references: [id_orcamento], onDelete: Cascade, onUpdate: Cascade)
