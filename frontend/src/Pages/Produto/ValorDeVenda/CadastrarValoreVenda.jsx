@@ -34,6 +34,7 @@ const CadastrarValoreVenda = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         await createSalePrice(data);
+        navigate('/produto/valores');
     };
 
     const handleCancel = () => {

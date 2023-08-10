@@ -67,6 +67,14 @@ export const ProductProvider = ({ children }) => {
     const listSalePrices = async () => {
         return handleRequest(api.get('/list/saleprice'));
     };
+    //function to delete a SalePrice by id
+    const deleteSalePrice = async (data) => {
+        return handleRequest(api.delete(`/delete/saleprice/${data}`), 'Preço de venda deletado com sucesso');
+    };
+    //function to update a SalePrice by id
+    const updateSalePrice = async (data) => {
+        return handleRequest(api.put(`/update/saleprice/${data.id}`, data), 'Preço de venda atualizado com sucesso');
+    };
     //function to delete file
     const deleteFile = async (id) => {
         return handleRequest(api.delete(`/delete/product/file/${id}`), 'Arquivo deletado com sucesso');
@@ -84,6 +92,8 @@ export const ProductProvider = ({ children }) => {
                 deleteProduct,
                 createSalePrice,
                 listSalePrices,
+                deleteSalePrice,
+                updateSalePrice,
                 deleteFile,
 
 
