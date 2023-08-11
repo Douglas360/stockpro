@@ -43,7 +43,6 @@ export const ProductProvider = ({ children }) => {
 
     //function to update a Product by id
     const updateProduct = async (data, id) => {
-        console.log(data)
         //return handleRequest(api.put(`/product/${data.productData.id_produto}`, data), 'Produto atualizado com sucesso');
         return handleRequest(api.put(`/product/${id}`, data), 'Produto atualizado com sucesso');
     };

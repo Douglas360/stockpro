@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
         const storage = rememberMe ? localStorage : sessionStorage;
         api.defaults.headers['Authorization'] = `Bearer ${token}`;
         setUser(userData.user);
-        console.log(userData.user)
         storage.setItem('user', JSON.stringify(userData.user));
         storage.setItem('token', token, { path: '/' });
 

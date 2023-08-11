@@ -31,7 +31,7 @@ class Header extends React.Component {
 
                             <HeaderLogo/>
 
-                            <div className={cx(
+                            {/* <div className={cx(
                                 "app-header__content",
                                 {'header-mobile-open': enableMobileMenuSmall},
                             )}>
@@ -41,7 +41,7 @@ class Header extends React.Component {
                                 <div className="app-header-right">
                                     <UserBox/>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </CSSTransition>
                 </TransitionGroup>

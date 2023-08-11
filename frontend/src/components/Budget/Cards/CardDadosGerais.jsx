@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { faPenToSquare, faRandom } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPenToSquare, faRandom } from '@fortawesome/free-solid-svg-icons'
 import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } from 'reactstrap'
-import { useRegister } from '../../../context/RegisterContext/useRegister'
-import { useOrder } from '../../../context/OrderContext/useOrder'
+
 import { useAuth } from '../../../context/AuthContext/useAuth'
+import { useOrder } from '../../../context/OrderContext/useOrder'
+import { useRegister } from '../../../context/RegisterContext/useRegister'
 
 const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
-
-
-  const { listAllCustomers } = useRegister()
   const { user } = useAuth()
   const { listSalesStatus } = useOrder()
+  const { listAllCustomers } = useRegister()
+
   const [customers, setCustomers] = useState([])
-  const [numeroVenda, setNumeroVenda] = useState(data?.numeroVenda)
   const [situacaoVenda, setSituacaoVenda] = useState([])
   const [inputErrors, setInputErrors] = useState({
     codigoError: false,
@@ -25,21 +24,17 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
   const idCompany = user?.id_empresa
 
   const loadCustomers = async () => {
-    //const id_empresa = user?.id_empresa
     const response = await listAllCustomers(idCompany)
     const responseStatus = await listSalesStatus()
     setCustomers(response)
     setSituacaoVenda(responseStatus)
-
   }
 
   useEffect(() => {
     if (idCompany) {
       loadCustomers()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idCompany])
-
 
   const handleInputBlur = (name, value) => {
     if (value.trim() === '') {
@@ -48,13 +43,10 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
       setInputErrors((prevErrors) => ({ ...prevErrors, [name]: false }));
     }
   };
-  const generateCode = () => {
 
+  const generateCode = () => {
     const randomCode = Math.floor(100000 + Math.random() * 900000)
 
-    setNumeroVenda(randomCode.toString())
-
-    //update the data object
     const updatedData = { ...data }
     updatedData.numeroVenda = randomCode.toString()
     handleInputChange({ target: { name: 'numeroVenda', value: randomCode.toString() } })
@@ -63,10 +55,9 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
       setInputErrors((prevErrors) => ({ ...prevErrors, codigoError: false }));
     }
   }
+
   const handleCodigoChange = (e) => {
     const { value } = e.target
-    setNumeroVenda(value)
-    //update the data object
     const updatedData = { ...data }
     updatedData.numeroVenda = value
     handleInputChange({ target: { name: 'numeroVenda', value: value } })
@@ -75,7 +66,6 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
   return (
     <Card className="main-card mb-1">
       <CardBody>
-
         <Row>
           <Col md='12'>
             <Label style={{ fontSize: 20 }}>
@@ -95,11 +85,11 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
                 id='numeroVenda'
                 placeholder='Numero Venda'
                 defaultValue={data?.numeroVenda || ''}
-                value={numeroVenda}
+                value={data.numeroVenda}
                 onChange={handleCodigoChange}
                 onBlur={(e) => handleInputBlur('codigoError', e.target.value)}
                 invalid={inputErrors.codigoError}
-                valid={!inputErrors.codigoError}
+                valid={inputErrors.codigoError}
               />
               <Button color='secondary' onClick={generateCode}>
                 <FontAwesomeIcon icon={faRandom} size='sm' style={{ marginRight: 3 }} />
@@ -115,12 +105,12 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               onChange={handleInputChange}
               onBlur={(e) => handleInputBlur('customerError', e.target.value)}
               invalid={inputErrors.customerError}
-              valid={!inputErrors.customerError}
+              valid={inputErrors.customerError}
               required
             >
               <option value=''>Selecione um cliente</option>
-              {customers?.map((customer) => (
-                <option key={customer.id_cliente} value={customer.id_cliente}>
+              {customers?.map((customer, index) => (
+                <option key={index} value={customer.id_cliente}>
                   {customer.nome}
                 </option>
               ))}
@@ -132,11 +122,12 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               type='date'
               name='dataOrcamento'
               id='dataOrcamento'
+              min={new Date().toISOString().split('T')[0]}
               value={data?.dataOrcamento || ''}
               onChange={handleInputChange}
               onBlur={(e) => handleInputBlur('dateError', e.target.value)}
               invalid={inputErrors.dateError}
-              valid={!inputErrors.dateError}
+              valid={inputErrors.dateError}
               required
 
             />
@@ -154,12 +145,12 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               onChange={handleInputChange}
               onBlur={(e) => handleInputBlur('situacaoError', e.target.value)}
               invalid={inputErrors.situacaoError}
-              valid={!inputErrors.situacaoError}
+              valid={inputErrors.situacaoError}
               required
             >
               <option value=''>Selecione</option>
-              {situacaoVenda?.map((situacao) => (
-                <option key={situacao.id_situacao_venda} value={situacao.id_situacao_venda}>
+              {situacaoVenda.map((situacao, index) => (
+                <option key={index} value={situacao.id_situacao_venda}>
                   {situacao.descricao}
                 </option>
               ))}
