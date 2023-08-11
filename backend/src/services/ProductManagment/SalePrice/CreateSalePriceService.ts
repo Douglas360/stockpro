@@ -15,7 +15,6 @@ class CreateSalePriceService {
 
         }
     }
-
     async getAll() {
         try {
             const salePrice = await prismaClient.lucroSugerido.findMany();
@@ -52,6 +51,4 @@ class CreateSalePriceService {
             throw new Error(error.message);
         }
     }
-
-
 } export { CreateSalePriceService };
