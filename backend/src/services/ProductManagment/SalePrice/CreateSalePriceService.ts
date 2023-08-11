@@ -25,5 +25,33 @@ class CreateSalePriceService {
             throw new Error(error.message);
         }
     }
+    async delete(id: number) {
+        try {
+            const salePrice = await prismaClient.lucroSugerido.delete({
+                where: {
+                    id_lucro_sugerido: id,
+                },
+            });
+
+            return salePrice;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async update(id: number, saleData: ISalePrice) {
+        try {
+            const salePrice = await prismaClient.lucroSugerido.update({
+                where: {
+                    id_lucro_sugerido: id,
+                },
+                data: saleData,
+            });
+
+            return salePrice;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
 
 } export { CreateSalePriceService };

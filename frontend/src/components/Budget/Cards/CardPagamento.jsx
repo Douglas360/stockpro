@@ -28,8 +28,26 @@ const CardPagamento = ({ data, handleInputChange }) => {
 
   const [pagamentoParcelado, setPagamentoParcelado] = useState(null);
   const [checkExibePagamento, setCheckExibePagamento] = useState(false);
-  const [checkPagamentoAvista, setCheckPagamentoAvista] = useState(false);
+  const [checkPagamentoAvista, setCheckPagamentoAvista] = useState(true);
   const [checkPagamentoParcelado, setCheckPagamentoParcelado] = useState(false);
+  const [inputErrors, setInputErrors] = useState({
+    formaPagamentoAvistaError: false,
+    formaPagamentoParceladoError: false,
+    vencimentoAvistaError: false,
+    valorAvistaError: false,
+    intervaloParcelasError: false,
+    quantidadeParcelasError: false,
+    dataPrimeiraParcelaError: false,
+
+
+  });
+  const handleInputBlur = (name, value) => {
+    if (value.trim() === '') {
+      setInputErrors((prevErrors) => ({ ...prevErrors, [name]: true }));
+    } else {
+      setInputErrors((prevErrors) => ({ ...prevErrors, [name]: false }));
+    }
+  };
 
   const [dataPagamento, setDataPagamento] = useState([]);
 
@@ -56,7 +74,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
         target: { name: "pagamentoParcelado", value: formatedObject },
       });
     } else {
-      console.log('ASDUHAIUDHAISUHDSA', pagamentoParcelado)
+      //console.log('ASDUHAIUDHAISUHDSA', pagamentoParcelado)
       handleInputChange({
         target: { name: "pagamentoParcelado", value: pagamentoParcelado },
       });
@@ -108,11 +126,11 @@ const CardPagamento = ({ data, handleInputChange }) => {
       setCheckExibePagamento(value);
     } else if (checkboxName === "pagamentoAvista") {
       setCheckPagamentoAvista(value);
-      setCheckPagamentoParcelado(false);
+      setCheckPagamentoParcelado(!value);
       setPagamentoParcelado([])
     } else if (checkboxName === "pagamentoParcelado") {
       setPagamentoParcelado([])
-      setCheckPagamentoAvista(false);
+      setCheckPagamentoAvista(!value);
       setCheckPagamentoParcelado(value);
     }
   };
@@ -130,9 +148,9 @@ const CardPagamento = ({ data, handleInputChange }) => {
             index === 0
               ? data.dataPrimeiraParcela
               : addDays(
-                  data.dataPrimeiraParcela,
-                  data.intervaloParcelas * index
-                ),
+                data.dataPrimeiraParcela,
+                data.intervaloParcelas * index
+              ),
           valorParcela: valorParcela,
           formaPagamentoParcela: data?.formaPagamentoParcela,
           observacaoParcela: "",
@@ -190,8 +208,9 @@ const CardPagamento = ({ data, handleInputChange }) => {
               onChange={(e) => handleCheck("exibePagamento", e.target.checked)}
               checked={checkExibePagamento}
               style={{ marginRight: 5 }}
+              required
             />
-            <Label for="exibePagamento">Gerar condições de pagamento</Label>
+            <Label for='exibePagamento' style={{ fontWeight: 'bold' }}>Gerar condições de pagamento</Label><span className='text-danger'>*</span>
           </Col>
         </Row>
         {checkExibePagamento && (
@@ -244,12 +263,15 @@ const CardPagamento = ({ data, handleInputChange }) => {
                       <Input
                         type="date"
                         min={new Date().toISOString().split('T')[0]}
-                        name="vencimento"
-                        id="vencimento"
+                        name='vencimentoAvista'
+                        id='vencimentoAvista'
                         placeholder="Vencimento"
-                        onChange={handleInputChange
-                        }
-                        value={data.vencimento}
+                        onChange={handleInputChange}
+                        value={data.vencimentoAvista}
+                        onBlur={(e) => handleInputBlur('vencimentoAvistaError', e.target.value)}
+                        invalid={inputErrors.vencimentoAvistaError}
+                        valid={!inputErrors.vencimentoAvistaError}
+                        required
                       />
                     </td>
                     <td>
@@ -257,7 +279,6 @@ const CardPagamento = ({ data, handleInputChange }) => {
                         className="form-control"
                         name="valorTotal"
                         id="valorTotal"
-                        required={false}
                         thousandSeparator="."
                         decimalSeparator=","
                         prefix="R$ "
@@ -274,9 +295,11 @@ const CardPagamento = ({ data, handleInputChange }) => {
                           })
                         }
                         value={data.valorTotal}
+                        required
+
                       />
                     </td>
-                    
+
                     <td>
                       <Input
                         type="select"
@@ -290,6 +313,10 @@ const CardPagamento = ({ data, handleInputChange }) => {
                           })
                         }
                         value={data.formaPagamentoAvista}
+                        onBlur={(e) => handleInputBlur('formaPagamentoAvistaError', e.target.value)}
+                        invalid={inputErrors.formaPagamentoAvistaError}
+                        valid={!inputErrors.formaPagamentoAvistaError}
+                        required
                       >
                         <option value="">Selecione</option>
                         {dataPagamento.map((item) => (
@@ -305,17 +332,19 @@ const CardPagamento = ({ data, handleInputChange }) => {
                     <td>
                       <Input
                         type="text"
-                        name="observacao"
-                        id="observacao"
+                        name='observacaoAvista'
+                        id='observacaoAvista'
                         placeholder="Observação"
-                        onChange={(e) =>
+                        /*onChange={(e) =>
                           setPagamentoParcelado({
                             ...pagamentoParcelado,
                             observacao: e.target.value,
                             parcelado: false,
                           })
-                        }
-                        value={data.observacao}
+                        }   value={data.observacao}*/
+                        onChange={handleInputChange}
+                        value={data.observacaoAvista}
+
                       />
                     </td>
                     <td>

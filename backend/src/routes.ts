@@ -21,6 +21,11 @@ import { TypeSaleController } from "./controllers/TypeSale/TypeSaleController";
 
 const router = Router();
 
+//Health check
+router.get("/health", (req, res) => {
+    return res.status(200).json({ message: 'OK 1.1' });
+});
+
 //Company routes
 const companyController = new CompanyController();
 router.post("/company", companyController.create);
@@ -78,6 +83,8 @@ router.delete("/delete/product/file/:id", createProductController.deleteFile);
 const createSalePriceController = new CreateSalePriceController();
 router.post("/saleprice", createSalePriceController.create);
 router.get("/list/saleprice/", createSalePriceController.getAll);
+router.put("/update/saleprice/:id", createSalePriceController.update);
+router.delete("/delete/saleprice/:id", createSalePriceController.delete);
 
 //Order routes
 const createOrderController = new CreateOrderController();
@@ -91,6 +98,7 @@ router.get("/list/salesstatus", createOrderController.listSalesStatus);
 router.put("/update/orderstatus/:id", createOrderController.updateOrderStatus);
 router.get("/list/historysalesstatus/:id", createOrderController.listHistorySalesStatus);
 router.put("/cancel/order/:id", createOrderController.cancelOrder);
+router.put("/update/order/:id", createOrderController.update);
 
 //Budget routes
 const createBudgetController = new CreateBudgetController();
@@ -101,6 +109,7 @@ router.put("/update/budgetstatus/:id", createBudgetController.updateBudgetStatus
 router.get("/list/budget/id_company/:id", createBudgetController.listBudgetByCompany);
 router.get("/list/historybudgetstatus/:id", createBudgetController.listHistoryBudgetStatus);
 router.get("/print/budget/:id", createBudgetController.listBudgetToPrint);
+router.put("/update/budget/:id", createBudgetController.update);
 
 //Invoice routes
 const createInvoiceController = new CreateInvoiceController();

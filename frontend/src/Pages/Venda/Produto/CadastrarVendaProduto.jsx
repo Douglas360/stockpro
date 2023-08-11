@@ -44,7 +44,7 @@ const CadastrarVendaProduto = () => {
     pagamentoParcelado: null,
   });
 
-  const { createOrder, getOrderById, loading } = useOrder();
+  const { createOrder, getOrderById, updateOrder, loading } = useOrder();
   const { getBudgetById } = useBudget();
 
   const isEditMode = !!id;
@@ -55,6 +55,7 @@ const CadastrarVendaProduto = () => {
         const response = await getOrderById(id);
         if (response) {
           const Object = {
+            id: response.numero_venda,
             bairro: response.bairro,
             cep: response.cep,
             cidade: response.cidade,
@@ -83,8 +84,8 @@ const CadastrarVendaProduto = () => {
             quantidadeParcelas: response.pagamento.length,
             dataPrimeiraParcela: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0]?.vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
             formaPagamentoParcela: response.pagamento[0]?.id_forma_pagamento
               ? response.pagamento[0].id_forma_pagamento
@@ -100,13 +101,13 @@ const CadastrarVendaProduto = () => {
               : null,
             vencimentoAvista: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
             vencimento: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
           };
           setInitialValues(Object);
@@ -149,8 +150,8 @@ const CadastrarVendaProduto = () => {
             validadeOrcamento: response?.validade_orcamento || "",
             dataPrimeiraParcela: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0]?.vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
             formaPagamentoParcela: response.pagamento[0]?.id_forma_pagamento
               ? response.pagamento[0].id_forma_pagamento
@@ -166,13 +167,13 @@ const CadastrarVendaProduto = () => {
               : null,
             vencimentoAvista: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
             vencimento: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
           };
 
@@ -185,8 +186,10 @@ const CadastrarVendaProduto = () => {
 
   const handleSubmit = async (data) => {
     if (isEditMode && !gerarVenda) {
-      //await updateOrder(data)
+      console.log(data)
+      await updateOrder(data)
     } else {
+      //console.log(data)
       await createOrder(data);
     }
   };

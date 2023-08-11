@@ -4,8 +4,7 @@ import { CreateBudgetService } from "../../services/Budget/CreateBudgetService";
 class CreateBudgetController {
     async create(request: Request, response: Response) {
         const { budgetData } = request.body;
-        console.log(budgetData)
-      
+
         const createBudgetService = new CreateBudgetService();
 
         const budget = await createBudgetService.create(budgetData);
@@ -21,7 +20,7 @@ class CreateBudgetController {
 
         return response.json(budget);
     }
-            
+
     async listBudgetByCompany(request: Request, response: Response) {
         const { id } = request.params;
 
@@ -51,7 +50,7 @@ class CreateBudgetController {
     }
     async updateBudgetStatus(request: Request, response: Response) {
         const { id } = request.params;
-        const { statusId, descricao } = request.body;       
+        const { statusId, descricao } = request.body;
 
         const createBudgetService = new CreateBudgetService();
 
@@ -65,6 +64,16 @@ class CreateBudgetController {
         const createBudgetService = new CreateBudgetService();
 
         const budget = await createBudgetService.listHistoryBudgetStatus(Number(id));
+
+        return response.json(budget);
+    }
+    async update(request: Request, response: Response) {
+        const { id } = request.params;
+        const { budgetData } = request.body;
+        console.log(budgetData)
+        const createBudgetService = new CreateBudgetService();
+
+        const budget = await createBudgetService.update(Number(id), budgetData);
 
         return response.json(budget);
     }

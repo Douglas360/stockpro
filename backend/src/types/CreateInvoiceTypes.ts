@@ -5,4 +5,5 @@ export interface CreateInvoiceServiceRequest {
   tipo_documento: number;
   local_destino: number;
   finalidade_emissao: number;
+  cfop: number;
 }

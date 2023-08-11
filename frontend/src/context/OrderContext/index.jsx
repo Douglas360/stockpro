@@ -37,27 +37,27 @@ export const OrderProvider = ({ children }) => {
 
     const pagamento = Array.isArray(data.pagamentoParcelado)
       ? data.pagamentoParcelado?.map((pagamento) => {
-          return {
-            id_forma_pagamento: +pagamento.id_forma_pagamento,
-            valor: pagamento.valor,
-            vencimento: pagamento.vencimento,
-            observacao: pagamento.observacao,
-            venda: true,
-            parcelado: true,
-          };
-        })
+        return {
+          id_forma_pagamento: +pagamento.id_forma_pagamento,
+          valor: pagamento.valor,
+          vencimento: pagamento.vencimento,
+          observacao: pagamento.observacao,
+          venda: true,
+          parcelado: true,
+        };
+      })
       : [
-          {
-            id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela,
-            observacao: data?.pagamentoParcelado?.observacao,
-            parcelado: false,
-            valor: data?.pagamentoParcelado?.valor
-              ? +data?.pagamentoParcelado?.valor.toFixed(2)
-              : +data?.valorTotal.toFixed(2),
-            vencimento: data?.pagamentoParcelado?.vencimento ? new Date(data?.pagamentoParcelado?.vencimento).toISOString() : new Date().toISOString(),
-            venda: true,
-          },
-        ];
+        {
+          id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela,
+          observacao: data?.pagamentoParcelado?.observacao,
+          parcelado: false,
+          valor: data?.pagamentoParcelado?.valor
+            ? +data?.pagamentoParcelado?.valor.toFixed(2)
+            : +data?.valorTotal.toFixed(2),
+          vencimento: data?.pagamentoParcelado?.vencimento ? new Date(data?.pagamentoParcelado?.vencimento).toISOString() : new Date().toISOString(),
+          venda: true,
+        },
+      ];
 
     const newData = {
       orderData: {
@@ -163,12 +163,87 @@ export const OrderProvider = ({ children }) => {
   const listTypeSale = async () => {
     return handleRequest(api.get("/typesale"));
   };
+  //function to update order
+  const updateOrder = async (data) => {
+    const date = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    );
+
+    const pagamento = Array.isArray(data.pagamentoParcelado)
+      ? data.pagamentoParcelado?.map((pagamento) => {
+        return {
+          id_forma_pagamento: +pagamento.id_forma_pagamento,
+          valor: pagamento.valor,
+          vencimento: pagamento.vencimento,
+          observacao: pagamento.observacao,
+          venda: true,
+          parcelado: true,
+        };
+      })
+      : [
+        {
+          id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela,
+          observacao: data?.pagamentoParcelado?.observacao,
+          parcelado: false,
+          valor: data?.pagamentoParcelado?.valor
+            ? +data?.pagamentoParcelado?.valor.toFixed(2)
+            : +data?.valorTotal.toFixed(2),
+          vencimento: data?.pagamentoParcelado?.vencimento ? new Date(data?.pagamentoParcelado?.vencimento).toISOString() : new Date().toISOString(),
+          venda: true,
+        },
+      ];
+
+    const newData = {
+      orderData: {
+        numero_venda: parseInt(data.numeroVenda),
+        data_venda: date,
+        id_empresa: parseInt(data.id_empresa),
+        id_cliente: parseInt(data.clienteOrcamento),
+        id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
+        id_canal_venda: parseInt(data.canalVendaOrcamento) || 1,
+        id_user: parseInt(data.id_user),
+        id_forma_pagamento: parseInt(data.formaPagamentoAvista) || 1,
+        id_transportadora: parseInt(data.id_transportadora),
+        valor_total: +data?.valorTotal.toFixed(2),
+        valor_desconto: parseFloat(data.descontoValor),
+        valor_frete: parseFloat(data.valorFrete),
+        valor_produto: +data.valorProdutos.toFixed(2),
+        observacao: data.observacaoOrcamento,
+        observacao_interna: data.observacaoInternaOrcamento,
+        cep: data.cep || "",
+        logradouro: data.logradouro || "",
+        numero: data.numero || "",
+        complemento: data.complemento || "",
+        bairro: data.bairro || "",
+        cidade: data.cidade || "",
+        estado: data.estado || "",
+        itens: data.produtos?.map((produto) => {
+          return {
+            id_produto: +produto.id_produto,
+            numero_item: +produto.numero_item,
+            quantidade: +produto.quantidade,
+            id_tipo_venda: +produto.id_tipo_venda,
+            desconto: +produto.desconto,
+            tipo_desconto: produto.tipo_desconto,
+            valor_unitario: +produto.valor_unitario,
+            valor_total: produto.valor_total
+              ? +produto.valor_total
+              : +produto.subtotal,
+          };
+        }),
+        pagamentos: pagamento,
+      },
+    };
+    return handleRequest(api.put(`/update/order/${data.id}`, newData), 'Venda atualizada com sucesso');
+  };
+
 
   return (
     <OrderContext.Provider
       value={{
         loading,
         createOrder,
+        updateOrder,
         listAllOrders,
         listSalesStatus,
         listHistoryOrder,

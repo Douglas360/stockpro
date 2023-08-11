@@ -22,6 +22,10 @@ export const CadastroNav = [
                 label: 'Transportadoras',
                 to: '/cadastro/transportadora',
             },
+            {
+                label: '1.03',
+                
+            }
         ]
     }
 ];

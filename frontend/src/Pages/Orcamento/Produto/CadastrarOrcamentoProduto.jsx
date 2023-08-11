@@ -7,7 +7,7 @@ import { useBudget } from "../../../context/BudgetContext/useBudget";
 
 const CadastrarOrcamentoProduto = () => {
   const { id } = useParams();
-  const { createBudget, getBudgetById, loading } = useBudget();
+  const { createBudget, getBudgetById,updateBudget, loading } = useBudget();
 
   const isEditMode = !!id;
 
@@ -41,6 +41,7 @@ const CadastrarOrcamentoProduto = () => {
         const response = await getBudgetById(id);
         if (response) {
           const Object = {
+            id: response.numero_orcamento,
             bairro: response.bairro,
             cep: response.cep,
             cidade: response.cidade,
@@ -71,8 +72,8 @@ const CadastrarOrcamentoProduto = () => {
             validadeOrcamento: response?.validade_orcamento || "",
             dataPrimeiraParcela: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0]?.vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
             formaPagamentoParcela: response.pagamento[0]?.id_forma_pagamento
               ? response.pagamento[0].id_forma_pagamento
@@ -86,17 +87,17 @@ const CadastrarOrcamentoProduto = () => {
             formaPagamentoAvista: response.pagamento[0]?.id_forma_pagamento
               ? response.pagamento[0].id_forma_pagamento
               : null,
-              
+
             vencimentoAvista: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
 
             vencimento: response.pagamento[0]?.vencimento
               ? new Date(response.pagamento[0].vencimento)
-                  .toISOString()
-                  .slice(0, 10)
+                .toISOString()
+                .slice(0, 10)
               : "",
           };
           setInitialValues(Object);
@@ -108,7 +109,7 @@ const CadastrarOrcamentoProduto = () => {
 
   const handleSubmit = async (data) => {
     if (isEditMode) {
-      console.log(data);
+      await updateBudget(data);
     } else {
       await createBudget(data);
     }
