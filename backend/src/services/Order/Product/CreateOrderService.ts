@@ -94,7 +94,7 @@ class CreateOrderService {
 
             }
             //Update history of the product sales       
-           /* await prismaClient.historicoSituacaoVenda.create({
+            await prismaClient.historicoSituacaoVenda.create({
                 data: {
 
                     id_venda: newOrder.id_venda,
@@ -103,7 +103,7 @@ class CreateOrderService {
                     id_usuario: newOrder.id_user,
                     data: newOrder.data_venda,
                 },
-            });*/
+            });
 
             let quantidadeAtual = 0;
             if (newOrder.id_situacao_venda !== 4) {
@@ -150,6 +150,8 @@ class CreateOrderService {
                     })
                 );
             }
+
+
 
             return order;
         } catch (error: any) {
