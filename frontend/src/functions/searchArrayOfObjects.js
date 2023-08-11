@@ -23,7 +23,7 @@ export const searchArrayOfObjects = (itemsToSearch, search, keysToSearch = null)
 
   const regex = createRegex(search);
 
-  const matches = itemsToSearch.filter((item) =>
+  const matches = itemsToSearch?.filter((item) =>
     keys.some((key) => regex.test(get(item, key)))
   );
 

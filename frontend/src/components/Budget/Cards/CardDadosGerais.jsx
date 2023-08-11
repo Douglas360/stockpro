@@ -149,7 +149,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               required
             >
               <option value=''>Selecione</option>
-              {situacaoVenda.map((situacao, index) => (
+              {situacaoVenda?.map((situacao, index) => (
                 <option key={index} value={situacao.id_situacao_venda}>
                   {situacao.descricao}
                 </option>
