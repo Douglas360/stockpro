@@ -21,6 +21,11 @@ import { TypeSaleController } from "./controllers/TypeSale/TypeSaleController";
 
 const router = Router();
 
+//Health check
+router.get("/health", (req, res) => {
+    return res.status(200).json({ message: 'OK 1.0' });
+});
+
 //Company routes
 const companyController = new CompanyController();
 router.post("/company", companyController.create);
@@ -78,6 +83,8 @@ router.delete("/delete/product/file/:id", createProductController.deleteFile);
 const createSalePriceController = new CreateSalePriceController();
 router.post("/saleprice", createSalePriceController.create);
 router.get("/list/saleprice/", createSalePriceController.getAll);
+router.put("/update/saleprice/:id", createSalePriceController.update);
+router.delete("/delete/saleprice/:id", createSalePriceController.delete);
 
 //Order routes
 const createOrderController = new CreateOrderController();

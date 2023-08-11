@@ -111,7 +111,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
             </Col>
           </Row>
           <Row className='mb-3'>
-            <Col md={2}>
+            <Col md={3}>
               <Label for='pesoLiquido'>Peso Líquido</Label>
               <Input
                 type='text'
@@ -122,7 +122,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 onChange={handlePesoLiquidChange}
               />
             </Col>
-            <Col md={2}>
+            <Col md={3}>
               <Label for='pesoBruto'>Peso Bruto</Label>
               <Input
                 type='text'
@@ -133,7 +133,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 onChange={handlePesoBrutoChange}
               />
             </Col>
-            <Col md={2}>
+            <Col md={3}>
               <Label for='numeroFci'>Número FCI</Label>
               <Input
                 type='text'
@@ -144,7 +144,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 onChange={handleInputChange}
               />
             </Col>
-            <Col md={2}>
+            <Col md={3}>
               <Label for='VrAproxTribut'>% Vr. aprox. tribut.</Label>
               <Input
                 type='text'
@@ -155,7 +155,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 onChange={handleInputChange}
               />
             </Col>
-            <Col md={4}>
+            {/* <Col md={4}>
               <Label for='cfop'>CFOP</Label> <span className='text-danger'>*</span>
               <Input
                 required
@@ -215,7 +215,7 @@ export const Fiscal = ({ data, handleSubmit, handleInputChange, Loading }) => {
                 <option value="6124">6124 - Industrialização efetuada para outra empresa</option>
                 <option value="6125">6125 - Industrialização efetuada para outra empresa quando a mercadoria recebida para utilização no processo de industrialização não transitar pelo estabelecimento adquirente da mercadoria</option>
               </Input>
-            </Col>
+            </Col>*/}
           </Row>
           <FontAwesomeIcon icon={faSackDollar} id='icms' size='xl' style={{ marginRight: 3 }} />
           <Label style={{ fontSize: 20 }}>PIS/COFINS</Label>

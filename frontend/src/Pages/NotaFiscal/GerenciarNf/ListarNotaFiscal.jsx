@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf, faRefresh, faXmarkSquare } from '@fortawesome/free-solid-svg-icons';
-import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, UncontrolledTooltip } from 'reactstrap';
+import { Button, FormText, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, UncontrolledTooltip } from 'reactstrap';
 
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import { SearchBar } from '../../../components/SearchBar';
@@ -152,7 +152,7 @@ export const ListarNotaFiscal = () => {
             subheading="Gerenciar emissão de nota fiscal."
             icon="lnr lnr-file-add icon-gradient bg-amy-crisp"
         /> {invoiceLoading && <CustomSpinner />}
-           
+
             <SearchBar
                 urlNavigate="/venda/produto/cadastrar"
                 columns={columns}
@@ -177,6 +177,9 @@ export const ListarNotaFiscal = () => {
                         name='cancelReason'
                         id='cancelReason'
                     />
+                    <FormText color='muted' style={{ fontStyle: 'italic' }}>
+                        A justificativa deve ter no mínimo <span style={{ fontWeight: 'bold' }}> 15 caracteres</span>
+                    </FormText>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="secondary" onClick={() => setCancelModalOpen(false)}>

@@ -66,7 +66,7 @@ export const InvoiceProvider = ({ children }) => {
     //function to create invoice
     const createInvoice = async (data) => {
 
-        return handleRequest(api.post('/invoice', data), 'Nota fiscal emitida com sucesso');
+        return handleRequest(api.post('/invoice', data), 'Nota fiscal enviada para processamento');
     };
 
     //function to get invoice

@@ -464,14 +464,71 @@ class CreateOrderService {
 
             if (!order) throw new Error("Order not found")
 
+            // Check if there is a previous canceled order for the same venda
+            const previousCanceledOrder = await prismaClient.historicoSituacaoVenda.findFirst({
+                where: {
+                    id_venda: order.id_venda,
+                    id_situacao_venda: 4, // Assuming 4 is the status code for "canceled"
+                },
+            });
+
             const deletedOrder = await prismaClient.venda.delete({
                 where: {
                     id_venda: order.id_venda,
                 },
+                include: {
+                    itens: true,
+                },
             });
 
+            if (!previousCanceledOrder) {
+                //TODO: update the inventory for each deleted item
+                await Promise.all(
+                    deletedOrder.itens.map(async (item) => {
+                        const { id_produto, quantidade } = item;
+
+                        // Update the inventory for the product
+                        const updatedInventory = await prismaClient.controleEstoque.update({
+                            where: { id_produto },
+                            data: {
+                                quantidade: {
+                                    increment: quantidade, // Increment the quantity since the order is canceled
+                                },
+                                data_ultima_saida: new Date(),
+                            },
+                        });
+
+                        return updatedInventory;
+                    })
+
+
+                );
+
+                // Update Inventory Movements for each canceled item
+              
+                /*await Promise.all(
+                    deletedOrder.itens.map(async (item) => {
+                        const { id_produto, quantidade } = item;
+                        //console.log(deletedOrder.itens)
+
+                        // Update the inventory for the product
+                        await prismaClient.movimentacaoEstoque.create({
+                            data: {
+                                id_produto,
+                                id_usuario: deletedOrder.id_user,
+                                quantidade,
+                                tipo_movimentacao: "Entrada", // Assuming "Entrada" is the movement type for canceling an deletedOrder
+                                id_venda: deletedOrder.id_venda,
+                                descricao: `Venda ${deletedOrder.numero_venda} excluída`,
+                                data_movimentacao: new Date(),
+                            },
+                        });
+                    })
+                );*/
+            }
             return deletedOrder;
         } catch (error: any) {
+            console.log(error.message)
             throw new Error(error.message);
         }
     }
@@ -603,12 +660,6 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-
-
-
-
-
-
 }
 
 export { CreateOrderService };
