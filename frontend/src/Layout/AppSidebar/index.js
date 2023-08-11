@@ -28,6 +28,7 @@ const AppSidebar = ({
       <div className="sidebar-mobile-overlay" onClick={toggleMobileSidebar} />
       <TransitionGroup>
         <CSSTransition
+          style={{ minHeight: '100%', height: '100vh' }}
           component="div"
           className={cx('app-sidebar', backgroundColor, { 'sidebar-shadow': enableSidebarShadow })}
           appear={true}

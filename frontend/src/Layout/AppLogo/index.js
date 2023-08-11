@@ -48,7 +48,7 @@ class HeaderLogo extends React.Component {
             <Fragment>
                 <div className="app-header__logo">
                     <div className="logo-src"/>
-                    <div className="header__pane ms-auto">
+                    {/* <div className="header__pane ms-auto">
                         <div onClick={this.toggleEnableClosedSidebar}>
                             <Slider
                                 active={enableClosedSidebar}
@@ -56,7 +56,7 @@ class HeaderLogo extends React.Component {
                                 onClick={() => this.setState({active: !this.state.active})}
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <AppMobileMenu/>
             </Fragment>

@@ -20,7 +20,6 @@ export const AjusteEstoqueProduto = () => {
 
     const loadInventory = async () => {
         const response = await listInventoryById(productId);
-        console.log(response)
         setInventory(response);
     };
 

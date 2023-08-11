@@ -1,98 +1,116 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Col, Form, Row } from 'reactstrap'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Col, Form, Row } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import CardDadosGerais from './Cards/CardDadosGerais'
-import CardTransporte from './Cards/CardTransporte'
-import CardTotal from './Cards/CardTotal'
-import CardProduto from './Cards/CardProduto'
-import CardEnderecoEntrega from './Cards/CardEnderecoEntrega'
-import CardPagamento from './Cards/CardPagamento'
-import CardObservacao from './Cards/CardObservacao'
-import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CustomSpinner } from '../CustomSpinner'
+import CardTotal from './Cards/CardTotal';
+import CardProduto from './Cards/CardProduto';
+import { CustomSpinner } from '../CustomSpinner';
+import CardPagamento from './Cards/CardPagamento';
+import CardTransporte from './Cards/CardTransporte';
+import CardObservacao from './Cards/CardObservacao';
+import CardDadosGerais from './Cards/CardDadosGerais';
+import CardEnderecoEntrega from './Cards/CardEnderecoEntrega';
+
+const FormBudget = ({
+  url,
+  handleFormSubmit,
+  loading,
+  initialValues,
+  setInitialValues,
+  typeForm,
+  isEditMode,
+  gerarVenda,
+}) => {
+  const navigate = useNavigate();
+  const idOrder =
+    sessionStorage?.getItem('user') || localStorage?.getItem('user');
+
+  const id = JSON.parse(idOrder).id_empresa;
+  const id_user = JSON.parse(idOrder).id;
+
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    
+    setInitialValues(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
 
-const FormBudget = ({ url, handleFormSubmit, loading, initialValues, typeForm }) => {
-    //console.log(initialValues)
+  const handleSubmit = async e => {
+    e.preventDefault();
+    initialValues.id_empresa = id;
+    initialValues.id_user = id_user;
 
-    // const { createOrder, loading } = useOrder()
-    const navigate = useNavigate()
-    const idOrder = sessionStorage?.getItem('user') || localStorage?.getItem('user')
-    const id = JSON.parse(idOrder).id_empresa
-    const id_user = JSON.parse(idOrder).id
-    //const [data, setData] = useState([]);
-    const [data, setData] = useState(initialValues || {});
+    await handleFormSubmit(initialValues);
+    navigate(url);
+  };
 
-    useEffect(() => {
-        setData(initialValues)
-    }, [initialValues])
+  const handleCancel = () => {
+    navigate(url);
+  };
 
+  if(!initialValues) {
+    return <CustomSpinner />
+  }
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+  return (
+    <Form onSubmit={handleSubmit}>
+      {loading && <CustomSpinner />}
 
-        setData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
+      <CardDadosGerais
+        data={initialValues}
+        handleInputChange={handleInputChange}
+        typeForm={typeForm}
+      />
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        data.id_empresa = id
-        data.id_user = id_user
+      <CardProduto
+        data={initialValues}
+        isEditMode={isEditMode}
+        gerarVenda={gerarVenda}
+        handleInputChange={handleInputChange}
+      />
+      {/*<CardProdutoTeste initialValues={initialValues} handleInputChange={handleInputChange} />*/}
 
-        await handleFormSubmit(data)
-        navigate(url)
-    };
+      <CardTransporte data={initialValues} handleInputChange={handleInputChange} />
 
-    const handleCancel = () => {
-        navigate(url)
-    }
-    return (
-        <Form onSubmit={handleSubmit}>
-            {
-                loading && <CustomSpinner />
+      <CardTotal data={initialValues} handleInputChange={handleInputChange} />
 
-            }
+      <CardEnderecoEntrega data={initialValues} handleInputChange={handleInputChange} />
 
-            <CardDadosGerais data={data} handleInputChange={handleInputChange} typeForm={typeForm} />
+      <CardPagamento data={initialValues} handleInputChange={handleInputChange} />
 
-            <CardProduto data={data} handleInputChange={handleInputChange} />
-            {/*<CardProdutoTeste data={data} handleInputChange={handleInputChange} />*/}
+      <CardObservacao data={initialValues} handleInputChange={handleInputChange} />
 
-            <CardTransporte data={data} handleInputChange={handleInputChange} />
+      <Row className="mb-2">
+        <Col md={12}>
+          <Button color="primary" type="submit">
+            <FontAwesomeIcon
+              icon={faSave}
+              size="xl"
+              style={{ marginRight: 3 }}
+            />
+            Salvar
+          </Button>
+          <Button
+            color="danger"
+            onClick={handleCancel}
+            style={{ marginLeft: 3 }}
+          >
+            <FontAwesomeIcon
+              icon={faTimes}
+              size="xl"
+              style={{ marginRight: 3 }}
+            />
+            Cancelar
+          </Button>
+        </Col>
+      </Row>
+    </Form>
+  );
+};
 
-            <CardTotal data={data} handleInputChange={handleInputChange} />
-
-            <CardEnderecoEntrega data={data} handleInputChange={handleInputChange} />
-
-            <CardPagamento data={data} handleInputChange={handleInputChange} />
-
-            <CardObservacao data={data} handleInputChange={handleInputChange} />
-
-            <Row className='mb-2'>
-                <Col md={12}>
-                    <Button color='primary' type='submit'
-
-                    >
-                        <FontAwesomeIcon icon={faSave} size='xl' style={{ marginRight: 3 }}
-
-                        />
-                        Salvar
-                    </Button>
-                    <Button color='danger' onClick={handleCancel} style={{ marginLeft: 3 }}>
-                        <FontAwesomeIcon icon={faTimes} size='xl' style={{ marginRight: 3 }} />
-                        Cancelar
-                    </Button>
-
-                </Col>
-            </Row>
-
-        </Form>
-    )
-}
-
-export default FormBudget
+export default FormBudget;

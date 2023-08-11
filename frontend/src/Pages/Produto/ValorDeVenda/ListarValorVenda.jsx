@@ -9,7 +9,6 @@ const ListarValorVenda = () => {
 
   const loadSalePrices = async () => {
     const response = await listSalePrices();
-    console.log(response)
     setValorVenda(response);
   };
 

@@ -21,7 +21,6 @@ export const ListarNotaFiscal = () => {
     useEffect(() => {
         const loadInvoice = async () => {
             const responseInvoices = await getAllInvoices(id);
-            console.log(responseInvoices)
             setInvoices(responseInvoices);
         };
 

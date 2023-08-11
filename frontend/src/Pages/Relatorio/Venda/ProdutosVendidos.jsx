@@ -25,11 +25,9 @@ export const ProdutosVendidos = () => {
         const response = await listAllCustomers(idCompany)
         const responseStatus = await listSalesStatus()
         const responseProducts = await listProducts(idCompany)
-        console.log(responseProducts)
         setCustomers(response)
         setSituacaoVenda(responseStatus)
         setProducts(responseProducts)
-
     }
 
     useEffect(() => {
@@ -54,7 +52,6 @@ export const ProdutosVendidos = () => {
         }
         const response = await getReportProductsSold(data)
         if (response) {
-            console.log(response)
             //Adicionar data_inicial e data_final no relatório
             if (data_inicial.value && data_final.value) {
                 response.salesFormatted.data_inicial = new Date(data_inicial.value).toLocaleDateString('pt-BR')
