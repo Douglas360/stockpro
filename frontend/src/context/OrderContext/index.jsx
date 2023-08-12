@@ -36,7 +36,6 @@ export const OrderProvider = ({ children }) => {
       new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
     );
 
-
     const pagamento = Array.isArray(data.pagamentoParcelado)
       ? data.pagamentoParcelado?.map((pagamento) => {
           return {
@@ -53,7 +52,7 @@ export const OrderProvider = ({ children }) => {
             id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela
               ? data?.pagamentoParcelado?.formaPagamentoParcela
               : +data.formaPagamentoAvista,
-            observacao: data?.pagamentoParcelado?.observacao,
+            observacao: data?.pagamentoParcelado?.observacao ? data?.pagamentoParcelado?.observacao : data?.observacaoAvista,
             parcelado: false,
             valor: data?.pagamentoParcelado?.valor
               ? +data?.pagamentoParcelado?.valor.toFixed(2)
