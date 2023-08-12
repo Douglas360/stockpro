@@ -722,18 +722,11 @@ class CreateOrderService {
                 const updatedPaymentsPromises = pagamentos.map(async (pagamento) => {
                     const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
 
-                    /*if (!id_forma_pagamento) {
-                        throw new Error("id_forma_pagamento not found");
-                    }*/
-                    if (!venda) {
-                        throw new Error("venda not found");
-                    }
+                   if(!id_forma_pagamento) throw new Error("id_forma_pagamento not found")
                     if (!valor) {
                         throw new Error("valor not found");
                     }
-                    if (!parcelado) {
-                        throw new Error("parcelado not found");
-                    }
+                    
                     if (!vencimento) {
                         throw new Error("vencimento not found");
                     }

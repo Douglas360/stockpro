@@ -37,8 +37,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-app.listen(3002, async () => {
-    console.log('Rodando na porta 3002');
+app.listen(process.env.PORT, async () => {
+    console.log(`Rodando na porta ${process.env.PORT}` );
 
     try {
         // Try the database connection
