@@ -28,8 +28,8 @@ const CardTotal = ({ data, handleInputChange }) => {
         ? cleanCurrencyMask(data.valorFrete) + +somaTotal
         : somaTotal;
 
-      const valorComDesconto = data.descontoValor
-        ? valorTotal - cleanCurrencyMask(data.descontoValor)
+      const valorComDesconto = data.valorDesconto
+        ? valorTotal - cleanCurrencyMask(data.valorDesconto)
         : valorTotal;
 
       setValorTotal(valorComDesconto);
@@ -108,8 +108,8 @@ const CardTotal = ({ data, handleInputChange }) => {
               <td>
                 <NumericFormat
                   className="form-control"
-                  name="descontoValor"
-                  id="descontoValor"
+                  name="valorDesconto"
+                  id="valorDesconto"
                   required={false}
                   thousandSeparator="."
                   decimalSeparator=","
@@ -118,7 +118,7 @@ const CardTotal = ({ data, handleInputChange }) => {
                   decimalScale={2}
                   fixedDecimalScale={true}
                   allowNegative={false}
-                  value={data.descontoValor}
+                  value={data.valorDesconto}
                   onChange={handleInputChange}
                 />
               </td>

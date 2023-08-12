@@ -22,7 +22,7 @@ const CadastrarOrcamentoProduto = () => {
     title: "",
     numeroVenda: "",
     clienteOrcamento: "",
-    dataOrcamento: null,
+    dataInclusao: null,
     situacaoVendaOrcamento: "",
     canalVendaOrcamento: "",
     produtos: "",
@@ -54,7 +54,7 @@ const CadastrarOrcamentoProduto = () => {
             title: "venda",
             numeroVenda: response.numero_orcamento,
             clienteOrcamento: response.id_cliente,
-            dataOrcamento: response.data_orcamento
+            dataInclusao: response.data_orcamento
               ? new Date(response.data_orcamento).toISOString().slice(0, 10)
               : new Date().toISOString().slice(0, 10),
             situacaoVendaOrcamento: response.id_situacao_venda,

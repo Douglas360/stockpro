@@ -32,42 +32,43 @@ export const OrderProvider = ({ children }) => {
   };
 
   const createOrder = async (data) => {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
 
-    const pagamento = Array.isArray(data.pagamentoParcelado)
-      ? data.pagamentoParcelado?.map((pagamento) => {
-          return {
-            id_forma_pagamento: +pagamento.id_forma_pagamento,
-            valor: pagamento.valor,
-            vencimento: pagamento.vencimento,
-            observacao: pagamento.observacao,
-            venda: true,
-            parcelado: true,
-          };
-        })
-      : [
-          {
-            id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela
-              ? data?.pagamentoParcelado?.formaPagamentoParcela
-              : +data.formaPagamentoAvista,
-            observacao: data?.pagamentoParcelado?.observacao ? data?.pagamentoParcelado?.observacao : data?.observacaoAvista,
-            parcelado: false,
-            valor: data?.pagamentoParcelado?.valor
-              ? +data?.pagamentoParcelado?.valor.toFixed(2)
-              : +data?.valorTotal.toFixed(2),
-            vencimento: data?.pagamentoParcelado?.vencimento
-              ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
-              : new Date().toISOString(),
-            venda: true,
-          },
-        ];
+    const pagamento =
+      data?.pagamentoParcelado?.length > 0
+        ? data.pagamentoParcelado?.map((pagamento) => {
+            return {
+              id_forma_pagamento: +pagamento.id_forma_pagamento,
+              valor: pagamento.valor,
+              vencimento: pagamento.vencimento,
+              observacao: pagamento.observacao,
+              venda: true,
+              parcelado: true,
+            };
+          })
+        : [
+            {
+              id_forma_pagamento: data?.pagamentoParcelado
+                ?.formaPagamentoParcela
+                ? data?.pagamentoParcelado?.formaPagamentoParcela
+                : +data.formaPagamentoAvista,
+              observacao: data?.pagamentoParcelado?.observacao
+                ? data?.pagamentoParcelado?.observacao
+                : data?.observacaoAvista,
+              parcelado: false,
+              valor: data?.pagamentoParcelado?.valor
+                ? +data?.pagamentoParcelado?.valor.toFixed(2)
+                : +data?.valorTotal.toFixed(2),
+              vencimento: data?.pagamentoParcelado?.vencimento
+                ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
+                : new Date(data?.vencimentoAvista).toISOString(),
+              venda: true,
+            },
+          ];
 
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
-        data_venda: date,
+        data_venda: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -77,7 +78,7 @@ export const OrderProvider = ({ children }) => {
         id_transportadora: parseInt(data.id_transportadora),
         valor_total: +data?.valorTotal.toFixed(2),
         valor_frete: cleanCurrencyMask(data.valorFrete),
-        valor_desconto: cleanCurrencyMask(data.descontoValor),
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
         valor_produto: +data.valorProdutos.toFixed(2),
         observacao: data.observacaoOrcamento,
         observacao_interna: data.observacaoInternaOrcamento,
@@ -171,11 +172,6 @@ export const OrderProvider = ({ children }) => {
   //function to update order
   const updateOrder = async (data) => {
 
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
-
-
     const pagamento =
       data?.pagamentoParcelado?.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
@@ -197,8 +193,8 @@ export const OrderProvider = ({ children }) => {
               observacao: data?.pagamento[0]?.observacao,
               parcelado: false,
               valor: data?.pagamento[0]?.valor
-                ? +data?.pagamento[0]?.valor.toFixed(2)
-                : +data?.pagamento[0].toFixed(2),
+                ? +data?.pagamento[0]?.valor
+                : +data.valorTotal,
               vencimento: data?.pagamento[0]?.vencimento
                 ? new Date(data?.pagamento[0]?.vencimento).toISOString()
                 : new Date().toISOString(),
@@ -206,11 +202,10 @@ export const OrderProvider = ({ children }) => {
             },
           ];
 
-
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
-        data_venda: date,
+        data_venda: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -219,7 +214,7 @@ export const OrderProvider = ({ children }) => {
         id_forma_pagamento: parseInt(data.formaPagamentoAvista) || 1,
         id_transportadora: parseInt(data.id_transportadora),
         valor_total: +data?.valorTotal.toFixed(2),
-        valor_desconto: cleanCurrencyMask(data.descontoValor),
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
         valor_frete: cleanCurrencyMask(data.valorFrete),
         valor_produto: +data.valorProdutos.toFixed(2),
         observacao: data.observacaoOrcamento,

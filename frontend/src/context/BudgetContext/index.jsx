@@ -30,10 +30,6 @@ export const BudgetProvider = ({ children }) => {
   };
 
   const createBudget = async (data) => {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
-
     const pagamento =
       Array.isArray(data.pagamentoParcelado) &&
       data.pagamentoParcelado.length > 0
@@ -71,7 +67,7 @@ export const BudgetProvider = ({ children }) => {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        data_orcamento: date,
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -82,7 +78,7 @@ export const BudgetProvider = ({ children }) => {
         valor_total: +data.valorTotal.toFixed(2),
         validade_orcamento: data.validadeOrcamento || "",
         introducao: data.introducaoOrcamento || "",
-        valor_desconto: cleanCurrencyMask(data.descontoValor),
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
         valor_frete: cleanCurrencyMask(data.valorFrete),
         valor_produto: +data.valorProdutos.toFixed(2),
         observacao: data.observacaoOrcamento,
@@ -154,9 +150,6 @@ export const BudgetProvider = ({ children }) => {
   };
   //function to update a Budget by id
   const updateBudget = async (data) => {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
 
     const pagamento =
       Array.isArray(data.pagamentoParcelado) &&
@@ -181,7 +174,7 @@ export const BudgetProvider = ({ children }) => {
               parcelado: false,
               valor: data?.pagamento[0]?.valor
                 ? +data?.pagamento[0]?.valor.toFixed(2)
-                : +data.valorTotal.toFixed(2),
+                : +data?.valorTotal.toFixed(2),
               vencimento: data?.pagamento[0]?.vencimento
                 ? new Date(data?.pagamento[0]?.vencimento).toISOString()
                 : new Date().toISOString(),
@@ -193,7 +186,7 @@ export const BudgetProvider = ({ children }) => {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        data_orcamento: date,
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -204,7 +197,7 @@ export const BudgetProvider = ({ children }) => {
         valor_total: +data.valorTotal.toFixed(2),
         validade_orcamento: data.validadeOrcamento || "",
         introducao: data.introducaoOrcamento || "",
-        valor_desconto: cleanCurrencyMask(data.descontoValor),
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
         valor_frete: cleanCurrencyMask(data.valorFrete),
         valor_produto: +data.valorProdutos.toFixed(2),
         observacao: data.observacaoOrcamento,
@@ -225,9 +218,9 @@ export const BudgetProvider = ({ children }) => {
             desconto: +produto.desconto,
             tipo_desconto: produto.tipo_desconto,
             valor_unitario: +produto.valor_unitario,
-            valor_total: produto.valor_total
-              ? +produto.valor_total.toFixed(2)
-              : +produto.subtotal.toFixed(2),
+            valor_total: produto?.valor_total
+              ? +produto?.valor_total.toFixed(2)
+              : +produto?.subtotal.toFixed(2),
           };
         }),
         pagamentos: pagamento,

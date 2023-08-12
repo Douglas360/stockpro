@@ -26,10 +26,12 @@ import { useOrder } from "../../../context/OrderContext/useOrder";
 const CardPagamento = ({ data, handleInputChange }) => {
   const { listTypePayment } = useOrder();
 
-  const [pagamentoParcelado, setPagamentoParcelado] = useState(null);
+  const [dataPagamento, setDataPagamento] = useState([]);
+  const [pagamentoParcelado, setPagamentoParcelado] = useState([]);
   const [checkExibePagamento, setCheckExibePagamento] = useState(false);
   const [checkPagamentoAvista, setCheckPagamentoAvista] = useState(true);
   const [checkPagamentoParcelado, setCheckPagamentoParcelado] = useState(false);
+
   const [inputErrors, setInputErrors] = useState({
     formaPagamentoAvistaError: false,
     formaPagamentoParceladoError: false,
@@ -38,37 +40,37 @@ const CardPagamento = ({ data, handleInputChange }) => {
     intervaloParcelasError: false,
     quantidadeParcelasError: false,
     dataPrimeiraParcelaError: false,
-
-
   });
+
   const handleInputBlur = (name, value) => {
-    if (value.trim() === '') {
+    if (value.trim() === "") {
       setInputErrors((prevErrors) => ({ ...prevErrors, [name]: true }));
     } else {
       setInputErrors((prevErrors) => ({ ...prevErrors, [name]: false }));
     }
   };
 
-  const [dataPagamento, setDataPagamento] = useState([]);
-
   useEffect(() => {
     if (data && data.pagamento && data.pagamento.length > 0) {
       setCheckExibePagamento(data.exibePagamento);
-      setCheckPagamentoAvista(!data.pagamento[0].parcelado);
-      setCheckPagamentoParcelado(data.pagamento[0].parcelado);
+
+      setCheckPagamentoAvista(!data.pagamento[0]?.parcelado);
+      setCheckPagamentoParcelado(data.pagamento[0]?.parcelado);
     }
-  }, [data?.pagamento, data?.exibePagamento]);
+  }, [data]);
 
   useEffect(() => {
     if (pagamentoParcelado?.length > 0) {
-      const formatedObject = pagamentoParcelado.map((item) => ({
-        id_forma_pagamento: +item?.formaPagamentoParcela,
-        observacao: item.observacaoParcela,
-        parcelado: checkPagamentoParcelado,
-        valor: item.valorParcela,
-        vencimento: new Date(item.vencimentoParcela).toISOString(),
-        venda: true,
-      }));
+      const formatedObject = pagamentoParcelado.map((item) => {
+        return {
+          id_forma_pagamento: +item?.formaPagamentoParcela,
+          observacao: item.observacaoParcela,
+          parcelado: checkPagamentoParcelado,
+          valor: item.valorParcela,
+          vencimento: new Date(item.vencimentoParcela).toISOString(),
+          venda: true,
+        };
+      });
 
       handleInputChange({
         target: { name: "pagamentoParcelado", value: formatedObject },
@@ -126,9 +128,9 @@ const CardPagamento = ({ data, handleInputChange }) => {
     } else if (checkboxName === "pagamentoAvista") {
       setCheckPagamentoAvista(value);
       setCheckPagamentoParcelado(!value);
-      setPagamentoParcelado([])
+      setPagamentoParcelado([]);
     } else if (checkboxName === "pagamentoParcelado") {
-      setPagamentoParcelado([])
+      setPagamentoParcelado([]);
       setCheckPagamentoAvista(!value);
       setCheckPagamentoParcelado(value);
     }
@@ -137,7 +139,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
   const handleRefresh = () => {
     setPagamentoParcelado([]);
 
-    if (data.intervaloParcelas && data.intervaloParcelas > 0) {
+    if (data.intervaloParcelas && data.intervaloParcelas > 0 && data.dataPrimeiraParcela) {
       const valorParcela = data.valorTotal / +data.quantidadeParcelas;
       const list = [];
 
@@ -147,15 +149,14 @@ const CardPagamento = ({ data, handleInputChange }) => {
             index === 0
               ? data.dataPrimeiraParcela
               : addDays(
-                data.dataPrimeiraParcela,
-                data.intervaloParcelas * index
-              ),
+                  data.dataPrimeiraParcela,
+                  data.intervaloParcelas * index
+                ),
           valorParcela: +valorParcela.toFixed(2),
           formaPagamentoParcela: +data?.formaPagamentoParcela,
           observacaoParcela: "",
         });
       }
-
 
       setPagamentoParcelado(list);
     } else {
@@ -210,7 +211,10 @@ const CardPagamento = ({ data, handleInputChange }) => {
               style={{ marginRight: 5 }}
               required
             />
-            <Label for='exibePagamento' style={{ fontWeight: 'bold' }}>Gerar condições de pagamento</Label><span className='text-danger'>*</span>
+            <Label for="exibePagamento" style={{ fontWeight: "bold" }}>
+              Gerar condições de pagamento
+            </Label>
+            <span className="text-danger">*</span>
           </Col>
         </Row>
         {checkExibePagamento && (
@@ -262,13 +266,12 @@ const CardPagamento = ({ data, handleInputChange }) => {
                     <td>
                       <Input
                         type="date"
-                        min={new Date().toISOString().split('T')[0]}
-                        name='vencimentoAvista'
-                        id='vencimentoAvista'
+                        min={new Date().toISOString().split("T")[0]}
+                        name="vencimentoAvista"
+                        id="vencimentoAvista"
                         placeholder="Vencimento"
                         onChange={handleInputChange}
                         value={data.vencimentoAvista}
-                        onBlur={(e) => handleInputBlur('vencimentoAvistaError', e.target.value)}
                         invalid={inputErrors.vencimentoAvistaError}
                         valid={!inputErrors.vencimentoAvistaError}
                         required
@@ -296,7 +299,6 @@ const CardPagamento = ({ data, handleInputChange }) => {
                         }
                         value={data.valorTotal}
                         required
-
                       />
                     </td>
 
@@ -332,8 +334,8 @@ const CardPagamento = ({ data, handleInputChange }) => {
                     <td>
                       <Input
                         type="text"
-                        name='observacaoAvista'
-                        id='observacaoAvista'
+                        name="observacaoAvista"
+                        id="observacaoAvista"
                         placeholder="Observação"
                         /*onChange={(e) =>
                           setPagamentoParcelado({
@@ -344,7 +346,6 @@ const CardPagamento = ({ data, handleInputChange }) => {
                         }   value={data.observacao}*/
                         onChange={handleInputChange}
                         value={data.observacaoAvista}
-
                       />
                     </td>
                     <td>
@@ -413,12 +414,13 @@ const CardPagamento = ({ data, handleInputChange }) => {
                       <td>
                         <Input
                           type="date"
-                          min={new Date().toISOString().split('T')[0]}
+                          min={new Date().toISOString().split("T")[0]}
                           name="dataPrimeiraParcela"
                           id="dataPrimeiraParcela"
                           placeholder="Data 1ª parcela"
                           onChange={handleInputChange}
                           value={data.dataPrimeiraParcela}
+                          required
                         />
                       </td>
                       <td>
@@ -445,104 +447,105 @@ const CardPagamento = ({ data, handleInputChange }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {pagamentoParcelado?.length > 0 && pagamentoParcelado.map((parcela, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>
-                            <Input
-                              type="date"
-                              disabled
-                              min={new Date().toISOString().split('T')[0]}
-                              name="vencimentoParcela"
-                              id="vencimentoParcela"
-                              placeholder="Vencimento"
-                              onChange={(e) =>
-                                handleFieldChange(
-                                  index,
-                                  "vencimentoParcela",
-                                  e.target.value
-                                )
-                              }
-                              value={parcela.vencimentoParcela}
-                            />
-                          </td>
-                          <td>
-                            <NumericFormat
-                              className="form-control"
-                              name="valorParcela"
-                              id="valorParcela"
-                              required={false}
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix="R$ "
-                              readOnly
-                              placeholder="Valor da Parcela"
-                              decimalScale={2}
-                              fixedDecimalScale={true}
-                              allowNegative={false}
-                              onChange={(e) =>
-                                handleFieldChange(
-                                  index,
-                                  "valorParcela",
-                                  cleanCurrencyMask(e.target.value)
-                                )
-                              }
-                              value={parcela.valorParcela}
-                            />
-                          </td>
-                          <td>
-                            <Input
-                              type="select"
-                              name="formaPagamentoParcela"
-                              id="formaPagamentoParcela"
-                              onChange={(e) =>
-                                handleFieldChange(
-                                  index,
-                                  "formaPagamentoParcela",
-                                  e.target.value
-                                )
-                              }
-                              value={parcela?.formaPagamentoParcela}
-                            >
-                              <option value="">Selecione</option>
+                    {pagamentoParcelado?.length > 0 &&
+                      pagamentoParcelado.map((parcela, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>
+                              <Input
+                                type="date"
+                                disabled
+                                min={new Date().toISOString().split("T")[0]}
+                                name="vencimentoParcela"
+                                id="vencimentoParcela"
+                                placeholder="Vencimento"
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "vencimentoParcela",
+                                    e.target.value
+                                  )
+                                }
+                                value={parcela.vencimentoParcela}
+                              />
+                            </td>
+                            <td>
+                              <NumericFormat
+                                className="form-control"
+                                name="valorParcela"
+                                id="valorParcela"
+                                required={false}
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                prefix="R$ "
+                                readOnly
+                                placeholder="Valor da Parcela"
+                                decimalScale={2}
+                                fixedDecimalScale={true}
+                                allowNegative={false}
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "valorParcela",
+                                    cleanCurrencyMask(e.target.value)
+                                  )
+                                }
+                                value={parcela.valorParcela}
+                              />
+                            </td>
+                            <td>
+                              <Input
+                                type="select"
+                                name="formaPagamentoParcela"
+                                id="formaPagamentoParcela"
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "formaPagamentoParcela",
+                                    e.target.value
+                                  )
+                                }
+                                value={parcela?.formaPagamentoParcela}
+                              >
+                                <option value="">Selecione</option>
 
-                              {dataPagamento.map((item) => (
-                                <option
-                                  key={item.id_forma_pagamento}
-                                  value={item.id_forma_pagamento}
-                                >
-                                  {item.descricao}
-                                </option>
-                              ))}
-                            </Input>
-                          </td>
-                          <td>
-                            <Input
-                              type="text"
-                              name="observacaoParcela"
-                              id="observacaoParcela"
-                              placeholder="Observação"
-                              onChange={(e) =>
-                                handleFieldChange(
-                                  index,
-                                  "observacaoParcela",
-                                  e.target.value
-                                )
-                              }
-                              value={parcela.observacaoParcela}
-                            />
-                          </td>
-                          <td>
-                            <Button
-                              color="danger"
-                              onClick={() => handleRemoveField(index)}
-                            >
-                              <FontAwesomeIcon icon={faTimes} />
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                                {dataPagamento.map((item) => (
+                                  <option
+                                    key={item.id_forma_pagamento}
+                                    value={item.id_forma_pagamento}
+                                  >
+                                    {item.descricao}
+                                  </option>
+                                ))}
+                              </Input>
+                            </td>
+                            <td>
+                              <Input
+                                type="text"
+                                name="observacaoParcela"
+                                id="observacaoParcela"
+                                placeholder="Observação"
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "observacaoParcela",
+                                    e.target.value
+                                  )
+                                }
+                                value={parcela.observacaoParcela}
+                              />
+                            </td>
+                            <td>
+                              <Button
+                                color="danger"
+                                onClick={() => handleRemoveField(index)}
+                              >
+                                <FontAwesomeIcon icon={faTimes} />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </Table>
                 {pagamentoParcelado?.length > 0 && (

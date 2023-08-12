@@ -20,7 +20,7 @@ const CadastrarVendaProduto = () => {
     title: null,
     numeroVenda: null,
     clienteOrcamento: null,
-    dataOrcamento: null,
+    dataInclusao: null,
     situacaoVendaOrcamento: null,
     canalVendaOrcamento: null,
     produtos: null,
@@ -30,7 +30,7 @@ const CadastrarVendaProduto = () => {
     valorFrete: null,
     valorProdutos: null,
     valorTotal: null,
-    descontoValor: null,
+    valorDesconto: null,
     exibePagamento: null,
     pagamento: null,
     quantidadeParcelas: null,
@@ -66,7 +66,7 @@ const CadastrarVendaProduto = () => {
             title: "venda",
             numeroVenda: response.numero_venda,
             clienteOrcamento: response.id_cliente,
-            dataOrcamento: response.data_venda
+            dataInclusao: response.data_venda
               ? new Date(response.data_venda).toISOString().slice(0, 10)
               : new Date().toISOString().slice(0, 10),
             situacaoVendaOrcamento: response.id_situacao_venda,
@@ -78,7 +78,7 @@ const CadastrarVendaProduto = () => {
             valorFrete: response.valor_frete,
             valorProdutos: response.valor_produto,
             valorTotal: response.valor_total,
-            descontoValor: response.valor_desconto,
+            valorDesconto: response.valor_desconto,
             exibePagamento: response.pagamento.length > 0,
             pagamento: response.pagamento,
             quantidadeParcelas: response.pagamento.length,
@@ -130,7 +130,7 @@ const CadastrarVendaProduto = () => {
             title: "venda",
             numeroVenda: response.numero_orcamento,
             clienteOrcamento: response.id_cliente,
-            dataOrcamento: response.data_orcamento
+            dataInclusao: response.data_orcamento
               ? new Date(response.data_orcamento).toISOString().slice(0, 10)
               : "",
             situacaoVendaOrcamento: response.id_situacao_venda,
@@ -141,7 +141,7 @@ const CadastrarVendaProduto = () => {
             valorFrete: response.valor_frete,
             valorProdutos: response.valor_produto,
             valorTotal: response.valor_total,
-            descontoValor: response.valor_desconto,
+            valorDesconto: response.valor_desconto,
             exibePagamento: response.pagamento.length > 0,
             pagamento: response.pagamento,
             quantidadeParcelas: response.pagamento.length,
