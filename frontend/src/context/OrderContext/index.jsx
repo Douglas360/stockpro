@@ -98,9 +98,9 @@ export const OrderProvider = ({ children }) => {
             desconto: +produto.desconto,
             tipo_desconto: produto.tipo_desconto,
             valor_unitario: +produto.valor_unitario,
-            valor_total: produto.valor_total
-              ? +produto.valor_total
-              : +produto.subtotal,
+            valor_total: produto?.valor_total
+              ? +produto?.valor_total.toFixed(2)
+              : +produto?.subtotal.toFixed(2),
           };
         }),
         pagamentos: pagamento,
@@ -241,9 +241,9 @@ export const OrderProvider = ({ children }) => {
             desconto: +produto.desconto,
             tipo_desconto: produto.tipo_desconto,
             valor_unitario: +produto.valor_unitario,
-            valor_total: produto.valor_total
-              ? +produto.valor_total
-              : +produto.subtotal,
+            valor_total: produto?.valor_total
+              ? +produto?.valor_total.toFixed(2)
+              : +produto?.subtotal.toFixed(2),
           };
         }),
         pagamentos: pagamento,
