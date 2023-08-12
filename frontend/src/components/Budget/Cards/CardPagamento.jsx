@@ -74,7 +74,6 @@ const CardPagamento = ({ data, handleInputChange }) => {
         target: { name: "pagamentoParcelado", value: formatedObject },
       });
     } else {
-      //console.log('ASDUHAIUDHAISUHDSA', pagamentoParcelado)
       handleInputChange({
         target: { name: "pagamentoParcelado", value: pagamentoParcelado },
       });
@@ -151,11 +150,12 @@ const CardPagamento = ({ data, handleInputChange }) => {
                 data.dataPrimeiraParcela,
                 data.intervaloParcelas * index
               ),
-          valorParcela: valorParcela,
-          formaPagamentoParcela: data?.formaPagamentoParcela,
+          valorParcela: +valorParcela.toFixed(2),
+          formaPagamentoParcela: +data?.formaPagamentoParcela,
           observacaoParcela: "",
         });
       }
+
 
       setPagamentoParcelado(list);
     } else {
@@ -305,15 +305,15 @@ const CardPagamento = ({ data, handleInputChange }) => {
                         type="select"
                         name="formaPagamentoAvista"
                         id="formaPagamentoAvista"
-                        onChange={(e) =>
-                          setPagamentoParcelado({
-                            ...pagamentoParcelado,
-                            formaPagamentoParcela: +e.target.value,
-                            parcelado: false,
-                          })
-                        }
+                        // onChange={(e) =>
+                        //   setPagamentoParcelado({
+                        //     ...pagamentoParcelado,
+                        //     formaPagamentoParcela: +e.target.value,
+                        //     parcelado: false,
+                        //   })
+                        // }
+                        onChange={handleInputChange}
                         value={data.formaPagamentoAvista}
-                        onBlur={(e) => handleInputBlur('formaPagamentoAvistaError', e.target.value)}
                         invalid={inputErrors.formaPagamentoAvistaError}
                         valid={!inputErrors.formaPagamentoAvistaError}
                         required

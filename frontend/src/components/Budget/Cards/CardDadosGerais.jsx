@@ -123,13 +123,12 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               name='dataOrcamento'
               id='dataOrcamento'
               min={new Date().toISOString().split('T')[0]}
-              value={data?.dataOrcamento || ''}
+              value={data?.dataOrcamento}
               onChange={handleInputChange}
               onBlur={(e) => handleInputBlur('dateError', e.target.value)}
               invalid={inputErrors.dateError}
               valid={inputErrors.dateError}
               required
-
             />
           </Col>
         </Row>

@@ -20,7 +20,7 @@ const CadastrarVendaProduto = () => {
     title: null,
     numeroVenda: null,
     clienteOrcamento: null,
-    dataOrcamento: new Date(),
+    dataOrcamento: null,
     situacaoVendaOrcamento: null,
     canalVendaOrcamento: null,
     produtos: null,
@@ -34,7 +34,7 @@ const CadastrarVendaProduto = () => {
     exibePagamento: null,
     pagamento: null,
     quantidadeParcelas: null,
-    dataPrimeiraParcela: new Date(),
+    dataPrimeiraParcela: null,
     formaPagamentoParcela: null,
     valorAvista: null,
     observacaoAvista: null,
@@ -68,7 +68,7 @@ const CadastrarVendaProduto = () => {
             clienteOrcamento: response.id_cliente,
             dataOrcamento: response.data_venda
               ? new Date(response.data_venda).toISOString().slice(0, 10)
-              : "",
+              : new Date().toISOString().slice(0, 10),
             situacaoVendaOrcamento: response.id_situacao_venda,
             canalVendaOrcamento: response.id_canal_venda,
             produtos: response.itens,
@@ -186,10 +186,8 @@ const CadastrarVendaProduto = () => {
 
   const handleSubmit = async (data) => {
     if (isEditMode && !gerarVenda) {
-      console.log(data)
       await updateOrder(data)
     } else {
-      //console.log(data)
       await createOrder(data);
     }
   };

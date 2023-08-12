@@ -341,7 +341,7 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
                       id={`quantidade-${index}`}
                     />
 
-                    {produto.produto && (
+                    {produto && (
                       <UncontrolledTooltip
                         placement="bottom"
                         target={`quantidade-${index}`}
