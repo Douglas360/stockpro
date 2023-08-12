@@ -166,8 +166,6 @@ export const EmpresaJSX = () => {
     e.target.value = '';
   }, []);
 
-
-
   return (
     <>
       {loading && <CustomSpinner />}

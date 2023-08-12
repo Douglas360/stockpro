@@ -8,7 +8,7 @@ import BasicDashboard from './Basic';
 
 import AppHeader from '../../Layout/AppHeader';
 import AppSidebar from '../../Layout/AppSidebar';
-//import AppFooter from '../../Layout/AppFooter';
+import AppFooter from '../../Layout/AppFooter';
 
 const Dashboards = () => (
     <Fragment>
@@ -19,7 +19,7 @@ const Dashboards = () => (
                 <div className="app-main__inner">
                     <BasicDashboard />
                 </div>
-                { /* <AppFooter />*/}
+                <AppFooter />
             </div>
         </div>
     </Fragment>

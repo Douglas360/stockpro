@@ -146,6 +146,10 @@ class CreateBudgetService {
                             cor: true,
                         }
                     }
+                    
+                },
+                orderBy: {
+                    data_orcamento: 'desc',
                 },
             });
 

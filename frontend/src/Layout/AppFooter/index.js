@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 
 class AppFooter extends React.Component {
     render() {
@@ -10,31 +10,31 @@ class AppFooter extends React.Component {
                     <div className="app-footer__inner">
                         <div className="app-footer-left">
                             <ul className="nav">
-                                <li className="nav-item">
+                                {/*  <li className="nav-item">
                                     <a href="#" className="nav-link">
                                         Footer Link 1
                                     </a>
-                                </li>
-                                <li className="nav-item">
+        </li>*/}
+                                {/* <li className="nav-item">
                                     <a href="#" className="nav-link">
                                         Footer Link 2
                                     </a>
-                                </li>
+    </li>*/}
                             </ul>
                         </div>
                         <div className="app-footer-right">
                             <ul className="nav">
-                                <li className="nav-item">
+                                {/* <li className="nav-item">
                                     <a href="#" className="nav-link">
                                         Footer Link 3
                                     </a>
-                                </li>
+        </li>*/}
                                 <li className="nav-item">
                                     <a href="#" className="nav-link">
                                         <div className="badge bg-success me-1 ms-0">
                                             <small>NEW</small>
                                         </div>
-                                        Footer Link 4
+                                        1.0.10h
                                     </a>
                                 </li>
                             </ul>
@@ -42,7 +42,8 @@ class AppFooter extends React.Component {
                     </div>
                 </div>
             </Fragment>
-        )}
+        )
+    }
 }
 
 export default AppFooter;
