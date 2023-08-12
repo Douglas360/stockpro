@@ -45,10 +45,14 @@ class CreateBudgetService {
                 },
 
             });
+            //console.log(orderData)
             if (pagamentos) {
+
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
                         const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+                        console.log("first"+parcelado)
+
                         if (!id_forma_pagamento) {
                             throw new Error("id_forma_pagamento not found");
                         }
@@ -58,12 +62,10 @@ class CreateBudgetService {
                         if (!valor) {
                             throw new Error("valor not found");
                         }
-                        if (!parcelado) {
-                            throw new Error("parcelado not found");
-                        }
+                        
                         if (!vencimento) {
                             throw new Error("vencimento not found");
-                        }
+                        }                       
 
                         // Create the payment
                         await prismaClient.pagamentoOrcamento.create({
@@ -71,7 +73,7 @@ class CreateBudgetService {
                                 id_forma_pagamento,
                                 valor,
                                 venda,
-                                parcelado,
+                                parcelado: Boolean(parcelado),
                                 vencimento,
                                 observacao,
                                 id_orcamento: newBudget.id_orcamento,
@@ -97,7 +99,7 @@ class CreateBudgetService {
 
             return newBudget;
         } catch (error: any) {
-
+            console.log(error)
             throw new Error(error.message);
         }
     }
@@ -146,7 +148,7 @@ class CreateBudgetService {
                             cor: true,
                         }
                     }
-                    
+
                 },
                 orderBy: {
                     data_orcamento: 'desc',
