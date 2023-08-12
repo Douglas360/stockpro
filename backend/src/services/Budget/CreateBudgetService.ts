@@ -56,9 +56,7 @@ class CreateBudgetService {
                         if (!id_forma_pagamento) {
                             throw new Error("id_forma_pagamento not found");
                         }
-                        if (!venda) {
-                            throw new Error("Se for orçamento venda=false, se for venda venda=true");
-                        }
+                      
                         if (!valor) {
                             throw new Error("valor not found");
                         }
@@ -348,9 +346,7 @@ class CreateBudgetService {
                     if (!valor) {
                         throw new Error("valor not found");
                     }
-                    if (!parcelado) {
-                        throw new Error("parcelado not found");
-                    }
+                   
                     if (!vencimento) {
                         throw new Error("vencimento not found");
                     }
