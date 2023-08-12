@@ -731,9 +731,7 @@ class CreateOrderService {
                     if (!valor) {
                         throw new Error("valor not found");
                     }
-                    if (!parcelado) {
-                        throw new Error("parcelado not found");
-                    }
+                    
                     if (!vencimento) {
                         throw new Error("vencimento not found");
                     }
