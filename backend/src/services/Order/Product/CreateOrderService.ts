@@ -508,7 +508,11 @@ class CreateOrderService {
                 );
 
                 // Update Inventory Movements for each canceled item
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> origin/main
                 /*await Promise.all(
                     deletedOrder.itens.map(async (item) => {
                         const { id_produto, quantidade } = item;
@@ -663,6 +667,7 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
+<<<<<<< HEAD
     async update(orderId: number, updatedOrderData: IOrder): Promise<any> {
         let updatedOrder;
         let updatedItems;
@@ -757,6 +762,8 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
+=======
+>>>>>>> origin/main
 }
 
 export { CreateOrderService };
