@@ -120,8 +120,9 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
     setLucroSugerido(updatedLucroSugerido);
 
     const valorVendaUtil = custoFinal * (1 + +data.lucroUtilizado / 100);
-    
-    data.valorVendaUtilizado = valorVendaUtil.toFixed(2);
+
+    //    data.valorVendaUtilizado = valorVendaUtil.toFixed(2);
+    data.valorVendaUtilizado = valorVendaUtil
   };
 
 

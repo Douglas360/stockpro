@@ -4,6 +4,7 @@ import { IOrderItem } from "../../types/OrderItem";
 
 class CreateBudgetService {
     async create(orderData: IBudget): Promise<any> {
+        console.log(orderData)
         try {
             const { itens, pagamentos, ...rest } = orderData;
 
