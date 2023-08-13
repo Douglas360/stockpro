@@ -119,7 +119,11 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
 
     setLucroSugerido(updatedLucroSugerido);
 
-    const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);
+    const valorVendaUtil = custoFinal * (1 + +data.lucroUtilizado / 100);
+
+    console.log(custoFinal)
+    console.log(+data.lucroUtilizado)
+    
     data.valorVendaUtilizado = valorVendaUtil.toFixed(2);
   };
 
@@ -324,8 +328,8 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                       <td>
                         <NumericFormat
                           className="form-control"
-                          name={`lucroUtilizado-${index}`}
-                          id={`lucroUtilizado-${index}`}
+                          name={`lucroUtilizado`}
+                          id={`lucroUtilizado`}
                           /*required={false}
                           thousandSeparator="."
                           decimalSeparator=","
@@ -334,6 +338,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                           decimalScale={2}
                           fixedDecimalScale={true}
                           allowNegative={false}*/
+                          required
                           value={data.lucroUtilizado}
                           onChange={handleInputChange}
                         />
@@ -341,8 +346,8 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                       <td>
                         <NumericFormat
                           className="form-control"
-                          name={`valorVendaSugerido-${index}`}
-                          id={`valorVendaSugerido-${index}`}
+                          name={`valorVendaSugerido`}
+                          id={`valorVendaSugerido`}
                           required={false}
                           thousandSeparator="."
                           decimalSeparator=","
@@ -359,9 +364,9 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                       <td>
                         <NumericFormat
                           className="form-control"
-                          name={`valorVendaUtilizado-${index}`}
-                          id={`valorVendaUtilizado-${index}`}
-                          required={false}
+                          name={`valorVendaUtilizado`}
+                          id={`valorVendaUtilizado`}
+                          required
                           thousandSeparator="."
                           decimalSeparator=","
                           placeholder="R$ 0,00"
