@@ -43,5 +43,4 @@ class CreateSalePriceController {
 
         return res.json(salePrice);
     }
-    
 } export { CreateSalePriceController };

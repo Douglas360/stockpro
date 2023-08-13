@@ -82,10 +82,8 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "deploy": "aws s3 sync build/ s3://homologacao.stockpro.com.br --acl public-read",
+    "deploy:homolog": "aws s3 sync build/ s3://homologacao.stockpro.com.br --acl public-read",
     "deploy:prod": "aws s3 sync build/ s3://stockpro.com.br --acl public-read"
-
-    
   },
   "eslintConfig": {
     "extends": "react-app"

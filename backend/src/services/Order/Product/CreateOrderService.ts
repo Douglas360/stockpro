@@ -77,6 +77,8 @@ class CreateOrderService {
                     pagamentos.map(async (pagamento) => {
                         const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
 
+                        if (!id_forma_pagamento) throw new Error("id_forma_pagamento not found")
+
                         // Create the payment
                         await prismaClient.pagamento.create({
                             data: {
@@ -89,6 +91,7 @@ class CreateOrderService {
                                 id_venda: newOrder.id_venda,
                             },
                         });
+
                     })
                 );
 
@@ -505,7 +508,11 @@ class CreateOrderService {
                 );
 
                 // Update Inventory Movements for each canceled item
+<<<<<<< HEAD
+
+=======
               
+>>>>>>> origin/main
                 /*await Promise.all(
                     deletedOrder.itens.map(async (item) => {
                         const { id_produto, quantidade } = item;
@@ -660,6 +667,103 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
+<<<<<<< HEAD
+    async update(orderId: number, updatedOrderData: IOrder): Promise<any> {
+        let updatedOrder;
+        let updatedItems;
+
+        try {
+            const { itens, pagamentos, ...rest } = updatedOrderData;
+
+            // Fetch the existing order
+            const existingOrder = await prismaClient.venda.findUnique({
+                where: { numero_venda: orderId },
+                include: { itens: true },
+            });
+
+            if (!existingOrder) {
+                throw new Error(`Order with ID ${orderId} not found`);
+            }
+
+            // Perform updates on the order data
+            const updatedOrder = await prismaClient.venda.update({
+                where: { numero_venda: orderId },
+                data: {
+                    ...rest,
+                },
+                include: {
+                    itens: true,
+                },
+            });
+
+            // Update order items
+            const updatedItemPromises = updatedOrder.itens.map(async (existingItem) => {
+                const matchingUpdatedItem = itens.find((item) => item.id_produto === existingItem.id_produto);
+                if (!matchingUpdatedItem) {
+                    return existingItem;
+                }
+
+                const updatedItem = await prismaClient.itemVenda.update({
+                    where: { id_item_venda: existingItem.id_item_venda },
+                    data: {
+                        quantidade: matchingUpdatedItem.quantidade,
+                        // Update other item properties if needed
+                    },
+                });
+
+                return updatedItem;
+            });
+
+            updatedItems = await Promise.all(updatedItemPromises);
+
+            // Update payments
+            if (pagamentos) {
+                // First, delete existing payments
+                await prismaClient.pagamento.deleteMany({
+                    where: { id_venda: orderId },
+                });
+
+                // Then, create updated payments
+                const updatedPaymentsPromises = pagamentos.map(async (pagamento) => {
+                    const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+
+                   if(!id_forma_pagamento) throw new Error("id_forma_pagamento not found")
+                    if (!valor) {
+                        throw new Error("valor not found");
+                    }
+                    
+                    if (!vencimento) {
+                        throw new Error("vencimento not found");
+                    }
+
+                    const createdPayment = await prismaClient.pagamento.create({
+                        data: {
+                            id_forma_pagamento,
+                            valor,
+                            venda,
+                            parcelado,
+                            vencimento,
+                            observacao,
+                            id_venda: updatedOrder.id_venda,
+                        },
+                    });
+
+                    return createdPayment;
+                });
+
+                await Promise.all(updatedPaymentsPromises);
+            }
+
+            // Additional update logic for inventory and history if needed
+
+            return updatedOrder;
+        } catch (error: any) {
+            console.error(error.message);
+            throw new Error(error.message);
+        }
+    }
+=======
+>>>>>>> origin/main
 }
 
 export { CreateOrderService };

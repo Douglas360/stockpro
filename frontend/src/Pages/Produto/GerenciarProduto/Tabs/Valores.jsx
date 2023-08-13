@@ -107,17 +107,24 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
   const handleCalculateSalePrice = () => {
     const custoFinal = handleSumPrice();
 
-    console.log('lucroSug', lucroSugerido)
-    
-    const lucroSug = parseFloat(lucroSugerido?.[0]?.valor);
+    const updatedLucroSugerido = lucroSugerido.map(item => {
+      const lucroSug = parseFloat(item.valor);
+      const valorVendaSugerido = custoFinal * (1 + lucroSug / 100);
 
-    const valorVendaSugerido = custoFinal * (1 + lucroSug / 100);
-    setValorVendaSugerido(valorVendaSugerido);
+      return {
+        ...item,
+        valorVendaSugerido: valorVendaSugerido.toFixed(2)
+      };
+    });
 
-    const valorVendaUtil = custoFinal * (1 + data.lucroUtilizado / 100);
+    setLucroSugerido(updatedLucroSugerido);
 
-    data.valorVendaUtilizado = valorVendaUtil.toFixed(2);
+    const valorVendaUtil = custoFinal * (1 + +data.lucroUtilizado / 100);
+
+    //    data.valorVendaUtilizado = valorVendaUtil.toFixed(2);
+    data.valorVendaUtilizado = valorVendaUtil
   };
+
 
   return (
     <Card className="main-card mb-3">
@@ -184,7 +191,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                   impostos, etc.
                 </Tooltip>
               </Label>
-              
+
               <NumericFormat
                 className="form-control"
                 name="despesasAcessorias"
@@ -313,31 +320,32 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                 </thead>
                 <tbody>
                   {lucroSugerido.map((item, index) => (
-                    <tr className="text-center">
-                      <td key={index}>{item.descricao}</td>
-                      <td key={index}>{item.valor}</td>
+                    <tr className="text-center" key={index}>
+                      <td>{item.descricao}</td>
+                      <td>{item.valor}</td>
                       <td>
-                      <NumericFormat
+                        <NumericFormat
                           className="form-control"
-                          name="lucroUtilizado"
-                          id="lucroUtilizado"
-                          required={false}
+                          name={`lucroUtilizado`}
+                          id={`lucroUtilizado`}
+                          /*required={false}
                           thousandSeparator="."
                           decimalSeparator=","
-                          placeholder="R$ 0,00"
-                          prefix="R$ "
+                          placeholder="0"
+                          //prefix="R$ "
                           decimalScale={2}
                           fixedDecimalScale={true}
-                          allowNegative={false}
+                          allowNegative={false}*/
+                          required
                           value={data.lucroUtilizado}
                           onChange={handleInputChange}
                         />
                       </td>
                       <td>
-                      <NumericFormat
+                        <NumericFormat
                           className="form-control"
-                          name="valorVendaSugerido"
-                          id="valorVendaSugerido"
+                          name={`valorVendaSugerido`}
+                          id={`valorVendaSugerido`}
                           required={false}
                           thousandSeparator="."
                           decimalSeparator=","
@@ -347,15 +355,16 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                           decimalScale={2}
                           fixedDecimalScale={true}
                           allowNegative={false}
-                          value={valorVendaSugerido}
+                          value={parseFloat(item.valorVendaSugerido).toLocaleString('pt-BR')}  // Format the value
                         />
+
                       </td>
                       <td>
-                      <NumericFormat
+                        <NumericFormat
                           className="form-control"
-                          name="valorVendaUtilizado"
-                          id="valorVendaUtilizado"
-                          required={false}
+                          name={`valorVendaUtilizado`}
+                          id={`valorVendaUtilizado`}
+                          required
                           thousandSeparator="."
                           decimalSeparator=","
                           placeholder="R$ 0,00"
@@ -369,6 +378,7 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
                       </td>
                     </tr>
                   ))}
+
                 </tbody>
               </Table>
               <div className="d-flex justify-content-end items-end">

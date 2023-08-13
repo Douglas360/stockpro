@@ -45,7 +45,6 @@ export const EmitirNotaFiscal = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(data)
         await createInvoice(data)
         navigate(`/nota-fiscal/gerenciar`)
     };

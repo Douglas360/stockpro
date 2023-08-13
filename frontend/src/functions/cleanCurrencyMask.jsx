@@ -1,10 +1,11 @@
 export function cleanCurrencyMask(str) {
   if (typeof str === "string") {
+
     const valorSemR = str.trim().replace("R$", "");
-
+    
     const valorSemPontos = valorSemR.replace(/\./g, "");
-
-    const valorNumerico = parseFloat(valorSemPontos);
+    
+    const valorNumerico = +valorSemPontos.replace(/,/g, '.');
 
     if (isNaN(valorNumerico)) {
       return "";

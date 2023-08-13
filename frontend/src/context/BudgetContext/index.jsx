@@ -30,37 +30,44 @@ export const BudgetProvider = ({ children }) => {
   };
 
   const createBudget = async (data) => {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    );
-
-    const pagamento = Array.isArray(data.pagamentoParcelado)
-    ? data.pagamentoParcelado?.map((pagamento) => {
-        return {
-          id_forma_pagamento: +pagamento.id_forma_pagamento,
-          valor: pagamento.valor,
-          vencimento: pagamento.vencimento,
-          observacao: pagamento.observacao,
-          venda: true,
-          parcelado: true,
-        };
-      })
-    : [
-        {
-          id_forma_pagamento: data?.pagamentoParcelado?.formaPagamentoParcela,
-          observacao: data?.pagamentoParcelado?.observacao,
-          parcelado: false,
-          valor: data?.pagamentoParcelado?.valor ? data?.pagamentoParcelado?.valor : data.valorTotal,
-          vencimento: data?.pagamentoParcelado?.vencimento ? new Date(data?.pagamentoParcelado?.vencimento).toISOString() : new Date().toISOString(),
-          venda: true,
-        },
-      ];
+    const pagamento =
+      Array.isArray(data.pagamentoParcelado) &&
+      data.pagamentoParcelado.length > 0
+        ? data.pagamentoParcelado?.map((pagamento) => {
+            return {
+              id_forma_pagamento: +pagamento.id_forma_pagamento,
+              valor: pagamento.valor,
+              vencimento: pagamento.vencimento,
+              observacao: pagamento.observacao,
+              venda: true,
+              parcelado: true,
+            };
+          })
+        : [
+            {
+              id_forma_pagamento: data?.pagamentoParcelado
+                ?.formaPagamentoParcela
+                ? data?.pagamentoParcelado?.formaPagamentoParcela
+                : +data.formaPagamentoAvista,
+              observacao: data?.pagamentoParcelado?.observacao
+                ? data?.pagamentoParcelado?.observacao
+                : data?.observacaoAvista,
+              parcelado: false,
+              valor: data?.pagamentoParcelado?.valor
+                ? +data?.pagamentoParcelado?.valor.toFixed(2)
+                : +data.valorTotal.toFixed(2),
+              vencimento: data?.pagamentoParcelado?.vencimento
+                ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
+                : new Date().toISOString(),
+              venda: true,
+            },
+          ];
 
     const newData = {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        data_orcamento: date,
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -68,12 +75,12 @@ export const BudgetProvider = ({ children }) => {
         id_user: parseInt(data.id_user),
         id_forma_pagamento: parseInt(data.formaPagamentoAvista) || 1,
         id_transportadora: parseInt(data.id_transportadora),
-        valor_total: data.valorTotal,
+        valor_total: +data.valorTotal.toFixed(2),
         validade_orcamento: data.validadeOrcamento || "",
         introducao: data.introducaoOrcamento || "",
-        valor_desconto: cleanCurrencyMask(data.descontoValor),
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
         valor_frete: cleanCurrencyMask(data.valorFrete),
-        valor_produto: parseFloat(data.valorProdutos),
+        valor_produto: +data.valorProdutos.toFixed(2),
         observacao: data.observacaoOrcamento,
         observacao_interna: data.observacaoInternaOrcamento,
         cep: data.cep || "",
@@ -84,18 +91,20 @@ export const BudgetProvider = ({ children }) => {
         cidade: data.cidade || "",
         estado: data.estado || "",
         itens: data.produtos?.map((produto) => {
-            return {
-              id_produto: +produto.id_produto,
-              numero_item: +produto.numero_item,
-              quantidade: +produto.quantidade,
-              id_tipo_venda: +produto.id_tipo_venda,
-              desconto: +produto.desconto,
-              tipo_desconto: produto.tipo_desconto,
-              valor_unitario: +produto.valor_unitario,
-              valor_total: +produto.subtotal,
-            };
-          }),
-          pagamentos: pagamento,
+          return {
+            id_produto: +produto.id_produto,
+            numero_item: +produto.numero_item,
+            quantidade: +produto.quantidade,
+            id_tipo_venda: +produto.id_tipo_venda,
+            desconto: +produto.desconto,
+            tipo_desconto: produto.tipo_desconto,
+            valor_unitario: +produto.valor_unitario,
+            valor_total: produto?.valor_total
+              ? +produto?.valor_total.toFixed(2)
+              : +produto?.subtotal.toFixed(2),
+          };
+        }),
+        pagamentos: pagamento,
       },
     };
 
@@ -139,12 +148,96 @@ export const BudgetProvider = ({ children }) => {
   const getBudgetById = async (id) => {
     return handleRequest(api.get(`/list/budget/${id}`));
   };
+  //function to update a Budget by id
+  const updateBudget = async (data) => {
+
+    const pagamento =
+      Array.isArray(data.pagamentoParcelado) &&
+      data?.pagamentoParcelado.length > 0
+        ? data.pagamentoParcelado?.map((pagamento) => {
+            return {
+              id_forma_pagamento: +pagamento.id_forma_pagamento,
+              valor: pagamento.valor,
+              vencimento: pagamento.vencimento,
+              observacao: pagamento.observacao,
+              venda: true,
+              parcelado: true,
+            };
+          })
+        : [
+            {
+              id_forma_pagamento: data?.pagamentoParcelado
+                ?.formaPagamentoParcela
+                ? data?.pagamentoParcelado?.formaPagamentoParcela
+                : +data.formaPagamentoAvista,
+              observacao: data?.pagamento[0]?.observacao,
+              parcelado: false,
+              valor: data?.pagamento[0]?.valor
+                ? +data?.pagamento[0]?.valor.toFixed(2)
+                : +data?.valorTotal.toFixed(2),
+              vencimento: data?.pagamento[0]?.vencimento
+                ? new Date(data?.pagamento[0]?.vencimento).toISOString()
+                : new Date().toISOString(),
+              venda: false,
+            },
+          ];
+
+    const newData = {
+      budgetData: {
+        numero_orcamento: parseInt(data.numeroVenda),
+        //Pegar horario do BRasil
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
+        id_empresa: parseInt(data.id_empresa),
+        id_cliente: parseInt(data.clienteOrcamento),
+        id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
+        id_canal_orcamento: parseInt(data.canalVendaOrcamento) || 1,
+        id_user: parseInt(data.id_user),
+        id_forma_pagamento: parseInt(data.formaPagamentoAvista) || 1,
+        id_transportadora: parseInt(data.id_transportadora),
+        valor_total: +data.valorTotal.toFixed(2),
+        validade_orcamento: data.validadeOrcamento || "",
+        introducao: data.introducaoOrcamento || "",
+        valor_desconto: cleanCurrencyMask(data.valorDesconto),
+        valor_frete: cleanCurrencyMask(data.valorFrete),
+        valor_produto: +data.valorProdutos.toFixed(2),
+        observacao: data.observacaoOrcamento,
+        observacao_interna: data.observacaoInternaOrcamento,
+        cep: data.cep || "",
+        logradouro: data.logradouro || "",
+        numero: data.numero || "",
+        complemento: data.complemento || "",
+        bairro: data.bairro || "",
+        cidade: data.cidade || "",
+        estado: data.estado || "",
+        itens: data.produtos?.map((produto) => {
+          return {
+            id_produto: +produto.id_produto,
+            numero_item: +produto.numero_item,
+            quantidade: +produto.quantidade,
+            id_tipo_venda: +produto.id_tipo_venda,
+            desconto: +produto.desconto,
+            tipo_desconto: produto.tipo_desconto,
+            valor_unitario: +produto.valor_unitario,
+            valor_total: produto?.valor_total
+              ? +produto?.valor_total.toFixed(2)
+              : +produto?.subtotal.toFixed(2),
+          };
+        }),
+        pagamentos: pagamento,
+      },
+    };
+    return handleRequest(
+      api.put(`/update/budget/${data.id}`, newData),
+      "Orçamento atualizado com sucesso"
+    );
+  };
 
   return (
     <BudgetContext.Provider
       value={{
         loading,
         createBudget,
+        updateBudget,
         listAllBudget,
         deleteBudget,
         listBudgetToPrint,

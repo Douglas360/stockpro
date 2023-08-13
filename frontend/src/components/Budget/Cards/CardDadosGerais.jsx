@@ -120,16 +120,14 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
             <Label style={{ fontWeight: 'bold' }}>Data</Label><span className='text-danger'>*</span>
             <Input
               type='date'
-              name='dataOrcamento'
-              id='dataOrcamento'
+              name='dataInclusao'
+              id='dataInclusao'
               min={new Date().toISOString().split('T')[0]}
-              value={data?.dataOrcamento || ''}
+              value={data?.dataInclusao}
               onChange={handleInputChange}
-              onBlur={(e) => handleInputBlur('dateError', e.target.value)}
               invalid={inputErrors.dateError}
               valid={inputErrors.dateError}
               required
-
             />
           </Col>
         </Row>
@@ -149,7 +147,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               required
             >
               <option value=''>Selecione</option>
-              {situacaoVenda.map((situacao, index) => (
+              {situacaoVenda?.map((situacao, index) => (
                 <option key={index} value={situacao.id_situacao_venda}>
                   {situacao.descricao}
                 </option>

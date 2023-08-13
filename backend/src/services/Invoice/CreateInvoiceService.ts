@@ -107,7 +107,7 @@ class CreateInvoiceService {
         //valor_frete: order.valor_frete as number | 0,
         valor_frete: 0,
         valor_seguro: 0,
-        valor_total: order.valor_total as number,        
+        valor_total: order.valor_total as number,
         valor_produtos: valor_produto as number,
         modalidade_frete: 0,
         items: order.itens.map(item => {
@@ -131,7 +131,7 @@ class CreateInvoiceService {
             cofins_situacao_tributaria: '07',
           }
         })
-      }    
+      }
 
       const ref = order?.numero_venda;
       const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;
@@ -301,7 +301,7 @@ class CreateInvoiceService {
         data: cancelData
       };
 
-      const response = await axios.delete(url, config);     
+      const response = await axios.delete(url, config);
 
       if (response.data.status === 'erro_cancelamento') {
         await prismaClient.notaFiscal.update({
@@ -325,8 +325,8 @@ class CreateInvoiceService {
             status_sefaz: response.data.status_sefaz,
             mensagem_sefaz: response.data.mensagem_sefaz,
           }
-        })        
-      }     
+        })
+      }
 
       return response.data
 
@@ -336,7 +336,7 @@ class CreateInvoiceService {
         const { mensagem, erros, mensagem_sefaz } = error.response.data;
         //console.log(error.response.data)
         const message = mensagem || erros[0].mensagem || mensagem_sefaz;
-        if(message === 'A nota fiscal já foi cancelada') {
+        if (message === 'A nota fiscal já foi cancelada') {
           await prismaClient.notaFiscal.update({
             where: {
               ref: id_nfe

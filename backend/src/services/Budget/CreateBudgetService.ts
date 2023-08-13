@@ -4,6 +4,7 @@ import { IOrderItem } from "../../types/OrderItem";
 
 class CreateBudgetService {
     async create(orderData: IBudget): Promise<any> {
+        console.log(orderData)
         try {
             const { itens, pagamentos, ...rest } = orderData;
 
@@ -45,10 +46,25 @@ class CreateBudgetService {
                 },
 
             });
+            //console.log(orderData)
             if (pagamentos) {
+
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
                         const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+                        console.log("first"+parcelado)
+
+                        if (!id_forma_pagamento) {
+                            throw new Error("id_forma_pagamento not found");
+                        }
+                      
+                        if (!valor) {
+                            throw new Error("valor not found");
+                        }
+                        
+                        if (!vencimento) {
+                            throw new Error("vencimento not found");
+                        }                       
 
                         // Create the payment
                         await prismaClient.pagamentoOrcamento.create({
@@ -56,7 +72,7 @@ class CreateBudgetService {
                                 id_forma_pagamento,
                                 valor,
                                 venda,
-                                parcelado,
+                                parcelado: Boolean(parcelado),
                                 vencimento,
                                 observacao,
                                 id_orcamento: newBudget.id_orcamento,
@@ -82,7 +98,7 @@ class CreateBudgetService {
 
             return newBudget;
         } catch (error: any) {
-
+            console.log(error)
             throw new Error(error.message);
         }
     }
@@ -115,7 +131,6 @@ class CreateBudgetService {
 
         }
     }
-
     async listBudgetByCompany(id: number): Promise<any> {
         try {
             const budget = await prismaClient.orcamento.findMany({
@@ -132,6 +147,10 @@ class CreateBudgetService {
                             cor: true,
                         }
                     }
+
+                },
+                orderBy: {
+                    data_orcamento: 'desc',
                 },
             });
 
@@ -267,4 +286,97 @@ class CreateBudgetService {
 
         }
     }
+    async update(budgetId: number, updatedBudgetData: IBudget): Promise<any> {
+        try {
+            const { itens, pagamentos, ...rest } = updatedBudgetData;
+
+            // Fetch the existing budget
+            const existingBudget = await prismaClient.orcamento.findUnique({
+                where: { numero_orcamento: budgetId },
+                include: { itens: true },
+            });
+
+            if (!existingBudget) {
+                throw new Error(`Budget with ID ${budgetId} not found`);
+            }
+
+            // Perform updates on the budget data
+            const updatedBudget = await prismaClient.orcamento.update({
+                where: { numero_orcamento: budgetId },
+                data: {
+                    ...rest,
+                },
+                include: {
+                    itens: true,
+                },
+            });
+
+            // Update budget items
+            const updatedItemPromises = updatedBudget.itens.map(async (existingItem) => {
+                const matchingUpdatedItem = itens.find((item) => item.id_produto === existingItem.id_produto);
+                if (!matchingUpdatedItem) {
+                    return existingItem;
+                }
+
+                const updatedItem = await prismaClient.itemOrcamento.update({
+                    where: { id_item_orcamento: existingItem.id_item_orcamento },
+                    data: {
+                        quantidade: matchingUpdatedItem.quantidade,
+                        // Update other item properties if needed
+                    },
+                });
+
+                return updatedItem;
+            });
+
+            // Update payments
+            if (pagamentos) {
+                // First, delete existing payments
+                await prismaClient.pagamentoOrcamento.deleteMany({
+                    where: { id_orcamento: updatedBudget.id_orcamento },
+                });
+
+                // Then, create updated payments
+                const updatedPaymentsPromises = pagamentos.map(async (pagamento) => {
+                    const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
+
+                    if (!id_forma_pagamento) {
+                        throw new Error("id_forma_pagamento not found");
+                    }
+                    
+                    if (!valor) {
+                        throw new Error("valor not found");
+                    }
+                   
+                    if (!vencimento) {
+                        throw new Error("vencimento not found");
+                    }
+
+
+                    const createdPayment = await prismaClient.pagamentoOrcamento.create({
+                        data: {
+                            id_forma_pagamento,
+                            valor,
+                            venda,
+                            parcelado,
+                            vencimento,
+                            observacao,
+                            id_orcamento: updatedBudget.id_orcamento,
+                        },
+                    });
+
+                    return createdPayment;
+                });
+
+                await Promise.all(updatedPaymentsPromises);
+            }
+
+            // Additional update logic for history if needed
+
+            return updatedBudget;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
 } export { CreateBudgetService }

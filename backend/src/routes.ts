@@ -23,7 +23,7 @@ const router = Router();
 
 //Health check
 router.get("/health", (req, res) => {
-    return res.status(200).json({ message: 'OK 1.0' });
+    return res.status(200).json({ message: 'OK 1.0.1' });
 });
 
 //Company routes
@@ -98,6 +98,7 @@ router.get("/list/salesstatus", createOrderController.listSalesStatus);
 router.put("/update/orderstatus/:id", createOrderController.updateOrderStatus);
 router.get("/list/historysalesstatus/:id", createOrderController.listHistorySalesStatus);
 router.put("/cancel/order/:id", createOrderController.cancelOrder);
+router.put("/update/order/:id", createOrderController.update);
 
 //Budget routes
 const createBudgetController = new CreateBudgetController();
@@ -108,6 +109,7 @@ router.put("/update/budgetstatus/:id", createBudgetController.updateBudgetStatus
 router.get("/list/budget/id_company/:id", createBudgetController.listBudgetByCompany);
 router.get("/list/historybudgetstatus/:id", createBudgetController.listHistoryBudgetStatus);
 router.get("/print/budget/:id", createBudgetController.listBudgetToPrint);
+router.put("/update/budget/:id", createBudgetController.update);
 
 //Invoice routes
 const createInvoiceController = new CreateInvoiceController();

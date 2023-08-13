@@ -22,6 +22,7 @@ export const CadastroNav = [
                 label: 'Transportadoras',
                 to: '/cadastro/transportadora',
             },
+           
         ]
     }
 ];
@@ -105,10 +106,10 @@ export const RelatorioNav = [
                 label: 'Vendas',
                 to: '/relatorio/vendas',
             },
-            {
+            /*{
                 label: 'Estoque',
                 to: '/relatorio/estoque',
-            },
+            },*/
 
         ]
     }
