@@ -96,6 +96,11 @@ export const Valores = ({ data, handleInputChange, handleSubmit, Loading }) => {
       : 0;
     outrasDespesas = outrasDespesas ? parseFloat(outrasDespesas) : 0;
 
+    //update the value of object data
+    data.valorCusto = valorCusto;
+    data.despesasAcessorias = despesasAcessorias;
+    data.outrasDespesas = outrasDespesas;
+    
     const custoFinal = valorCusto + despesasAcessorias + outrasDespesas;
 
     return custoFinal;

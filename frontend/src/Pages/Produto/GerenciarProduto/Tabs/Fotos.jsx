@@ -1,12 +1,13 @@
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Card, CardBody, CardImg, Col, Form, Input, Label, Row } from 'reactstrap'
+import { Button, Card, CardBody, CardImg, Col, Form, Input, Label, Progress, Row } from 'reactstrap'
 import { useProduct } from '../../../../context/ProductContext/useProduct'
 
 export const Fotos = ({ data, handleFileChange, Loading, handleSubmit }) => {
   const { deleteFile } = useProduct()
+  const [uploadProgress, setUploadProgress] = useState(-1) // -1 = not uploading, 0-100 = upload progress, 101 = uploaded
   const navigate = useNavigate()
   const handleCancel = () => {
     navigate('/produto/gerenciar')
@@ -39,9 +40,33 @@ export const Fotos = ({ data, handleFileChange, Loading, handleSubmit }) => {
       updatedData.fileUrl = null
       await deleteFile(data.id_produto)
       handleFileChange({ target: { files: [] } }); // Passando um objeto vazio como seletor de arquivos
-     
+
     }
   }
+
+  const handleChangeFile = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadstart = () => setUploadProgress(0);
+      reader.onprogress = (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          setUploadProgress(progress);
+        }
+      };
+      reader.onloadend = () => setUploadProgress(100);
+      reader.readAsDataURL(file);
+    } else {
+      setUploadProgress(0);
+    }
+    const updatedData = { ...data }
+    updatedData.file = file
+    updatedData.fileUrl = fileURL
+    handleFileChange({ target: { files: [file] } }); // Passando um objeto vazio como seletor de arquivos
+  }
+
+
   return (
     <Card className='main-card mb-3'>
       <CardBody>
@@ -55,17 +80,23 @@ export const Fotos = ({ data, handleFileChange, Loading, handleSubmit }) => {
               <Form onSubmit={handleSubmit} enctype="multipart/form-data">
                 <Input
                   type='file'
-                  className='custom-file-input'
-                  id='file'
                   name='file'
-                  multiple
-
-                  onChange={handleFileChange}
+                  id='customFileUpload'
+                  className='custom-file-input'
+                  onChange={handleChangeFile}
                 />
+
                 <Label className='custom-file-label' htmlFor='customFileUpload'>
                   Escolha um arquivo
                 </Label>
+                {uploadProgress >= 0 && (
+                  <div className="mt-1 w-3/4">
+                    <Progress animated color='success' value={uploadProgress}>
+                      {uploadProgress}%
+                    </Progress>
 
+                  </div>
+                )}
                 {/* Buttons Add and Cancel*/}
                 <Row className='mb-2'>
                   <Col md={12}>
@@ -81,7 +112,6 @@ export const Fotos = ({ data, handleFileChange, Loading, handleSubmit }) => {
                   </Col>
                 </Row>
               </Form>
-
               {fileURL && (
                 <CardBody>
                   <Row>
@@ -103,9 +133,7 @@ export const Fotos = ({ data, handleFileChange, Loading, handleSubmit }) => {
                     </Col>
                   </Row>
                 </CardBody>
-
               )}
-
             </div>
           </div>
         </div>

@@ -484,6 +484,8 @@ class CreateOrderService {
                 },
             });
 
+            let quantidadeAtual = 0;
+
             if (!previousCanceledOrder) {
                 //TODO: update the inventory for each deleted item
                 await Promise.all(
@@ -501,17 +503,24 @@ class CreateOrderService {
                             },
                         });
 
+                        quantidadeAtual = updatedInventory.quantidade as number;
+
                         return updatedInventory;
                     })
 
 
+
+
                 );
 
-                // Update Inventory Movements for each canceled item
-                /*await Promise.all(
+
+
+
+                //Update Inventory Movements for each canceled item
+                await Promise.all(
                     deletedOrder.itens.map(async (item) => {
                         const { id_produto, quantidade } = item;
-                        //console.log(deletedOrder.itens)
+                        console.log(deletedOrder)
 
                         // Update the inventory for the product
                         await prismaClient.movimentacaoEstoque.create({
@@ -519,14 +528,15 @@ class CreateOrderService {
                                 id_produto,
                                 id_usuario: deletedOrder.id_user,
                                 quantidade,
+                                quantidade_atual: quantidadeAtual,
                                 tipo_movimentacao: "Entrada", // Assuming "Entrada" is the movement type for canceling an deletedOrder
-                                id_venda: deletedOrder.id_venda,
+                                //id_venda: deletedOrder.id_venda,
                                 descricao: `Venda ${deletedOrder.numero_venda} excluída`,
                                 data_movimentacao: new Date(),
                             },
                         });
                     })
-                );*/
+                )
             }
             return deletedOrder;
         } catch (error: any) {
@@ -721,11 +731,11 @@ class CreateOrderService {
                 const updatedPaymentsPromises = pagamentos.map(async (pagamento) => {
                     const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
 
-                   if(!id_forma_pagamento) throw new Error("id_forma_pagamento not found")
+                    if (!id_forma_pagamento) throw new Error("id_forma_pagamento not found")
                     if (!valor) {
                         throw new Error("valor not found");
                     }
-                    
+
                     if (!vencimento) {
                         throw new Error("vencimento not found");
                     }

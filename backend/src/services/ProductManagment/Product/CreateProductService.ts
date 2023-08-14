@@ -230,7 +230,7 @@ class CreateProductService {
                 }
             }
 
-            if (newFile && folderName) {
+            /*if (newFile && folderName) {
                 const file = await prismaClient.fotoProduto.findFirst({
                     where: {
                         id_produto: product.id_produto
@@ -250,9 +250,46 @@ class CreateProductService {
                         caminho: fileUrl as string
                     }
                 });
+            }*/
+
+            if (newFile && folderName) {
+                const existingFile = await prismaClient.fotoProduto.findFirst({
+                    where: {
+                        id_produto: product.id_produto
+                    }
+                });
+                if (existingFile) {
+                    const fileUrl = existingFile?.caminho?.split("/");
+                    const fileKey = `fotos/produtos/${fileUrl?.[fileUrl.length - 1]}`;
+                    await deleteFile(fileKey);
+
+                    //upload new file to S3 bucket
+                    const newFileUrl = await uploadFile(newFile, folderName);
+
+                    //update file in database 
+                    await prismaClient.fotoProduto.update({
+                        where: {
+                            id_foto_produto: existingFile.id_foto_produto
+                        },
+                        data: {
+                            caminho: newFileUrl as string
+                        }
+                    });
+
+
+                } else {
+                    //upload new file to S3 bucket
+                    const newFileUrl = await uploadFile(newFile, folderName);
+
+                    //update file in database 
+                    await prismaClient.fotoProduto.create({
+                        data: {
+                            id_produto: product.id_produto,
+                            caminho: newFileUrl as string
+                        }
+                    });
+                }
             }
-
-
 
             return product;
 

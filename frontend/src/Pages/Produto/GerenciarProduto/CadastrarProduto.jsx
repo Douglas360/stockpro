@@ -10,7 +10,7 @@ import { Fiscal } from './Tabs/Fiscal';
 import { Fornecedores } from './Tabs/Fornecedores';
 import { useProduct } from '../../../context/ProductContext/useProduct';
 import { CustomSpinner } from '../../../components/CustomSpinner';
-import { useAuth } from '../../../context/AuthContext/useAuth';
+//import { useAuth } from '../../../context/AuthContext/useAuth';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const CadastrarProduto = () => {
@@ -22,13 +22,13 @@ const CadastrarProduto = () => {
   const idSession = sessionStorage?.getItem('user') || localStorage?.getItem('user');
   const id_empresa = JSON.parse(idSession).id_empresa;
   const id_usuario = JSON.parse(idSession).id;
+  const navigate = useNavigate();
 
   useEffect(() => {
     //if is edit mode, get product by id
     if (isEditMode) {
       const loadProduct = async () => {
         const response = await getProduct(id)
-
         setProduct({
           id_produto: response?.id_produto,
           nomeProduto: response.nome,
@@ -184,17 +184,31 @@ const CadastrarProduto = () => {
 
     if (isEditMode) {
 
-      await updateProduct(formData, data.id_produto);
+      await updateProduct(formData, data.id_produto).then(
+        (response) => {
+          if (response) {
+            navigate('/produto/gerenciar')
+          }
+        }
+      )
+
 
     } else {
 
-      await createProduct(formData)
+      await createProduct(formData).then
+        (
+          (response) => {
+            if (response) {
+              navigate('/produto/gerenciar')
+            }
+          }
+        )
     }
 
   };
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]; // Capturar o primeiro arquivo selecionado
-    
+
     setData((prevData) => ({
       ...prevData,
       file: selectedFile, // Atualizar o estado com o arquivo selecionado
