@@ -319,7 +319,7 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
                       {products?.map((product, innerIndex) => {
                         return (
                           <option
-                            disabled={product.estoque[0].quantidade <= 0}
+                            //disabled={product.estoque[0].quantidade <= 0}
                             key={innerIndex}
                             value={product.id_produto}
                           >
