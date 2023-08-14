@@ -1,24 +1,25 @@
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+//import pdfFonts from "pdfmake/build/vfs_fonts";
 import { imgUrl } from "../reports/imgUrl";
+import { dateFormatWithHours } from "./getFomatter";
 
 export const printA4 = (data) => {
-   
+
 
     function createFooter() {
         return {
             table: {
                 widths: ['*'],
                 body: [
-                    [{ 
-                        text: 'Orçamento emitido no StockPro - www.stockpro.com.br', 
-                        alignment: 'right', 
+                    [{
+                        text: 'Orçamento emitido no StockPro - www.stockpro.com.br',
+                        alignment: 'right',
                         fontSize: 8,
                         italics: true,
                         margin: [0, 0, 10, 0],
-                     }],
+                    }],
                 ],
-                
+
             },
             layout: {
                 defaultBorder: false,
@@ -93,8 +94,9 @@ export const printA4 = (data) => {
                                 text: [
                                     { text: 'Data: ' },
                                     {
-                                        text: new Date(data.data_venda).toLocaleDateString() ||
-                                            new Date(data.data_orcamento).toLocaleDateString() || 'N/A'
+                                        /*text: new Date(data.data_venda).toLocaleDateString() ||
+                                            new Date(data.data_orcamento).toLocaleDateString() || 'N/A'*/
+                                        text: dateFormatWithHours(data.data_venda) || dateFormatWithHours(data.data_orcamento) || 'N/A'
                                     },
                                 ],
                                 alignment: 'left',

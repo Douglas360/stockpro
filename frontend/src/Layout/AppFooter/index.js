@@ -34,7 +34,7 @@ class AppFooter extends React.Component {
                                         <div className="badge bg-success me-1 ms-0">
                                             <small>NEW</small>
                                         </div>
-                                        1.0.2p
+                                        1.0.3
                                     </a>
                                 </li>
                             </ul>

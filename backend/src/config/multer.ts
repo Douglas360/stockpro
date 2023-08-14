@@ -22,7 +22,7 @@ export const uploadFile = async (file?: FileObject, folderName?: string): Promis
     const newFileName = `${randomName}-${file?.originalname}`;
 
     const uploadParams = {
-        Bucket: 'stockpro.com.br',
+        Bucket: process.env.AWS_BUCKET_NAME!,
         Key: `${folderName}/${newFileName}`,
         Body: file?.buffer,
         ACL: 'public-read',
@@ -30,7 +30,8 @@ export const uploadFile = async (file?: FileObject, folderName?: string): Promis
 
     try {
         await s3.send(new PutObjectCommand(uploadParams));
-        const fileUrl = `http://stockpro.com.br.s3-website-us-east-1.amazonaws.com/${folderName}/${newFileName}`;
+        //const fileUrl = `http://stockpro.com.br.s3-website-us-east-1.amazonaws.com/${folderName}/${newFileName}`;
+        const fileUrl = `${process.env.AWS_BUCKET_URL}/${folderName}/${newFileName}`;
         return fileUrl;
     } catch (error) {
         console.log(error);
@@ -49,10 +50,10 @@ export const deleteFile = async (filePath: string): Promise<void | Error> => {
     });
 
     const deleteParams = {
-        Bucket: 'stockpro.com.br',
+        Bucket: process.env.AWS_BUCKET_NAME!,
         Key: filePath,
     };
-    
+
 
     try {
         await s3.send(new DeleteObjectCommand(deleteParams));

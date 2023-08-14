@@ -45,7 +45,8 @@ const ListarProdutos = () => {
     return {
       id: product.codigo_interno,
       nome: product.nome,
-      price: 'R$ ' + product.valor_venda?.toString().replace('.', ','),
+      //price: 'R$ ' + product.valor_venda?.toString().replace('.', ','),
+      price: 'R$ ' + product.valor_venda?.toFixed(2).replace('.', ','),
       stock: product.estoque[0].quantidade,
       created_at: dateFormatWithHours(product.createdAt),
     };
