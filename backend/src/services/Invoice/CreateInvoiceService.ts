@@ -134,8 +134,11 @@ class CreateInvoiceService {
       }
 
       const ref = order?.numero_venda;
-      const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;
-      const secondUrl = `https://homologacao.focusnfe.com.br/v2/nfe/${ref}?completa=1`;
+      //const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;
+      //const secondUrl = `https://homologacao.focusnfe.com.br/v2/nfe/${ref}?completa=1`;
+
+      const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
+      const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
 
       await axios.post(url, orderMapped, config);
 
