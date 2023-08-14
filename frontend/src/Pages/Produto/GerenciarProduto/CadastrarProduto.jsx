@@ -226,6 +226,8 @@ const CadastrarProduto = () => {
     )
   }
 
+  console.log(data)
+
   const tabsContent = [
     {
       title: 'Dados',
@@ -241,15 +243,20 @@ const CadastrarProduto = () => {
     },
     {
       title: 'Estoque',
-      content: <Estoque data={data} handleInputChange={handleInputChange} handleSubmit={handleSubmit} Loading={Loading} />,
+      content: data.movimentaEstoque === true || data.movimentaEstoque === 'true' ? (
+        <Estoque data={data} handleInputChange={handleInputChange} handleSubmit={handleSubmit} Loading={Loading} />
+      ) : null,
     },
     {
       title: 'Fotos',
       content: <Fotos data={data} handleFileChange={handleFileChange} handleSubmit={handleSubmit} Loading={Loading} />,
     },
+
     {
       title: 'Fiscal',
-      content: <Fiscal data={data} handleInputChange={handleInputChange} handleSubmit={handleSubmit} Loading={Loading} />,
+      content: data.habilitarNf === true || data.habilitarNf === 'true' ? (
+        <Fiscal data={data} handleInputChange={handleInputChange} handleSubmit={handleSubmit} Loading={Loading} />
+      ) : null,
     },
     {
       title: 'Fornecedores',
@@ -258,6 +265,7 @@ const CadastrarProduto = () => {
   ];
 
   return (
+
     <div>
       {!isEditMode || product ? (
         <>
@@ -270,17 +278,20 @@ const CadastrarProduto = () => {
             tabsWrapperClass="body-tabs body-tabs-layout"
             transform={false}
             showInkBar={true}
-            items={tabsContent}
+            items={tabsContent.filter(tab => tab.content !== null)} // Filter out null content
           >
-            {tabsContent.map((tab, index) => (
-              React.cloneElement(tab.content, {
-                key: index,
-                data,
-                handleInputChange,
-                handleSubmit,
-              })
-            ))}
+            {tabsContent
+              .filter(tab => tab.content !== null) // Filter out null content
+              .map((tab, index) =>
+                React.cloneElement(tab.content, {
+                  key: index,
+                  data,
+                  handleInputChange,
+                  handleSubmit,
+                })
+              )}
           </Tabs>
+
         </>
       ) : (
         <CustomSpinner />

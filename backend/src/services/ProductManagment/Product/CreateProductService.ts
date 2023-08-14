@@ -51,7 +51,9 @@ class CreateProductService {
                 data: productDataWithoutIdUser,
                 include: {
                     campos: true,
-                    estoque: true,
+                    //if productdata.movimentacao_estoque = true then create a new row in movimentacao_estoque table 
+                    estoque: productData.movimenta_estoque ? true : false,
+                    //estoque: true,
                     fornecedor: true,
 
                 }
@@ -77,17 +79,19 @@ class CreateProductService {
             });
 
             //Update movement inventory
-            await prismaClient.movimentacaoEstoque.create({
-                data: {
-                    id_produto: product.id_produto,
-                    tipo_movimentacao: "Entrada",
-                    quantidade: productWithDetails?.estoque[0].quantidade || 0,
-                    quantidade_atual: productWithDetails?.estoque[0].quantidade || 0,
-                    id_usuario: productData.id_usuario || 1,
-                    descricao: "Saldo Inicial",
+            if (productData.movimenta_estoque) {
+                await prismaClient.movimentacaoEstoque.create({
+                    data: {
+                        id_produto: product.id_produto,
+                        tipo_movimentacao: "Entrada",
+                        quantidade: productWithDetails?.estoque[0].quantidade || 0,
+                        quantidade_atual: productWithDetails?.estoque[0].quantidade || 0,
+                        id_usuario: productData.id_usuario || 1,
+                        descricao: "Saldo Inicial",
 
-                }
-            });
+                    }
+                });
+            }
 
             return productWithDetails;
 
@@ -201,31 +205,34 @@ class CreateProductService {
                 },
                 data: productData,
                 include: {
-                    estoque: true
+                    estoque: productData.movimenta_estoque ? true : false,
+                    //estoque: true
                 }
             });
 
-            if (stockData) {
-                const existingStockData = await prismaClient.controleEstoque.findUnique({
-                    where: {
-                        id_estoque: stockData.id_estoque
-                    }
-                });
-                const existingQuantidade = existingStockData?.quantidade || 0;
-                const estoqueMin = existingStockData?.estoque_min || 0;
-                const estoqueMax = existingStockData?.estoque_max || 0;
+            if (productData.movimenta_estoque) {
+                if (stockData) {
+                    const existingStockData = await prismaClient.controleEstoque.findUnique({
+                        where: {
+                            id_estoque: stockData.id_estoque
+                        }
+                    });
+                    const existingQuantidade = existingStockData?.quantidade || 0;
+                    const estoqueMin = existingStockData?.estoque_min || 0;
+                    const estoqueMax = existingStockData?.estoque_max || 0;
 
-                if (
-                    estoqueMin !== stockData.estoque_min ||
-                    estoqueMax !== stockData.estoque_max ||
-                    existingQuantidade !== stockData.quantidade
-                ) {
-                    // Verificar se é uma entrada ou saída no inventário
-                    if (stockData.quantidade > existingQuantidade) {
+                    if (
+                        estoqueMin !== stockData.estoque_min ||
+                        estoqueMax !== stockData.estoque_max ||
+                        existingQuantidade !== stockData.quantidade
+                    ) {
+                        // Verificar se é uma entrada ou saída no inventário
+                        if (stockData.quantidade > existingQuantidade) {
 
-                        await createInventoryEntrada(product, stockData);
-                    } else {
-                        await createInventorySaida(product, stockData);
+                            await createInventoryEntrada(product, stockData);
+                        } else {
+                            await createInventorySaida(product, stockData);
+                        }
                     }
                 }
             }

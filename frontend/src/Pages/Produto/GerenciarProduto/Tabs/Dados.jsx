@@ -197,8 +197,8 @@ export const Dados = ({ data, handleInputChange, handleSubmit, Loading }) => {
                 value={data?.movimentaEstoque}
                 onChange={handleInputChange}
               >
-                <option></option>
-                <option value={true}>Sim</option>
+                <option>Selecione</option>
+                <option value={true} >Sim</option>
                 <option value={false}>Não</option>
               </Input>
             </Col>
@@ -225,8 +225,8 @@ export const Dados = ({ data, handleInputChange, handleSubmit, Loading }) => {
                 Habilite ou não essa funcionalidade para emitir nota fiscal do produto.
               </Tooltip>
               <Input type="select" name="habilitarNf" id="habilitarNf" value={data?.habilitarNf} onChange={handleInputChange}>
-                <option></option>
-                <option value={true}>Sim</option>
+                <option>Selecione</option>
+                <option value={true} >Sim</option>
                 <option value={false}>Não</option>
               </Input>
             </Col>
@@ -251,9 +251,9 @@ export const Dados = ({ data, handleInputChange, handleSubmit, Loading }) => {
                 Habilite ou não essa funcionalidade para informar que o produto possui validade de 12 meses.
               </Tooltip>
               <Input type="select" name="validade" id="validade" value={data?.validade} onChange={handleInputChange}>
-                <option></option>
+                <option>Selecione</option>
                 <option value={true}>Sim</option>
-                <option value={false}>Não</option>
+                <option value={false} >Não</option>
               </Input>
             </Col>
           </Row>

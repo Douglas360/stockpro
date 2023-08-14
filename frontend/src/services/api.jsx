@@ -3,8 +3,8 @@ import axios from "axios";
 const token = localStorage.getItem("token");
 
 export const api = axios.create({
-    baseURL: "http://localhost:3002",
-    //baseURL: "http://3.88.249.155:3001",
+    //baseURL: "http://localhost:3002",
+    baseURL: "http://3.88.249.155:3001",
     headers: {
         Authorization: token ? `Bearer ${token}` : undefined,
     },
