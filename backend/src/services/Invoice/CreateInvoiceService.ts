@@ -69,16 +69,19 @@ class CreateInvoiceService {
       }
 
       let valor_produto
+      let valorFretePorItem = 0
       if (order.valor_frete) {
         valor_produto = order.valor_total - order.valor_frete
+        valorFretePorItem = order?.valor_frete / order?.itens.length;
       } else {
         valor_produto = order.valor_total
       }
 
 
+
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
-        numero:requestData.numero_nota,
+        numero: requestData.numero_nota,
         serie: requestData.tipo_documento,
         data_emissao: order.data_venda.toISOString(),
         data_entrada_saida: order.data_venda.toISOString(),
@@ -106,14 +109,15 @@ class CreateInvoiceService {
         uf_destinatario: order.cliente?.enderecos[0].estado as string,
         pais_destinatario: 'Brasil',
         cep_destinatario: order.cliente?.enderecos[0].cep as string,
-        //valor_frete: order.valor_frete as number | 0,
-        valor_frete: 0,
+        valor_frete: order.valor_frete as number | 0,
+        //valor_frete: 0,
         valor_seguro: 0,
         valor_total: order.valor_total as number,
         valor_produtos: valor_produto as number,
         modalidade_frete: 0,
         items: order.itens.map(item => {
           return {
+            valor_frete: valorFretePorItem,
             numero_item: item.numero_item as number,
             codigo_produto: item?.produto?.codigo_interno as string,
             descricao: item.produto.nome,
@@ -136,8 +140,7 @@ class CreateInvoiceService {
       }
 
       const ref = order?.numero_venda;
-      //const url = `https://homologacao.focusnfe.com.br/v2/nfe?ref=${ref}`;
-      //const secondUrl = `https://homologacao.focusnfe.com.br/v2/nfe/${ref}?completa=1`;
+
 
       const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
       const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
@@ -211,7 +214,7 @@ class CreateInvoiceService {
   }
   async getInvoiceData(ref: number): Promise<void> {
     try {
-      const secondUrl = `https://homologacao.focusnfe.com.br/v2/nfe/${ref}?completa=1`;
+      const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
 
       const response = await axios.get(secondUrl, config);
 
@@ -289,7 +292,7 @@ class CreateInvoiceService {
         throw new Error('Nota fiscal não encontrada');
       }
 
-      const url = `https://homologacao.focusnfe.com.br/v2/nfe/${nf.ref}`;
+      const url = `${process.env.URL_API_NF}/v2/nfe/${nf.ref}`;
 
       const cancelData = {
         justificativa: reason
