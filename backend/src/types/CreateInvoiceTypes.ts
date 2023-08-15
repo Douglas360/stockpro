@@ -6,4 +6,5 @@ export interface CreateInvoiceServiceRequest {
   local_destino: number;
   finalidade_emissao: number;
   cfop: number;
+  numero_nota: number;
 }

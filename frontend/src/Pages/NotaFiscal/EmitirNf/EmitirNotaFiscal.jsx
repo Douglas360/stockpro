@@ -268,7 +268,18 @@ export const EmitirNotaFiscal = () => {
                         </h3>
                     </CardTitle>
                     <Row className='mb-3'>
-                        <Col md={2}>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Nº NFe</Label><span className='text-danger'>*</span>
+                            <Input
+                                required
+                                type="number"
+                                value={data.numero_nota}
+                                onChange={handleInputChange}
+                                name="numero_nota"
+                                id="numero_nota"
+                            />
+                        </Col>
+                        <Col md={4}>
                             <Label style={{ fontWeight: 'bold' }}>Natureza da oper.</Label><span className='text-danger'>*</span>
                             <Input
                                 required
@@ -283,7 +294,7 @@ export const EmitirNotaFiscal = () => {
                                 <option value={'Devolução'}>2-Devolução</option>
                             </Input>
                         </Col>
-                        <Col md={2}>
+                        <Col md={4}>
                             <Label style={{ fontWeight: 'bold' }}>Tipo da oper.</Label><span className='text-danger'>*</span>
                             <Input
                                 required
@@ -298,7 +309,10 @@ export const EmitirNotaFiscal = () => {
                                 <option value={1}>1-Saída</option>
                             </Input>
                         </Col>
-                        <Col md={2}>
+
+                    </Row>
+                    <Row className='mb-3'>
+                        <Col md={4}>
                             <Label style={{ fontWeight: 'bold' }}>CFOP</Label><span className='text-danger'>*</span>
                             <Input
                                 required
@@ -359,7 +373,7 @@ export const EmitirNotaFiscal = () => {
                                 <option value={6125}>6125 - Industrialização efetuada para outra empresa quando a mercadoria recebida para utilização no processo de industrialização não transitar pelo estabelecimento adquirente da mercadoria</option>
                             </Input>
                         </Col>
-                        <Col md={3}>
+                        <Col md={4}>
                             <Label style={{ fontWeight: 'bold' }}>Finalidade da Emissão</Label><span className='text-danger'>*</span>
                             <Input
                                 required
@@ -377,7 +391,7 @@ export const EmitirNotaFiscal = () => {
                             </Input>
                         </Col>
 
-                        <Col md={3}>
+                        <Col md={4}>
                             <Label style={{ fontWeight: 'bold' }}>Destino da operação</Label><span className='text-danger'>*</span>
                             <Input
                                 required
