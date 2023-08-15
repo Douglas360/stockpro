@@ -1,5 +1,7 @@
 export interface OrderData {
     natureza_operacao: string;
+    numero: number;
+    serie: number;
     data_emissao: string;
     data_entrada_saida: string;
     tipo_documento: number;

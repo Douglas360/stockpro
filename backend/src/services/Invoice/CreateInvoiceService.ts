@@ -78,6 +78,8 @@ class CreateInvoiceService {
 
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
+        numero:requestData.numero_nota,
+        serie: requestData.tipo_documento,
         data_emissao: order.data_venda.toISOString(),
         data_entrada_saida: order.data_venda.toISOString(),
         tipo_documento: requestData.tipo_documento,

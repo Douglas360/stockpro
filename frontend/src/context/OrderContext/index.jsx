@@ -32,43 +32,47 @@ export const OrderProvider = ({ children }) => {
   };
 
   const createOrder = async (data) => {
+    const date = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    )
 
     const pagamento =
       data?.pagamentoParcelado?.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
-            return {
-              id_forma_pagamento: +pagamento.id_forma_pagamento,
-              valor: pagamento.valor,
-              vencimento: pagamento.vencimento,
-              observacao: pagamento.observacao,
-              venda: true,
-              parcelado: true,
-            };
-          })
+          return {
+            id_forma_pagamento: +pagamento.id_forma_pagamento,
+            valor: pagamento.valor,
+            vencimento: pagamento.vencimento,
+            observacao: pagamento.observacao,
+            venda: true,
+            parcelado: true,
+          };
+        })
         : [
-            {
-              id_forma_pagamento: data?.pagamentoParcelado
-                ?.formaPagamentoParcela
-                ? data?.pagamentoParcelado?.formaPagamentoParcela
-                : +data.formaPagamentoAvista,
-              observacao: data?.pagamentoParcelado?.observacao
-                ? data?.pagamentoParcelado?.observacao
-                : data?.observacaoAvista,
-              parcelado: false,
-              valor: data?.pagamentoParcelado?.valor
-                ? +data?.pagamentoParcelado?.valor.toFixed(2)
-                : +data?.valorTotal.toFixed(2),
-              vencimento: data?.pagamentoParcelado?.vencimento
-                ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
-                : new Date(data?.vencimentoAvista).toISOString(),
-              venda: true,
-            },
-          ];
+          {
+            id_forma_pagamento: data?.pagamentoParcelado
+              ?.formaPagamentoParcela
+              ? data?.pagamentoParcelado?.formaPagamentoParcela
+              : +data.formaPagamentoAvista,
+            observacao: data?.pagamentoParcelado?.observacao
+              ? data?.pagamentoParcelado?.observacao
+              : data?.observacaoAvista,
+            parcelado: false,
+            valor: data?.pagamentoParcelado?.valor
+              ? +data?.pagamentoParcelado?.valor.toFixed(2)
+              : +data?.valorTotal.toFixed(2),
+            vencimento: data?.pagamentoParcelado?.vencimento
+              ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
+              : new Date(data?.vencimentoAvista).toISOString(),
+            venda: true,
+          },
+        ];
 
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
-        data_venda: new Date(data.dataInclusao).toISOString(),
+        //data_venda: new Date(data.dataInclusao).toISOString(),
+        data_venda: date,
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -175,37 +179,37 @@ export const OrderProvider = ({ children }) => {
     const pagamento =
       data?.pagamentoParcelado?.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
-            return {
-              id_forma_pagamento: +pagamento.id_forma_pagamento,
-              valor: pagamento.valor,
-              vencimento: pagamento.vencimento,
-              observacao: pagamento.observacao,
-              venda: true,
-              parcelado: true,
-            };
-          })
+          return {
+            id_forma_pagamento: +pagamento.id_forma_pagamento,
+            valor: pagamento.valor,
+            vencimento: pagamento.vencimento,
+            observacao: pagamento.observacao,
+            venda: true,
+            parcelado: true,
+          };
+        })
         : [
-            {
-              id_forma_pagamento: data?.pagamentoParcelado
-                ?.formaPagamentoParcela
-                ? data?.pagamentoParcelado?.formaPagamentoParcela
-                : +data.formaPagamentoAvista,
-              observacao: data?.pagamento[0]?.observacao,
-              parcelado: false,
-              valor: data?.pagamento[0]?.valor
-                ? +data?.pagamento[0]?.valor
-                : +data.valorTotal,
-              vencimento: data?.pagamento[0]?.vencimento
-                ? new Date(data?.pagamento[0]?.vencimento).toISOString()
-                : new Date().toISOString(),
-              venda: true,
-            },
-          ];
-
+          {
+            id_forma_pagamento: data?.pagamentoParcelado
+              ?.formaPagamentoParcela
+              ? data?.pagamentoParcelado?.formaPagamentoParcela
+              : +data.formaPagamentoAvista,
+            observacao: data?.pagamento[0]?.observacao,
+            parcelado: false,
+            valor: data?.pagamento[0]?.valor
+              ? +data?.pagamento[0]?.valor
+              : +data.valorTotal,
+            vencimento: data?.pagamento[0]?.vencimento
+              ? new Date(data?.pagamento[0]?.vencimento).toISOString()
+              : new Date().toISOString(),
+            venda: true,
+          },
+        ];
+console.log(data.dataInclusao)
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
-        data_venda: new Date(data.dataInclusao).toISOString(),
+        //data_venda: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,

@@ -30,44 +30,48 @@ export const BudgetProvider = ({ children }) => {
   };
 
   const createBudget = async (data) => {
+    const date = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    )
     const pagamento =
       Array.isArray(data.pagamentoParcelado) &&
-      data.pagamentoParcelado.length > 0
+        data.pagamentoParcelado.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
-            return {
-              id_forma_pagamento: +pagamento.id_forma_pagamento,
-              valor: pagamento.valor,
-              vencimento: pagamento.vencimento,
-              observacao: pagamento.observacao,
-              venda: true,
-              parcelado: true,
-            };
-          })
+          return {
+            id_forma_pagamento: +pagamento.id_forma_pagamento,
+            valor: pagamento.valor,
+            vencimento: pagamento.vencimento,
+            observacao: pagamento.observacao,
+            venda: true,
+            parcelado: true,
+          };
+        })
         : [
-            {
-              id_forma_pagamento: data?.pagamentoParcelado
-                ?.formaPagamentoParcela
-                ? data?.pagamentoParcelado?.formaPagamentoParcela
-                : +data.formaPagamentoAvista,
-              observacao: data?.pagamentoParcelado?.observacao
-                ? data?.pagamentoParcelado?.observacao
-                : data?.observacaoAvista,
-              parcelado: false,
-              valor: data?.pagamentoParcelado?.valor
-                ? +data?.pagamentoParcelado?.valor.toFixed(2)
-                : +data.valorTotal.toFixed(2),
-              vencimento: data?.pagamentoParcelado?.vencimento
-                ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
-                : new Date().toISOString(),
-              venda: true,
-            },
-          ];
+          {
+            id_forma_pagamento: data?.pagamentoParcelado
+              ?.formaPagamentoParcela
+              ? data?.pagamentoParcelado?.formaPagamentoParcela
+              : +data.formaPagamentoAvista,
+            observacao: data?.pagamentoParcelado?.observacao
+              ? data?.pagamentoParcelado?.observacao
+              : data?.observacaoAvista,
+            parcelado: false,
+            valor: data?.pagamentoParcelado?.valor
+              ? +data?.pagamentoParcelado?.valor.toFixed(2)
+              : +data.valorTotal.toFixed(2),
+            vencimento: data?.pagamentoParcelado?.vencimento
+              ? new Date(data?.pagamentoParcelado?.vencimento).toISOString()
+              : new Date().toISOString(),
+            venda: true,
+          },
+        ];
 
     const newData = {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        data_orcamento: new Date(data.dataInclusao).toISOString(),
+        //data_orcamento: new Date(data.dataInclusao).toISOString(),
+        data_orcamento: date,
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -150,43 +154,42 @@ export const BudgetProvider = ({ children }) => {
   };
   //function to update a Budget by id
   const updateBudget = async (data) => {
-
     const pagamento =
       Array.isArray(data.pagamentoParcelado) &&
-      data?.pagamentoParcelado.length > 0
+        data?.pagamentoParcelado.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
-            return {
-              id_forma_pagamento: +pagamento.id_forma_pagamento,
-              valor: pagamento.valor,
-              vencimento: pagamento.vencimento,
-              observacao: pagamento.observacao,
-              venda: true,
-              parcelado: true,
-            };
-          })
+          return {
+            id_forma_pagamento: +pagamento.id_forma_pagamento,
+            valor: pagamento.valor,
+            vencimento: pagamento.vencimento,
+            observacao: pagamento.observacao,
+            venda: true,
+            parcelado: true,
+          };
+        })
         : [
-            {
-              id_forma_pagamento: data?.pagamentoParcelado
-                ?.formaPagamentoParcela
-                ? data?.pagamentoParcelado?.formaPagamentoParcela
-                : +data.formaPagamentoAvista,
-              observacao: data?.pagamento[0]?.observacao,
-              parcelado: false,
-              valor: data?.pagamento[0]?.valor
-                ? +data?.pagamento[0]?.valor.toFixed(2)
-                : +data?.valorTotal.toFixed(2),
-              vencimento: data?.pagamento[0]?.vencimento
-                ? new Date(data?.pagamento[0]?.vencimento).toISOString()
-                : new Date().toISOString(),
-              venda: false,
-            },
-          ];
+          {
+            id_forma_pagamento: data?.pagamentoParcelado
+              ?.formaPagamentoParcela
+              ? data?.pagamentoParcelado?.formaPagamentoParcela
+              : +data.formaPagamentoAvista,
+            observacao: data?.pagamento[0]?.observacao,
+            parcelado: false,
+            valor: data?.pagamento[0]?.valor
+              ? +data?.pagamento[0]?.valor.toFixed(2)
+              : +data?.valorTotal.toFixed(2),
+            vencimento: data?.pagamento[0]?.vencimento
+              ? new Date(data?.pagamento[0]?.vencimento).toISOString()
+              : new Date().toISOString(),
+            venda: false,
+          },
+        ];
 
     const newData = {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        data_orcamento: new Date(data.dataInclusao).toISOString(),
+        //data_orcamento: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
