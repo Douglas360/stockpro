@@ -3,8 +3,7 @@ import { createFooter } from "../getFooter";
 import { getHeader } from "../getHeader";
 
 export const RelatorioVenda = (data) => {
-
-    const docDefinition = {      
+    const docDefinition = {
         pageSize: 'A4',
         pageMargins: [20, 10, 20, 20],
         pageOrientation: 'landscape',
@@ -45,7 +44,7 @@ export const RelatorioVenda = (data) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['auto', '*', '*', '*', '*',],
+                    widths: ['auto', 'auto', '*', '*', '*',],
                     body: [
                         [
                             { text: 'Cód', bold: true },
@@ -55,7 +54,7 @@ export const RelatorioVenda = (data) => {
                             { text: 'Valor total', bold: true },
                         ],
                         ...(data || []).map((item) => [
-                            { text: item.numero_orcamento, fontSize: 10 }, // Adjust the font size if needed
+                            { text: item.numero_orcamento || item.numero_venda, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.cliente, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.data_orcamento || item.data_venda, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.situacao, fontSize: 10 }, // Adjust the font size if needed
@@ -64,12 +63,12 @@ export const RelatorioVenda = (data) => {
 
                         ]),
                         [
-                            {  }, // Empty cell spanning four columns
-                            {  },
-                            {  },
+                            {}, // Empty cell spanning four columns
+                            {},
+                            {},
                             { text: 'Total', bold: true, fontSize: 14, alignment: 'right' },
                             // TotalValue cell, if totalValue is zero, show an empty string.
-                            { text: data?.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 14, bold: true,},
+                            { text: data?.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 14, bold: true, },
                         ]
                     ],
                 },
@@ -82,12 +81,12 @@ export const RelatorioVenda = (data) => {
     //pdfMake.createPdf(docDefinition).open();
     const pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
-     // Open the PDF in a new tab and set the title
-     pdfDocGenerator.getBlob((blob) => {
+    // Open the PDF in a new tab and set the title
+    pdfDocGenerator.getBlob((blob) => {
         const url = URL.createObjectURL(blob);
         const tab = window.open();
         tab.document.write(`<iframe src="${url}" frameborder="0" style="width: 100%; height: 100vh;"></iframe>`);
-        tab.document.title = "Relatorio de Venda";    
+        tab.document.title = "Relatorio de Venda";
         tab.document.close();
     });
 };

@@ -37,7 +37,7 @@ export const Venda = () => {
             "report": {
                 data_inicial: data_inicial.value,
                 data_final: data_final.value,
-                cliente: cliente.value,
+                cliente: cliente.value, 
                 situacao: situacao.value,
                 id_empresa: id
             }

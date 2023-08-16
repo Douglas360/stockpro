@@ -96,13 +96,18 @@ class CreateOrderService {
                 );
 
             }
+
+            const user = await prismaClient.user.findUnique({
+                where: { id: newOrder.id_user },
+            });
+
             //Update history of the product sales       
             await prismaClient.historicoSituacaoVenda.create({
                 data: {
 
                     id_venda: newOrder.id_venda,
                     id_situacao_venda: newOrder.id_situacao_venda,
-                    descricao: `Venda Cadastrada`,
+                    descricao: `Venda Cadastrada nº ${newOrder.numero_venda} por ${user?.nome}`,
                     id_usuario: newOrder.id_user,
                     data: newOrder.data_venda,
                 },
@@ -351,7 +356,7 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
-    async updateOrderStatus(id: number, statusId: number, descricao?: string): Promise<any> {
+    async updateOrderStatus(id: number, statusId: number, descricao?: string, idUser?: number): Promise<any> {
 
         try {
             // Check id
@@ -367,6 +372,7 @@ class CreateOrderService {
                 },
             });
             if (!orderId) throw new Error("Order not found")
+
             //Check if there is a previous canceled order for the same venda
             const previousCanceledOrder = await prismaClient.historicoSituacaoVenda.findFirst({
                 where: {
@@ -394,15 +400,13 @@ class CreateOrderService {
                     id_venda: order?.id_venda,
                     id_situacao_venda: order.id_situacao_venda,
                     descricao: descricao,
-                    id_usuario: order.id_user,
+                    id_usuario: idUser ? idUser : order.id_user,
                     data: new Date(),
                 },
             });
 
             //Check if id_situacao_venda is 4 (canceled), if true, update inventory
             if (order.id_situacao_venda === 4) {
-
-
 
                 if (!previousCanceledOrder) {
                     // Update the inventory for each canceled item
@@ -689,6 +693,14 @@ class CreateOrderService {
                 throw new Error(`Order with ID ${orderId} not found`);
             }
 
+            //Check if there is a previous canceled order for the same venda
+            const previousCanceledOrder = await prismaClient.historicoSituacaoVenda.findFirst({
+                where: {
+                    id_venda: existingOrder.id_venda,
+                    id_situacao_venda: 4, // Assuming 4 is the status code for "canceled"
+                },
+            });
+
             // Perform updates on the order data
             const updatedOrder = await prismaClient.venda.update({
                 where: { numero_venda: orderId },
@@ -759,6 +771,61 @@ class CreateOrderService {
             }
 
             // Additional update logic for inventory and history if needed
+            //Update history of the product sales
+            await prismaClient.historicoSituacaoVenda.create({
+                data: {
+                    id_venda: updatedOrder?.id_venda,
+                    id_situacao_venda: updatedOrder.id_situacao_venda,
+                    descricao: "Venda Atualizada",
+                    id_usuario: updatedOrder.id_user,
+                    data: new Date(),
+                },
+            });
+            //Check if id_situacao_venda is 4 (canceled), if true, update inventory
+            if (updatedOrder.id_situacao_venda === 4) {
+
+                if (!previousCanceledOrder) {
+                    // Update the inventory for each canceled item
+                    await Promise.all(
+                        updatedOrder.itens.map(async (item) => {
+                            const { id_produto, quantidade } = item;
+
+                            // Update the inventory for the product
+                            const updatedInventory = await prismaClient.controleEstoque.update({
+                                where: { id_produto },
+                                data: {
+                                    quantidade: {
+                                        increment: quantidade, // Increment the quantity since the order is canceled
+                                    },
+                                    data_ultima_saida: new Date(),
+                                },
+                            });
+
+                            return updatedInventory;
+                        })
+                    );
+
+                    // Update Inventory Movements for each canceled item
+                    await Promise.all(
+                        updatedOrder.itens.map(async (item) => {
+                            const { id_produto, quantidade } = item;
+
+                            // Update the inventory for the product
+                            await prismaClient.movimentacaoEstoque.create({
+                                data: {
+                                    id_produto,
+                                    id_usuario: updatedOrderData.id_user,
+                                    quantidade,
+                                    tipo_movimentacao: "Entrada", // Assuming "Entrada" is the movement type for canceling an updatedOrder
+                                    id_venda: updatedOrder.id_venda,
+                                    descricao: `Venda ${updatedOrder.numero_venda} cancelada`,
+                                    data_movimentacao: new Date(),
+                                },
+                            });
+                        })
+                    );
+                }
+            }
 
             return updatedOrder;
         } catch (error: any) {

@@ -175,7 +175,6 @@ export const OrderProvider = ({ children }) => {
   };
   //function to update order
   const updateOrder = async (data) => {
-
     const pagamento =
       data?.pagamentoParcelado?.length > 0
         ? data.pagamentoParcelado?.map((pagamento) => {
@@ -205,7 +204,6 @@ export const OrderProvider = ({ children }) => {
             venda: true,
           },
         ];
-console.log(data.dataInclusao)
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),

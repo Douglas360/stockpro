@@ -4,8 +4,7 @@ import { imgUrl } from "../reports/imgUrl";
 import { dateFormatWithHours } from "./getFomatter";
 
 export const printA4 = (data) => {
-
-
+    console.log(data)
     function createFooter() {
         return {
             table: {
@@ -54,7 +53,9 @@ export const printA4 = (data) => {
                                     { text: data.empresa?.cnpj || 'N/A' },
                                     '\n',
                                     { text: 'Endereço: ', bold: true },
-                                    { text: data.empresa?.endereco || 'N/A' },
+                                    { text: `${data.empresa?.logradouro}, ${data.empresa.numero}` || 'N/A' },
+                                    '\n',
+                                    { text: `${data.empresa.cidade} / ${data.empresa.estado}`, bold: true },
                                     '\n',
                                     { text: 'Telefone: ', bold: true },
                                     { text: data.empresa?.telefone || 'N/A' },

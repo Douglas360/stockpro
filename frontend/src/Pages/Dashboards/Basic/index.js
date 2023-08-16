@@ -114,7 +114,7 @@ const SalesTable = ({ data }) => {
                 {data?.map((sale, index) => {
                     return (
                         <tr key={index} className='text-center' style={{ fontSize: 13 }}>
-                            <td>{sale.id}</td>
+                            <td><a href={`/venda/produto/editar/${sale.id}`}>{sale.id}</a></td>
                             <td>{dateFormatWithHours(sale?.data_venda) || dateFormatWithHours(sale?.data_orcamento)}</td>
                             <td>{sale.nome_cliente}</td>
                             <td >
