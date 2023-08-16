@@ -64,11 +64,11 @@ class CreateOrderController {
     }
     async updateOrderStatus(req: Request, res: Response) {
         const { id } = req.params;
-        const { statusId, descricao } = req.body;
+        const { statusId, descricao, idUser} = req.body;
 
         const createOrderService = new CreateOrderService();
 
-        const orderResult = await createOrderService.updateOrderStatus(Number(id), Number(statusId), descricao);
+        const orderResult = await createOrderService.updateOrderStatus(Number(id), Number(statusId), descricao, Number(idUser));
 
         return res.status(200).json(orderResult);
 

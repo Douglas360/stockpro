@@ -13,6 +13,7 @@ export function getHeader(company) {
                             alignment: 'left',
                             border: [true, true, false, true], // Add borders to all sides
                             borderColor: 'red', // Set the border color to red
+
                         },
                         {
                             text: [
@@ -33,9 +34,11 @@ export function getHeader(company) {
                                 '\n',
                             ],
                             alignment: 'right',
-                            border: [false, true, true, true], // Add borders to all sides
-                            borderColor: 'red', // Set the border color to red
+                                                     lineHeight: 1.2, // Adjust this value to achieve vertical centering
+                            border: [false, true, true, true], // Add borders to all sides                          
+                            margin: [0, 10, 0, 0], // Adjust top margin to vertically center the cell
                         },
+
                     ],
                 ],
             }

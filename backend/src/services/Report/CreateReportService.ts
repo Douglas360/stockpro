@@ -140,12 +140,12 @@ class CreateReportService {
             }
             if (cliente) {
                 filters.id_cliente = {
-                    in: Number(cliente),
+                    in: [Number(cliente)],
                 };
             }
             if (situacao) {
                 filters.id_situacao_venda = {
-                    in: Number(situacao),
+                    in: [Number(situacao)],
                 };
             }
 
@@ -160,16 +160,16 @@ class CreateReportService {
                     data_orcamento: "asc",
                 },
             });
-    
+
             if (budgets.length === 0) {
                 throw new Error("Nenhum orçamento encontrado");
             }
-    
+
             let totalValue = 0; // Variable to store the total value of all budgets
-    
+
             const budgetFormatted = budgets.map((budget) => {
                 totalValue += budget.valor_total; // Calculate the total value
-    
+
                 return {
                     numero_orcamento: budget.numero_orcamento,
                     cliente: budget?.cliente?.nome,
@@ -184,17 +184,18 @@ class CreateReportService {
                     logoEmpresa: budget?.empresa?.avatar,
                 };
             });
-    
+
             // Format valor_total with two decimal places for each budget
             budgetFormatted.forEach((budget) => {
                 budget.valor_total = Number(budget.valor_total.toFixed(2));
             });
-    
+
             // Format the totalValue with two decimal places
             totalValue = Number(totalValue.toFixed(2));
-    
+
             // Return the budgetFormatted array and the totalValue
-            return { budgetFormatted, valor_total: totalValue };        } catch (error: any) {
+            return { budgetFormatted, valor_total: totalValue };
+        } catch (error: any) {
             console.log(error.message)
             throw new Error(error.message);
         }
@@ -215,12 +216,12 @@ class CreateReportService {
             }
             if (cliente) {
                 filters.id_cliente = {
-                    in: Number(cliente),
+                    in: [Number(cliente)],
                 };
             }
             if (situacao) {
                 filters.id_situacao_venda = {
-                    in: Number(situacao),
+                    in: [Number(situacao)],
                 };
             }
 
@@ -235,11 +236,11 @@ class CreateReportService {
                     data_venda: "asc",
                 },
             });
-    
+
             if (sales.length === 0) {
                 throw new Error("Nenhum produto encontrado")
             }
-    
+
             const salesFormatted = sales.map((sale) => {
                 return {
                     numero_venda: sale.numero_venda,
@@ -255,16 +256,16 @@ class CreateReportService {
                     logoEmpresa: sale?.empresa?.avatar,
                 }
             });
-    
+
             // Calculate the total value from the sales data
             const totalValue = sales.reduce((total, sale) => total + sale.valor_total, 0);
-    
-           
-    
+
+
+
             // Return salesFormatted along with the totalValue
             return {
                 salesFormatted,
-                valor_total:totalValue,
+                valor_total: totalValue,
             };
         } catch (error: any) {
             throw new Error(error.message);
@@ -462,14 +463,14 @@ class CreateReportService {
                     }
                 });
             });
-    
+
             const productsSales = Object.values(productsMap);
-    
+
             // Add empresa information to each product sale object
             const productsSalesWithEmpresa = productsSales.map((productSale) => {
                 const { codigo_interno } = productSale;
                 const sale = sales.find((sale) => sale.itens.some((item) => item.produto?.codigo_interno === codigo_interno));
-    
+
                 return {
                     ...productSale,
                     nomeEmpresa: sale?.empresa?.nome_fantasia || 'N/A',
@@ -480,18 +481,18 @@ class CreateReportService {
                     logoEmpresa: sale?.empresa?.avatar || null,
                 };
             });
-    
+
             // Calculate the total quantities and total value
             const quantidade_total = productsSales.reduce((total, sale) => total + sale.quantidade, 0);
             const valor_total = productsSales.reduce((total, sale) => total + sale.valor_total, 0);
-    
+
             // Add the total quantities and total value to the result object
             const result = {
                 productsSalesWithEmpresa,
                 quantidade_total,
                 valor_total,
             };
-    
+
             return result;
 
         } catch (error: any) {
@@ -530,13 +531,13 @@ class CreateReportService {
                     empresa: true,
                     cliente: true,
                     situacao_venda: true,
-                },               
+                },
             });
 
             if (sales.length === 0) {
                 throw new Error("Nenhuma venda encontrada");
             }
-            
+
             const customersMap: { [key: number]: { id_cliente: number; nome_cliente: string; valor_total: number; quantidade_vendas: number } } = {};
 
             sales.forEach((sale) => {

@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { printA4 } from "../../../functions/printA4";
 import { dateFormatWithHours } from "../../../functions/getFomatter";
 import { ChangeStatusModal } from "../../../components/ChangeStatusModal";
+import { useAuth } from "../../../context/AuthContext/useAuth";
 
 const ListarVendaProduto = () => {
   const {
@@ -31,25 +32,31 @@ const ListarVendaProduto = () => {
     updateOrderStatus,
   } = useOrder();
 
+  const {
+    user
+  } = useAuth();
+
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
   const [data, setData] = useState({});
   const navigate = useNavigate();
-  const idEmpresa =
-    sessionStorage?.getItem("user") || localStorage?.getItem("user");
-  const id = JSON.parse(idEmpresa).id_empresa;
-
+  //const idEmpresa =
+    //sessionStorage?.getItem("user") || localStorage?.getItem("user");
+  //const id = JSON.parse(idEmpresa).id_empresa;
+  const id = user?.id_empresa;
+  
   const loadOrders = async () => {
     const response = await listAllOrders(id);
 
     setOrders(response);
   };
-
   useEffect(() => {
-    loadOrders();
+    if (id) {
+      loadOrders();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   const handleEmitNfeClick = (status, client) => {
     if (status !== "Concretizada") {
@@ -66,6 +73,7 @@ const ListarVendaProduto = () => {
     const response = await listHistoryOrder(client.id);
     //pass id to modal
     response[0].id = client.id;
+    response.idUser = user.id;
     setData(response);
     setShowChangeStatusModal(true);
   };
