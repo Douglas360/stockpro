@@ -4,11 +4,35 @@ import { toast } from "react-toastify";
 import { ERROR_MESSAGES } from "../../config/ErrorMessage";
 import { cleanCurrencyMask } from "../../functions/cleanCurrencyMask";
 
+import { format, parseISO, set } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+
+
+
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
   /*const navigate = useNavigate();*/
   const [loading, setLoading] = useState(false);
+
+  const associarHoraAoDia = (dataString) => {
+    const dataAtual = new Date(); 
+    const dataFornecida = parseISO(dataString); 
+
+    const fusoHorario = 'America/Sao_Paulo';
+  
+    const dataAtualEmBrasilia = utcToZonedTime(dataAtual, fusoHorario);
+  
+    const dataAssociada = set(dataFornecida, {
+      hours: dataAtualEmBrasilia.getHours(),
+      minutes: dataAtualEmBrasilia.getMinutes(),
+      seconds: dataAtualEmBrasilia.getSeconds(),
+    });
+  
+    const dataAssociadaUtc = zonedTimeToUtc(dataAssociada, fusoHorario);
+  
+    return format(dataAssociadaUtc, 'yyyy-MM-dd HH:mm:ss'); 
+  }
 
   const handleRequest = async (requestPromise, message) => {
     try {
@@ -72,7 +96,7 @@ export const OrderProvider = ({ children }) => {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
         //data_venda: new Date(data.dataInclusao).toISOString(),
-        data_venda: date,
+        data_venda: associarHoraAoDia(data.dataInclusao),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
