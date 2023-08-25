@@ -4,7 +4,6 @@ import { IOrderItem } from "../../types/OrderItem";
 
 class CreateBudgetService {
     async create(orderData: IBudget): Promise<any> {
-        
         try {
             const { itens, pagamentos, ...rest } = orderData;
 
@@ -46,25 +45,25 @@ class CreateBudgetService {
                 },
 
             });
-          
+            //console.log(orderData)
             if (pagamentos) {
 
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
                         const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
-                     
+                        console.log("first" + parcelado)
 
                         if (!id_forma_pagamento) {
                             throw new Error("id_forma_pagamento not found");
                         }
-                      
+
                         if (!valor) {
                             throw new Error("valor not found");
                         }
-                        
+
                         if (!vencimento) {
                             throw new Error("vencimento not found");
-                        }                       
+                        }
 
                         // Create the payment
                         await prismaClient.pagamentoOrcamento.create({
@@ -306,28 +305,40 @@ class CreateBudgetService {
                 data: {
                     ...rest,
                 },
-                include: {
-                    itens: true,
-                },
+                include: { itens: true },
             });
 
             // Update budget items
-            const updatedItemPromises = updatedBudget.itens.map(async (existingItem) => {
-                const matchingUpdatedItem = itens.find((item) => item.id_produto === existingItem.id_produto);
-                if (!matchingUpdatedItem) {
-                    return existingItem;
-                }
-
-                const updatedItem = await prismaClient.itemOrcamento.update({
-                    where: { id_item_orcamento: existingItem.id_item_orcamento },
-                    data: {
-                        quantidade: matchingUpdatedItem.quantidade,
-                        // Update other item properties if needed
-                    },
+            if (itens) {
+                // First, delete existing items
+                await prismaClient.itemOrcamento.deleteMany({
+                    where: { id_orcamento: updatedBudget.id_orcamento },
                 });
 
-                return updatedItem;
-            });
+                // Then, create updated items
+                const updatedItemPromises = itens.map(async (item) => {
+                    const { id_produto, numero_item, quantidade, id_tipo_venda, desconto, tipo_desconto, valor_unitario, valor_total, } = item;
+
+                    const createdItem = await prismaClient.itemOrcamento.create({
+                        data: {
+                            id_orcamento: updatedBudget.id_orcamento,
+                            id_produto,
+                            numero_item,
+                            quantidade,
+                            id_tipo_venda,
+                            desconto,
+                            tipo_desconto,
+                            valor_unitario,
+                            valor_total,
+                        },
+                    });
+
+                    return createdItem;
+                });
+
+                await Promise.all(updatedItemPromises);
+            }
+          
 
             // Update payments
             if (pagamentos) {
@@ -343,11 +354,11 @@ class CreateBudgetService {
                     if (!id_forma_pagamento) {
                         throw new Error("id_forma_pagamento not found");
                     }
-                    
+
                     if (!valor) {
                         throw new Error("valor not found");
                     }
-                   
+
                     if (!vencimento) {
                         throw new Error("vencimento not found");
                     }
