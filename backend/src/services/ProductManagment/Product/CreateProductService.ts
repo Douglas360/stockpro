@@ -142,7 +142,7 @@ class CreateProductService {
             });
             const quantidadeAtual = stockData.quantidade
             stockData.quantidade = stockData.quantidade - productData?.estoque[0]?.quantidade;
-            //console.log(productData?.estoque[0]?.quantidade)
+         
             await prismaClient.movimentacaoEstoque.create({
                 data: {
                     id_produto: productData.id_produto,

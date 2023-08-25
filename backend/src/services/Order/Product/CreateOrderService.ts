@@ -524,7 +524,7 @@ class CreateOrderService {
                 await Promise.all(
                     deletedOrder.itens.map(async (item) => {
                         const { id_produto, quantidade } = item;
-                        console.log(deletedOrder)
+                  
 
                         // Update the inventory for the product
                         await prismaClient.movimentacaoEstoque.create({

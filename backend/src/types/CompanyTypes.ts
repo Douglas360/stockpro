@@ -1,4 +1,5 @@
 export interface ICompany {
+    id? : number;
     nome: string;
     nome_fantasia: string
     logradouro: string
@@ -13,4 +14,11 @@ export interface ICompany {
     email: string
     telefone: string
     avatar: string
+    file?: FileObject
+    folderName?: string
+}
+
+interface FileObject {
+    originalname: string;
+    buffer: Buffer;
 }

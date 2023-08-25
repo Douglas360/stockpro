@@ -84,8 +84,8 @@ export const RegisterProvider = ({ children }) => {
     };
 
     //function to update a Supplier by id
-    const updateSupplier = async (data) => {      
-     
+    const updateSupplier = async (data) => {
+
         const supplierData = {
             "supplierData": {
                 "nome": data.nomeCliente || data.razaoSocialCliente,
@@ -171,30 +171,8 @@ export const RegisterProvider = ({ children }) => {
     };
 
     //function to update a Company by id
-    const updateCompany = async (id, data) => {
-        const companyData = {
-            "companyData": {
-                "nome": data.razaoSocial,
-                "nome_fantasia": data.nomeFantasia,
-                "cnpj": data.cnpj,
-                "inscr_estadual": data.inscricaoEstadualCliente,
-                //"inscr_municipal": data.inscricaoMunicipalCliente,
-                "cep": data.cep,
-                "logradouro": data.logradouro,
-                "numero": data.numero,
-                "complemento": data.complemento,
-                "bairro": data.bairro,
-                "cidade": data.cidade,
-                "estado": data.estado,
-                "telefone": data.telefone,
-                "email": data.email,
-                "file": data.avatar,
-
-            }
-        }
-
-
-        return handleRequest(api.put(`/company/${id}`, companyData, { file: data.file }), 'Empresa atualizada com sucesso');
+    const updateCompany = async (id, data) => {      
+        return handleRequest(api.put(`/company/${id}`, data), 'Empresa atualizada com sucesso');
     };
 
     //FUnction to list user

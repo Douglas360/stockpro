@@ -23,6 +23,7 @@
     "d3-scale": "^4.0.2",
     "date-arithmetic": "^4.1.0",
     "date-fns": "^2.29.2",
+    "date-fns-tz": "^2.0.0",
     "dotenv": "^16.0.1",
     "faker": "^6.6.6",
     "google-map-react": "^2.2.0",

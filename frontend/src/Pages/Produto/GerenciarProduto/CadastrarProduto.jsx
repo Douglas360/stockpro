@@ -226,8 +226,6 @@ const CadastrarProduto = () => {
     )
   }
 
-  console.log(data)
-
   const tabsContent = [
     {
       title: 'Dados',

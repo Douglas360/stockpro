@@ -5,52 +5,53 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faIdCard, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useRegister } from '../../../context/RegisterContext/useRegister';
 import { CustomSpinner } from '../../../components/CustomSpinner';
-
+import { useAuth } from '../../../context/AuthContext/useAuth';
 
 
 export const EmpresaJSX = () => {
   const { listCompany, updateCompany, loading } = useRegister();
+  const { user } = useAuth();
   const [company, setCompany] = useState();
-  const id = localStorage.getItem('user') || sessionStorage.getItem('user');
-  const idCompany = JSON.parse(id)?.id_empresa
+  const idCompany = user?.id_empresa
   const [avatarUrl, setAvatarUrl] = useState('');
   const [uploadProgress, setUploadProgress] = useState(-1);
 
 
+  const loadCompany = async () => {
+    const response = await listCompany(idCompany);
+    setCompany(response);
 
+    // Set the initial form values here after fetching the company data
+    setFormValues({
+
+      tipoCliente: 'Pessoa Fisica',
+      tipoClienteError: false,
+      nameError: false,
+      razaoSocialError: false,
+      nomeFantasia: response?.nome_fantasia,
+      razaoSocial: response?.nome,
+      logradouro: response?.logradouro,
+      numero: response?.numero,
+      complemento: response?.complemento,
+      bairro: response?.bairro,
+      cidade: response?.cidade,
+      estado: response?.estado,
+      cep: response?.cep,
+      inscrEstadual: response.inscr_estadual,
+      inscrMunicipal: '',
+      cnpj: response?.cnpj,
+      email: response?.email,
+      telefone: response?.telefone,
+      avatar: response?.avatar,
+      ativo: true,
+    });
+  };
   useEffect(() => {
-    const loadCompany = async () => {
-      const response = await listCompany(idCompany);
-      setCompany(response);
+    if (idCompany) {
+      loadCompany();
+    }
 
-      // Set the initial form values here after fetching the company data
-      setFormValues({
-
-        tipoCliente: 'Pessoa Fisica',
-        tipoClienteError: false,
-        nameError: false,
-        razaoSocialError: false,
-        nomeFantasia: response?.nome_fantasia,
-        razaoSocial: response?.nome,
-        logradouro: response?.logradouro,
-        numero: response?.numero,
-        complemento: response?.complemento,
-        bairro: response?.bairro,
-        cidade: response?.cidade,
-        estado: response?.estado,
-        cep: response?.cep,
-        inscrEstadual: response.inscr_estadual,
-        inscrMunicipal: '',
-        cnpj: response?.cnpj,
-        email: response?.email,
-        telefone: response?.telefone,
-        avatar: response?.avatar,
-        ativo: true,
-      });
-    };
-
-    loadCompany();
-  }, []);
+  }, [idCompany]);
 
   const [formValues, setFormValues] = useState({
 
@@ -102,34 +103,19 @@ export const EmpresaJSX = () => {
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-
     // Verificar se há erros antes de enviar os dados
     const hasErrors = Object.keys(formValues).some((key) => key.endsWith('Error') && formValues[key]);
     if (hasErrors) {
       alert('Preencha todos os campos obrigatórios corretamente.');
       return;
     }
-
-    let file = form.get('file');
-
-    // Se o usuário não selecionou uma nova imagem, manter a imagem atual
-    if (!file) {
-      file = formValues.file;
-    }
-
-    form.append('file', file)
-
-    const formEntries = Object.fromEntries(form.entries());
-    const formValuesWithfile = {
-      ...formEntries,
-      file,
-    };
+    form.append('nome', form.get('razaoSocial'));
+    form.append('nome_fantasia', form.get('nomeFantasia'));
+    form.append('inscr_estadual', form.get('inscrEstadual'));
+    form.append('file', formValues.file);
 
     // Enviar os dados para a API 
-    await updateCompany(idCompany, formValuesWithfile);
-    //TODO: Redirecionar para a página de listagem
-
-
+    await updateCompany(idCompany, form)
 
   }, [formValues]);
 
@@ -138,7 +124,6 @@ export const EmpresaJSX = () => {
     setUploadProgress(-1);
     const file = e.target.files[0];
     setAvatarUrl(URL.createObjectURL(file));
-
 
     if (file) {
       const reader = new FileReader();
@@ -413,7 +398,7 @@ export const EmpresaJSX = () => {
                 <Label for='file' style={{ fontWeight: 'bold' }}>Logo da empresa</Label>
                 <Label style={{ width: '200px', height: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', marginLeft: 20, marginTop: 20 }}>
                   <span style={{ position: 'absolute', opacity: '0.5', ':hover': { opacity: '1' } }}>
-                    <i className="pe-7s-cloud-upload" style={{ fontSize: '5rem' }}></i>
+                    <i className="pe-7s-cloud-upload" style={{ fontSize: '3rem' }}></i>
                   </span>
                   <Input
                     type='file'
@@ -426,10 +411,10 @@ export const EmpresaJSX = () => {
                   />
                   <Input type="file" name="file" hidden />
                   {avatarUrl ? (
-                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                    <img src={avatarUrl} alt="avatar" style={{ width: '100%' }} />
                   ) : (
                     company?.avatar ? (
-                      <img src={company.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                      <img src={company.avatar} alt="avatar" style={{ width: '100%' }} />
                     ) : (
                       <span></span>
                     )

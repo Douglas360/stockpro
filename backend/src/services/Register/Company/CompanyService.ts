@@ -1,19 +1,14 @@
+import { deleteFile, uploadFile } from "../../../config/multer";
 import prismaClient from "../../../prisma";
 import { ICompany } from "../../../types/CompanyTypes";
 
-interface FileObject {
-    originalname: string;
-    buffer: Buffer;
-}
-
-
 class CompanyService {
     async create(empresaData: ICompany) {
-      
+
         try {
             // Validate user input
             //Check if email is valid
-            if(!empresaData.email) throw new Error("Email is required")
+            if (!empresaData.email) throw new Error("Email is required")
 
             const emailRegex = /\S+@\S+\.\S+/;
             if (!emailRegex.test(empresaData.email)) {
@@ -73,16 +68,57 @@ class CompanyService {
         }
 
     }
-    async update(id: number, empresaData: ICompany, file:FileObject) {
-              
+    async update(empresaData: ICompany) {
+
         try {
-            if (!id) {
+            if (!empresaData.id) {
                 throw new Error('Id is required');
             }
 
+            if (empresaData.file && empresaData.folderName) {
+                //First delete old avatar from folder and database 
+                const oldCompany = await prismaClient.empresa.findUnique({
+                    where: { id_empresa: empresaData.id },
+                });
+
+                if (!oldCompany) {
+                    throw new Error('Company not found');
+                }
+
+                if (oldCompany.avatar) {
+
+                    const fileUrl = oldCompany.avatar.split('/');
+                    const fileKey = `fotos/empresa/${fileUrl?.[fileUrl.length - 1]}`;
+                    await deleteFile(fileKey);
+                }
+
+                const newAvatar = await uploadFile(empresaData.file, empresaData.folderName);
+                empresaData.avatar = newAvatar as string;
+            }
+
+
+            //update empresaData without file, id and folderName
+            const companyData = {
+                nome: empresaData.nome,
+                nome_fantasia: empresaData.nome_fantasia,
+                logradouro: empresaData.logradouro,
+                numero: empresaData.numero,
+                complemento: empresaData.complemento,
+                bairro: empresaData.bairro,
+                cidade: empresaData.cidade,
+                estado: empresaData.estado,
+                cep: empresaData.cep,
+                inscr_estadual: empresaData.inscr_estadual,
+                cnpj: empresaData.cnpj,
+                email: empresaData.email,
+                telefone: empresaData.telefone,
+                avatar: empresaData.avatar,
+            } as ICompany;
+
+
             const company = await prismaClient.empresa.update({
-                where: { id_empresa: id },
-                data: empresaData
+                where: { id_empresa: empresaData.id },
+                data: companyData
             });
 
             return company;
