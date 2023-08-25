@@ -1,5 +1,5 @@
 import pdfMake from "pdfmake/build/pdfmake";
-import { dateFormatWithHours } from "./getFomatter";
+import { dateFormatWithoutHours } from "./getFomatter";
 
 export const printA4 = (data) => {
 
@@ -14,13 +14,10 @@ export const printA4 = (data) => {
                         fontSize: 8,
                         italics: true,
                         margin: [0, 0, 10, 0],
+                        color: '#152138'
                     }],
                 ],
 
-            },
-            layout: {
-                defaultBorder: false,
-                fillColor: '#ffffff', // Set the background color of the footer
             },
         };
     }
@@ -61,9 +58,9 @@ export const printA4 = (data) => {
                                     '\n',
                                 ],
                                 alignment: 'right',
-                                border: [false, true, true, true], // Add borders to all sides
-                                borderColor: 'red', // Set the border color to red
+                                border: [false, true, true, true], // Add borders to all sides                             
                                 margin: [0, 10, 0, 10], // Adjust top margin to vertically center the cell
+                                style: 'subheaderLogo',
                             },
                         ],
 
@@ -71,9 +68,10 @@ export const printA4 = (data) => {
                     ],
 
                 },
-                /*  layout: {
-                      fillColor: (i, node) => (i === 0 ?  '#e2dddd' : null),
-                  },*/
+                layout: {
+                    hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                    vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                }
             },
 
             //Numero da venda e data
@@ -84,24 +82,26 @@ export const printA4 = (data) => {
                         [
                             {
                                 text: [
-                                    { text: `${data.title}: `, style: 'subheader' },
-                                    { text: data.numero_venda || data.numero_orcamento || 'N/A' },
+                                    { text: `${data.title}: `, },
+                                    { text: data.numero_venda || data.numero_orcamento || 'N/A', },
                                 ],
                                 alignment: 'center',
                                 border: [true, true, false, true], // Add borders to all sides
+                                style: 'subheader'
 
                             },
                             {
                                 text: [
-                                    { text: 'Data: ' },
+                                    { text: 'Data: ', bold: true },
                                     {
                                         /*text: new Date(data.data_venda).toLocaleDateString() ||
                                             new Date(data.data_orcamento).toLocaleDateString() || 'N/A'*/
-                                        text: dateFormatWithHours(data.data_venda) || dateFormatWithHours(data.data_orcamento) || 'N/A'
+                                        text: dateFormatWithoutHours(data.data_venda) || dateFormatWithoutHours(data.data_orcamento) || 'N/A'
                                     },
                                 ],
                                 alignment: 'left',
                                 border: [false, true, true, true], // Add borders to all sides
+                                style: 'subheader'
 
                             },
                         ],
@@ -109,10 +109,10 @@ export const printA4 = (data) => {
                 },
                 margin: [0, 10, 0, 0],
                 layout: {
-                    fillColor: (i, node) => (i === 0 ? '#e2dddd' : null),
 
-
-                },
+                    hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                    vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                }
             },
 
             //Se for orçamento, mostra introdução
@@ -123,6 +123,7 @@ export const printA4 = (data) => {
                         { text: data.introducao || 'N/A' },
                     ],
                     margin: [0, 10, 0, 0],
+                    style: 'text',
                 },
             ] : []),
 
@@ -149,9 +150,9 @@ export const printA4 = (data) => {
                     margin: [0, 10, 0, 0],
                     layout: {
                         fillColor: (i, node) => (i === 0 ? '#e2dddd' : null),
-
-
-                    },
+                        hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                        vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                    }
                 },
             ] : []),
 
@@ -203,6 +204,11 @@ export const printA4 = (data) => {
                     ],
                 },
                 margin: [0, 10, 0, 0],
+                layout: {
+                    fillColor: (i, node) => (i === 0 ? '#e2dddd' : null),
+                    hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                    vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                }
             },
 
 
@@ -248,31 +254,34 @@ export const printA4 = (data) => {
                         // Linha do Frete, se houver
                         ...(data.valor_frete > 0 ? [
                             [
-                                { text: 'Frete', colSpan: 5, alignment: 'right', bold: true },
+                                { text: 'Frete', colSpan: 5, alignment: 'right', bold: true, color: '#152138' },
                                 {},
                                 {},
                                 {},
                                 {},
-                                { text: `R$ ${data.valor_frete.toFixed(2)}`, fontSize: '12', bold: true },
+                                { text: `R$ ${data.valor_frete.toFixed(2)}`, fontSize: '12', bold: true, color: '#152138' },
                             ],
                         ] : []),
 
                         // Linha do total
                         [
-                            { text: 'Total', colSpan: 5, alignment: 'right', bold: true },
+                            { text: 'Total', colSpan: 5, alignment: 'right', fontSize: '13', bold: true, color: '#152138' },
                             {},
                             {},
                             {},
                             {},
-                            { text: `R$ ${data.valor_total.toFixed(2)}`, fontSize: '14', bold: true },
+                            { text: `R$ ${data.valor_total.toFixed(2)}`, fontSize: '13', bold: true, color: '#152138' },
+
                         ],
+
 
 
                     ],
                 },
                 margin: [0, 10, 0, 0],
                 layout: {
-                    fillColor: (i, node) => (i === 0 ? '#e2dddd' : null),
+                    hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                    vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
                 },
             },
 
@@ -305,10 +314,9 @@ export const printA4 = (data) => {
                     },
                     margin: [0, 10, 0, 0],
                     layout: {
-                        fillColor: (i, node) => (i === 0 ? '#e2dddd' : null),
-
-
-                    },
+                        hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                        vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                    }
                 },
             ] : []),
 
@@ -330,7 +338,7 @@ export const printA4 = (data) => {
                         ],
                         [
                             {
-                                text: 'Assinatura do cliente',
+                                text: 'Assinatura',
                                 alignment: 'center',
                                 border: [true, false, true, true], // Add borders to all sides
                             },
@@ -340,6 +348,10 @@ export const printA4 = (data) => {
                     ],
                 },
                 margin: [0, 20, 0, 0],
+                layout: {
+                    hLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas horizontais das células
+                    vLineColor: (i, node) => '#a4a7ac', // Define a cor das bordas verticais das células
+                }
             },
 
 
@@ -347,29 +359,35 @@ export const printA4 = (data) => {
 
 
         ],
-        //Footer da venda
         footer: createFooter(),
         styles: {
-            defaultStyle: {
-                font: "Roboto" // Use the font family you defined in customFont
-            },
             header: {
                 fontSize: 16,
                 bold: true,
                 margin: [0, 10, 0, 10],
+                color: '#152138'
             },
             subheader: {
                 fontSize: 14,
                 bold: true,
                 margin: [0, 5, 0, 5],
+                color: '#152138'
+            },
+            subheaderLogo: {
+                fontSize: 12,
+                bold: true,
+                margin: [0, 5, 0, 5],
+                color: '#152138'
             },
             title: {
                 fontSize: 10,
                 bold: true,
+                color: '#152138'
 
             },
             text: {
                 fontSize: 8,
+                color: '#152138'
             },
         },
         images: {
