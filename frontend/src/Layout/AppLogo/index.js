@@ -1,69 +1,46 @@
-import React, {Fragment} from 'react';
-import {connect} from 'react-redux';
-
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { Slider } from "react-burgers";
-
 import AppMobileMenu from '../AppMobileMenu';
+import { setEnableClosedSidebar, setEnableMobileMenu, setEnableMobileMenuSmall } from '../../reducers/ThemeOptions';
+import { useAuth } from '../../context/AuthContext/useAuth';
 
-import {
-    setEnableClosedSidebar,
-    setEnableMobileMenu,
-    setEnableMobileMenuSmall,
-} from '../../reducers/ThemeOptions';
-
-class HeaderLogo extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            active: false,
-            mobile: false,
-            activeSecondaryMenuMobile: false
-        };
-
-    }
-
-    toggleEnableClosedSidebar = () => {
-        let {enableClosedSidebar, setEnableClosedSidebar} = this.props;
+const imgDefault = "utils/logo/logo.png";
+function HeaderLogo(props) {
+    const [active, setActive] = useState(false);
+    const { user } = useAuth();
+    const toggleEnableClosedSidebar = () => {
+        let { enableClosedSidebar, setEnableClosedSidebar } = props;
         setEnableClosedSidebar(!enableClosedSidebar);
     }
 
-    state = {
-        openLeft: false,
-        openRight: false,
-        relativeWidth: false,
-        width: 280,
-        noTouchOpen: false,
-        noTouchClose: false,
-    };
+    const imgLogo = user?.logo ? user.logo : imgDefault;
 
-    render() {
-        let {
-            enableClosedSidebar,
-        } = this.props;
+    const { enableClosedSidebar } = props;
 
-        const {
-        } = this.state;
-
-        return (
-            <Fragment>
-                <div className="app-header__logo">
-                    <div className="logo-src"/>
-                    {/* <div className="header__pane ms-auto">
-                        <div onClick={this.toggleEnableClosedSidebar}>
-                            <Slider
-                                active={enableClosedSidebar}
-                                type="elastic"
-                                onClick={() => this.setState({active: !this.state.active})}
-                            />
-                        </div>
-                    </div> */}
+    return (
+        <React.Fragment>
+            <div className="app-header__logo">
+                {/*<img src={imgLogo} alt="logo" width="95%" height="95%" style={{ marginRight: 10 }} />*/}
+                <img
+                    src={imgLogo}
+                    alt="logo"
+                    style={{ maxWidth: '100%', maxHeight: '100%', margin: 10 }}
+                />
+                <div className="header__pane ms-auto">
+                    <div onClick={toggleEnableClosedSidebar}>
+                        <Slider
+                            active={enableClosedSidebar}
+                            type="elastic"
+                            onClick={() => setActive(!active)}
+                        />
+                    </div>
                 </div>
-                <AppMobileMenu/>
-            </Fragment>
-        )
-    }
+            </div>
+            <AppMobileMenu />
+        </React.Fragment>
+    )
 }
-
 
 const mapStateToProps = state => ({
     enableClosedSidebar: state.ThemeOptions.enableClosedSidebar,
@@ -72,11 +49,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-
     setEnableClosedSidebar: enable => dispatch(setEnableClosedSidebar(enable)),
     setEnableMobileMenu: enable => dispatch(setEnableMobileMenu(enable)),
     setEnableMobileMenuSmall: enable => dispatch(setEnableMobileMenuSmall(enable)),
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLogo);

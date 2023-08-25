@@ -89,6 +89,7 @@ const ListarVendaProduto = () => {
 
   const handlePrintA4 = async (client) => {
     const response = await listOrderToPrint(client.id);
+    console.log(response)
     response.title = "VENDA";
     printA4(response);
   };

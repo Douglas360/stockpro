@@ -1,10 +1,8 @@
 import pdfMake from "pdfmake/build/pdfmake";
-//import pdfFonts from "pdfmake/build/vfs_fonts";
-import { imgUrl } from "../reports/imgUrl";
 import { dateFormatWithHours } from "./getFomatter";
 
 export const printA4 = (data) => {
-    console.log(data)
+
     function createFooter() {
         return {
             table: {
@@ -26,8 +24,6 @@ export const printA4 = (data) => {
             },
         };
     }
-
-
     const docDefinition = {
         pageSize: 'A4',
         content: [
@@ -38,7 +34,7 @@ export const printA4 = (data) => {
                     body: [
                         [
                             {
-                                image: imgUrl,
+                                image: 'snow',
                                 fit: [100, 100],
                                 alignment: 'left',
                                 border: [true, true, false, true], // Add borders to all sides
@@ -67,9 +63,13 @@ export const printA4 = (data) => {
                                 alignment: 'right',
                                 border: [false, true, true, true], // Add borders to all sides
                                 borderColor: 'red', // Set the border color to red
+                                margin: [0, 10, 0, 10], // Adjust top margin to vertically center the cell
                             },
                         ],
+
+
                     ],
+
                 },
                 /*  layout: {
                       fillColor: (i, node) => (i === 0 ?  '#e2dddd' : null),
@@ -350,6 +350,9 @@ export const printA4 = (data) => {
         //Footer da venda
         footer: createFooter(),
         styles: {
+            defaultStyle: {
+                font: "Roboto" // Use the font family you defined in customFont
+            },
             header: {
                 fontSize: 16,
                 bold: true,
@@ -369,7 +372,13 @@ export const printA4 = (data) => {
                 fontSize: 8,
             },
         },
+        images: {
+            snow: data?.empresa?.avatar
+        },
     };
 
+
     pdfMake.createPdf(docDefinition).open();
+
+
 };

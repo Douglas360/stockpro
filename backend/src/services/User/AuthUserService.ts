@@ -64,6 +64,7 @@ class AuthUserService {
                 login: user.login,
                 email: user.email,
                 id_empresa: user.empresa?.id_empresa,
+                logo: user.empresa?.avatar,
 
             };
 

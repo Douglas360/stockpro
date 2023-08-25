@@ -95,8 +95,8 @@ export const OrderProvider = ({ children }) => {
     const newData = {
       orderData: {
         numero_venda: parseInt(data.numeroVenda),
-        //data_venda: new Date(data.dataInclusao).toISOString(),
-        data_venda: associarHoraAoDia(data.dataInclusao),
+        data_venda: date,
+        //data_venda: associarHoraAoDia(data.dataInclusao),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -134,7 +134,7 @@ export const OrderProvider = ({ children }) => {
         pagamentos: pagamento,
       },
     };
-
+    console.log(newData)
     return handleRequest(
       api.post("/order", newData),
       "Venda cadastrada com sucesso"
