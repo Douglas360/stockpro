@@ -262,6 +262,20 @@ export const printA4 = (data) => {
                                 { text: `R$ ${data.valor_frete.toFixed(2)}`, fontSize: '12', bold: true, color: '#152138' },
                             ],
                         ] : []),
+                        // Linha do desconto se houver
+                        ...(data.valor_desconto > 0 ? [
+                            [
+                                { text: 'Desconto', colSpan: 5, alignment: 'right', fontSize: '11', bold: true, color: '#152138' },
+                                {},
+                                {},
+                                {},
+                                {},
+                                { text: `R$ ${data.valor_desconto.toFixed(2)}`, fontSize: '11', bold: true, color: '#152138' },
+
+                            ],
+                        ] : []
+
+                        ),
 
                         // Linha do total
                         [

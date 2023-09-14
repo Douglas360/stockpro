@@ -122,7 +122,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
     setPagamentoParcelado(list);
   };
 
-  const handleCheck = (checkboxName, value) => {
+  /*const handleCheck = (checkboxName, value) => {
     if (checkboxName === "exibePagamento") {
       setCheckExibePagamento(value);
     } else if (checkboxName === "pagamentoAvista") {
@@ -134,7 +134,18 @@ const CardPagamento = ({ data, handleInputChange }) => {
       setCheckPagamentoAvista(!value);
       setCheckPagamentoParcelado(value);
     }
-  };
+  };*/
+  const handleCheck = (checkboxName, value) => {
+    if (checkboxName === 'exibePagamento') {
+      setCheckExibePagamento(value)
+    } else if (checkboxName === 'pagamentoAvista') {
+      setCheckPagamentoAvista(value)
+      setCheckPagamentoParcelado(!value)
+    } else if (checkboxName === 'pagamentoParcelado') {
+      setCheckPagamentoParcelado(value)
+      setCheckPagamentoAvista(!value)
+    }
+  }
 
   const handleRefresh = () => {
     setPagamentoParcelado([]);
