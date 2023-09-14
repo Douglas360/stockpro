@@ -10,3 +10,14 @@ export const dateFormatWithHours = (value) => {
 
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
+
+export const dateFormatWithoutHours = (value) => {
+    if (!value) return '';
+
+    const date = new Date(value);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = date.getUTCFullYear();
+
+    return `${day}/${month}/${year}`;
+}
