@@ -16,7 +16,7 @@ import {
 import { useProduct } from "../../../context/ProductContext/useProduct";
 import { useAuth } from "../../../context/AuthContext/useAuth";
 import { NumericFormat } from "react-number-format";
-
+import Select from "react-select"
 import { cleanCurrencyMask } from "../../../functions/cleanCurrencyMask";
 import { useOrder } from "../../../context/OrderContext/useOrder";
 
@@ -24,26 +24,26 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
   const { listProducts } = useProduct();
   const { user } = useAuth();
 
-  const {listTypeSale} = useOrder()
+  const { listTypeSale } = useOrder()
 
-  
+
   const [tipoVenda, setTipoVenda] = useState([]);
   const [products, setProducts] = useState([]);
-
+  const [selectedProdutos, setSelectedProdutos] = useState([]);
   const [produtos, setProdutos] = useState([
     {
-        numero_item:  1,
-        produto: '',
-        nome: '',
-        quantidade: '',
-        id_tipo_venda: '',
-        valor_unitario: '',
-        tipo_desconto: "R$",
-        desconto: '',
-        subtotal: '',
+      numero_item: 1,
+      produto: '',
+      nome: '',
+      quantidade: '',
+      id_tipo_venda: '',
+      valor_unitario: '',
+      tipo_desconto: "R$",
+      desconto: '',
+      subtotal: '',
     },
   ]);
-
+  const [totalValue, setTotalValue] = useState()
   const [stockQuantities, setStockQuantities] = useState({});
 
   const idCompany = user?.id_empresa;
@@ -51,7 +51,6 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
   const loadProducts = useCallback(async () => {
     const response = await listProducts(idCompany);
     const responseTypeSale = await listTypeSale();
-
     setProducts(response);
     setTipoVenda(responseTypeSale);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,7 +96,7 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
 
 
           updatedFields[index].nome = selectedProduct.nome
-          
+
           updatedFields[index].valor_unitario = selectedProduct.valor_venda || 0;
 
           updatedFields[index].quantidade = 1;
@@ -124,10 +123,35 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
 
   const handleRemoveField = (index) => {
     setProdutos((prevProdutos) => {
-      const updatedFields = [...prevProdutos];
+      /*const updatedFields = [...prevProdutos];
       updatedFields.splice(index, 1);
+      return updatedFields;*/
+
+      // Remove the product at the specified index
+      const updatedFields = [...prevProdutos];
+      const removedProduct = updatedFields.splice(index, 1)[0];
+
+      // Calculate the new total value
+      const newTotalValue = calculateTotalValue(updatedFields);
+
+      // Update the data object with the updated products
+      const updatedData = { ...data };
+      updatedData.produtos = updatedFields;
+
+      // Update the state with the new products and total value
+      handleInputChange({ target: { name: "produtos", value: updatedFields } });
+      setTotalValue(newTotalValue); // You need to define and update the total value state
+
       return updatedFields;
     });
+  };
+  const calculateTotalValue = (produtos) => {
+    let totalValue = 0;
+    for (const produto of produtos) {
+      // Calculate the subtotal for each product and add it to the total
+      totalValue += calculaDesconto(produto);
+    }
+    return totalValue;
   };
 
   const handleQuantityChange = (index, value) => {
@@ -161,7 +185,7 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
       ) {
         updatedFields[index].subtotal =
           updatedFields[index].quantidade *
-            updatedFields[index].valor_unitario -
+          updatedFields[index].valor_unitario -
           value;
       } else if (produtos[index].tipo_desconto === "%") {
         // Apply discount as a percentage of the total
@@ -172,7 +196,7 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
           100;
         updatedFields[index].subtotal =
           updatedFields[index].quantidade *
-            updatedFields[index].valor_unitario -
+          updatedFields[index].valor_unitario -
           discount;
       }
 
@@ -262,6 +286,15 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
     }
   }, [data]);
 
+
+
+  const handleProdutoChange = (selectedOption, index) => {
+    const updatedSelectedProdutos = [...selectedProdutos];
+    updatedSelectedProdutos[index] = selectedOption;
+    setSelectedProdutos(updatedSelectedProdutos);
+    handleFieldChange(index, "id_produto", selectedOption.value);
+  };
+
   return (
     <Card className="main-card mb-1">
       <CardBody>
@@ -297,37 +330,18 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
             </tr>
           </thead>
           <tbody>
-            {produtos.map((produto, index) => {
+            {produtos?.map((produto, index) => {
               return (
                 <tr key={index}>
                   <td>
-                    <Input
-                      required
-                      type="select"
-                      name="produto"
-                      value={produto.nome}
-                      onChange={(e) =>
-                        handleFieldChange(index, "id_produto", e.target.value)
-                      }
-                    >
-                      <option
-                        key={+produto.id_produto}
-                        value={+produto.id_produto}
-                      >
-                        {produto.nome}
-                      </option>
-                      {products?.map((product, innerIndex) => {
-                        return (
-                          <option
-                            //disabled={product.estoque[0].quantidade <= 0}
-                            key={innerIndex}
-                            value={product.id_produto}
-                          >
-                            {product.nome}
-                          </option>
-                        );
-                      })}
-                    </Input>
+                    <Select
+                      value={isEditMode ? [{ value: produto.numero_item, label: produto.nome }]
+                        : selectedProdutos[index]}
+                      onChange={(selectedOption) => handleProdutoChange(selectedOption, index)}
+                      options={products?.map(product => ({ value: product.id_produto, label: product.nome }))}
+                      noOptionsMessage={() => "Nenhum registro encontrado"}
+                      placeholder="Selecione o produto"
+                    />
                   </td>
                   <td>
                     <Input
@@ -340,7 +354,6 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
                       }
                       id={`quantidade-${index}`}
                     />
-
                     {produto && (
                       <UncontrolledTooltip
                         placement="bottom"
@@ -372,8 +385,8 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
                       <option value="">Selecione</option>
                       {tipoVenda.map((tipo, innerIndex) => (
                         <option key={innerIndex} value={tipo.id_tipo_venda}>
-                        {tipo.descricao}
-                      </option>
+                          {tipo.descricao}
+                        </option>
                       ))}
                     </Input>
                   </td>
@@ -455,20 +468,6 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
                         handleFieldChange(index, "subtotal", e.target.value)
                       }
                     />
-
-                    {/* <NumericFormat
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      prefix="R$ "
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      allowNegative={false}
-                      name="subtotal"
-                      value={produto?.subtotal}
-                      onChange={(e) =>
-                        handleFieldChange(index, "subtotal", e.target.value)
-                      }
-                    /> */}
                   </td>
                   <td>
                     <Button

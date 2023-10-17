@@ -45,13 +45,12 @@ class CreateBudgetService {
                 },
 
             });
-            //console.log(orderData)
+          
             if (pagamentos) {
 
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
-                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
-                        console.log("first" + parcelado)
+                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;                     
 
                         if (!id_forma_pagamento) {
                             throw new Error("id_forma_pagamento not found");

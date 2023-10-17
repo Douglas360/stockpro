@@ -64,7 +64,8 @@ class CreateDashboardService {
                             data_movimentacao: "desc",
                         },
                     }
-                }
+                },
+                take:10
             });
            
             const movementInventory2 = movementInventory.map((product) => {
@@ -109,6 +110,7 @@ class CreateDashboardService {
                 orderBy: {
                     data_venda: "desc",
                 },
+                take:8
 
 
             });
@@ -153,6 +155,7 @@ class CreateDashboardService {
                 orderBy: {
                     data_orcamento: "desc",
                 },
+                take:8
 
 
             });
