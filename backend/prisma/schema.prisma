@@ -50,6 +50,7 @@ model Empresa {
   email          String           @unique
   telefone       String?
   avatar         String?
+  token_nfe      String?
   ativo          Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -542,4 +543,13 @@ model PagamentoOrcamento {
   forma_pagamento FormaPagamento @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_pagamento_orcamento")
+}
+
+model Configuracao{
+  id_configuracao Int @id @default(autoincrement())
+  id_empresa Int
+  periodo_validade_produto String?
+  permite_venda_produto_sem_estoque Boolean?
+  
+  permite_atualizacao_valor_orcamento Boolean?
 }

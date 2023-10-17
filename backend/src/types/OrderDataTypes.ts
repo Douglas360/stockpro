@@ -33,6 +33,7 @@ export interface OrderData {
     valor_total: number;
     valor_produtos: number;
     modalidade_frete: number;
+    informacoes_adicionais_contribuinte:string
     items: OrderItemData[];
 }
 

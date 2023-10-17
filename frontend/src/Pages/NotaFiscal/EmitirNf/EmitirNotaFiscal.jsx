@@ -8,11 +8,13 @@ import { useOrder } from '../../../context/OrderContext/useOrder'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBox, faListCheck, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { getFormatterInputPrice } from '../../../functions/getFormatterInputPrice'
+import { useAuth } from '../../../context/AuthContext/useAuth'
 
 
 export const EmitirNotaFiscal = () => {
     const { createInvoice, invoiceLoading } = useInvoice()
     const { getOrderById, loading } = useOrder()
+    const { user } = useAuth()
 
     const [data, setData] = useState([])
     const [orderData, setOrderData] = useState([])
@@ -21,6 +23,8 @@ export const EmitirNotaFiscal = () => {
         const response = await getOrderById(id)
         setOrderData(response)
     }
+
+    const idCompany = user?.id_empresa
 
     useEffect(() => {
         loadOrder()
@@ -40,6 +44,7 @@ export const EmitirNotaFiscal = () => {
             ...prevData,
             [name]: value,
             orderId: id,
+            id_empresa: idCompany,
         }));
     };
 
@@ -407,6 +412,19 @@ export const EmitirNotaFiscal = () => {
                                 <option value={3}>3-Operação com exterior</option>
                             </Input>
                         </Col>
+                    </Row>
+                    <Row className='mb-3'> 
+                    <Col md={12}>
+                    <Label style={{ fontWeight: 'bold' }}>Informações adicionais</Label><span className='text-danger'>*</span>
+                            <Input
+                                type='text'
+                                value={data.informacoes_adicionais_contribuinte}
+                                onChange={handleInputChange}
+                                name='informacoes_adicionais_contribuinte'
+                                id='informacoes_adicionais_contribuinte'
+                                />
+                    </Col>
+
                     </Row>
                     <Row>
                         <Col md={4}>

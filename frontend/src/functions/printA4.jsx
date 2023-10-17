@@ -216,7 +216,7 @@ export const printA4 = (data) => {
             {
                 table: {
                     headerRows: 2,
-                    widths: ['auto', '*', '*', '*', '*', '*'],
+                    widths: ['auto', 'auto', 'auto', 'auto', '*', '*'],
                     body: [
                         [
                             {
@@ -236,17 +236,17 @@ export const printA4 = (data) => {
                         [
                             { text: 'Item', bold: true }, // Deixa o cabeçalho em negrito
                             { text: 'Produto', bold: true }, // Deixa o cabeçalho em negrito
-                            { text: 'Unidade', bold: true }, // Deixa o cabeçalho em negrito
-                            { text: 'Quantidade', bold: true }, // Deixa o cabeçalho em negrito
+                            { text: 'Un.', bold: true }, // Deixa o cabeçalho em negrito
+                            { text: 'Qnt.', bold: true }, // Deixa o cabeçalho em negrito
                             { text: 'Valor Unitário', bold: true }, // Deixa o cabeçalho em negrito
                             { text: 'Valor Total', bold: true }, // Deixa o cabeçalho em negrito
                         ],
                         // Linhas dos itens
                         ...(data.itens || []).map((item) => [
-                            { text: item.numero_item, style: 'text' }, // Aplica o estilo 'item'
-                            { text: item.produto?.nome || 'N/A', style: 'text' }, // Aplica o estilo 'item'
-                            { text: 'UN', style: 'text' }, // Aplica o estilo 'item'
-                            { text: item.quantidade || 'N/A', style: 'text' }, // Aplica o estilo 'item'
+                            { text: item.numero_item, style: 'text', alignment: 'center' }, // Aplica o estilo 'item'
+                            { text: item.produto?.nome || 'N/A', style: 'text', }, // Aplica o estilo 'item'
+                            { text: 'UN', style: 'text', alignment: 'center'  }, // Aplica o estilo 'item'
+                            { text: item.quantidade || 'N/A', style: 'text', alignment: 'center'  }, // Aplica o estilo 'item'
                             { text: `R$ ${item.valor_unitario.toFixed(2)}` || 'N/A', style: 'text' }, // Aplica o estilo 'item'
                             { text: `R$ ${item.valor_total.toFixed(2)}` || 'N/A', style: 'text' }, // Aplica o estilo 'item'
                         ]),
