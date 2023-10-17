@@ -2,9 +2,12 @@ import axios, { AxiosRequestConfig } from 'axios';
 import prismaClient from '../../prisma';
 import { OrderData } from '../../types/OrderDataTypes';
 import { CreateInvoiceServiceRequest } from '../../types/CreateInvoiceTypes';
+import { DateTime } from 'luxon';
+
+const dataHoraAtual: string | null = DateTime.now().setZone('America/Sao_Paulo').toISO()!
 
 // Configure o cabeçalho da requisição com o método HTTP Basic Auth
-const config: AxiosRequestConfig = {
+/*const config: AxiosRequestConfig = {
   auth: {
     username: process.env.TOKEN_API_NF as string,
     password: '',
@@ -12,7 +15,7 @@ const config: AxiosRequestConfig = {
   headers: {
     'Content-Type': 'application/json',
   },
-};
+};*/
 
 class CreateInvoiceService {
 
@@ -67,6 +70,9 @@ class CreateInvoiceService {
       if (!order.empresa?.nome_fantasia) {
         throw new Error('Falta atualizar o nome fantasia da empresa');
       }
+      if (!order.empresa?.inscr_estadual) {
+        throw new Error('Falta atualizar a inscrição estadual da empresa')
+      }
 
       let valor_produto
       let valorFretePorItem = 0
@@ -78,13 +84,16 @@ class CreateInvoiceService {
       }
 
 
-
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
         numero: requestData.numero_nota,
         serie: requestData.tipo_documento,
-        data_emissao: order.data_venda.toISOString(),
-        data_entrada_saida: order.data_venda.toISOString(),
+        //data_emissao: order.data_venda.toISOString(),
+        //data_entrada_saida: order.data_venda.toISOString(),
+        //data_emissao: new Date().toISOString(),
+        //data_entrada_saida: new Date().toISOString(),
+        data_emissao: dataHoraAtual !== null ? dataHoraAtual : new Date().toISOString(),
+        data_entrada_saida: dataHoraAtual !== null ? dataHoraAtual : new Date().toISOString(),
         tipo_documento: requestData.tipo_documento,
         local_destino: requestData.local_destino,
         finalidade_emissao: requestData.finalidade_emissao,
@@ -115,6 +124,7 @@ class CreateInvoiceService {
         valor_total: order.valor_total as number,
         valor_produtos: valor_produto as number,
         modalidade_frete: 0,
+        informacoes_adicionais_contribuinte: requestData.informacoes_adicionais_contribuinte,
         items: order.itens.map(item => {
           return {
             valor_frete: valorFretePorItem,
@@ -144,6 +154,17 @@ class CreateInvoiceService {
 
       const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
       const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
+      const token = order.empresa?.token_nfe as string
+
+      const config: AxiosRequestConfig = {
+        auth: {
+          username: token,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
 
       await axios.post(url, orderMapped, config);
 
@@ -154,11 +175,12 @@ class CreateInvoiceService {
           ref: String(ref)
         }
       })
-
+     
       if (!nf) {
         nf = await prismaClient.notaFiscal.create({
           data: {
-            id_empresa: 1, // Alterar para pegar o id da empresa
+            //id_empresa: 2, // Alterar para pegar o id da empresa
+            id_empresa: requestData.id_empresa,
             ref: String(ref),
             status: 'Processamento autorizado',
           }
@@ -179,6 +201,8 @@ class CreateInvoiceService {
         const secondResponse = await axios.get(secondUrl, config);
         const secondResponseData = secondResponse.data;
 
+
+        console.log(secondResponseData.requisicao_nota_fiscal.data_emissao)
         //Atualiza nf no banco de dados
         await prismaClient.notaFiscal.update({
           where: {
@@ -192,10 +216,12 @@ class CreateInvoiceService {
             numero_nfe: secondResponseData.numero,
             caminho_xml: secondResponseData.caminho_xml_nota_fiscal,
             caminho_pdf: secondResponseData.caminho_danfe,
-            data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
+            //data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
+            data_emissao: dataHoraAtual
           }
         })
       }, 10000)
+
       return nf
     } catch (error: any) {
       if (error.response && error.response.data && typeof error.response.data === 'object') {
@@ -214,6 +240,30 @@ class CreateInvoiceService {
   }
   async getInvoiceData(ref: number): Promise<void> {
     try {
+      //pegar o token_nfe atraves do numero de referencia da venda vinculada a empresa
+      const token = await prismaClient.venda.findFirst({
+        where: {
+          id_venda: ref
+        },
+        include: {
+          empresa: {
+            select: {
+              token_nfe: true
+            }
+          }
+        }
+      })
+      console.log("VERIFICAR: " + token)
+      const config: AxiosRequestConfig = {
+        auth: {
+          //username: process.env.TOKEN_API_NF as string,
+          username: token?.empresa?.token_nfe as string,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
       const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
 
       const response = await axios.get(secondUrl, config);
@@ -285,6 +335,13 @@ class CreateInvoiceService {
       const nf = await prismaClient.notaFiscal.findFirst({
         where: {
           ref: id_nfe
+        },
+        include:{
+          empresa:{
+            select:{
+              token_nfe:true
+            }
+          }
         }
       });
 
@@ -297,10 +354,11 @@ class CreateInvoiceService {
       const cancelData = {
         justificativa: reason
       }
-
+      const token = nf.empresa?.token_nfe
       const config: AxiosRequestConfig = {
         auth: {
-          username: process.env.TOKEN_API_NF as string,
+          //username: process.env.TOKEN_API_NF as string,
+          username:token as string,          
           password: '',
         },
         headers: {
@@ -310,7 +368,7 @@ class CreateInvoiceService {
       };
 
       const response = await axios.delete(url, config);
-
+      
       if (response.data.status === 'erro_cancelamento') {
         await prismaClient.notaFiscal.update({
           where: {

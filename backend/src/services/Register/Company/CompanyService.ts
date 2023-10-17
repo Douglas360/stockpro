@@ -113,6 +113,7 @@ class CompanyService {
                 email: empresaData.email,
                 telefone: empresaData.telefone,
                 avatar: empresaData.avatar,
+                token_nfe: empresaData.token_nfe
             } as ICompany;
 
 

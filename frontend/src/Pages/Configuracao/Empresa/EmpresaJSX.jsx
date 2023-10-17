@@ -43,6 +43,7 @@ export const EmpresaJSX = () => {
       email: response?.email,
       telefone: response?.telefone,
       avatar: response?.avatar,
+      token_nfe:response?.token_nfe,
       ativo: true,
     });
   };
@@ -390,6 +391,19 @@ export const EmpresaJSX = () => {
                   value={formValues.telefone}
                   onChange={handleChange}
                 />
+              </Col>
+            </Row>
+            <Row>
+              <Col md='4'>
+                <Label style={{fontWeight:'bold'}}>Token para emissão da NF-e</Label>
+                <Input
+                  type='text'
+                  name='token_nfe'
+                  id='token_nfe'
+                  value={formValues.token_nfe}
+                  onChange={handleChange}
+                />
+
               </Col>
             </Row>
             <Row>

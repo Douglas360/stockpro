@@ -40,6 +40,7 @@ class CompanyController {
             cnpj,
             email,
             telefone,
+            token_nfe
 
         } = req.body;
         const { file } = req;
@@ -59,7 +60,8 @@ class CompanyController {
             email,
             telefone,
             folderName: 'fotos/empresa', //without when update
-            file: file //without when update
+            file: file, //without when update
+            token_nfe
         } as ICompany;
 
         //console.log(companyData)

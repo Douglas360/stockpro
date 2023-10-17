@@ -15,6 +15,7 @@ export interface ICompany {
     telefone: string
     avatar: string
     file?: FileObject
+    token_nfe?: string
     folderName?: string
 }
 
