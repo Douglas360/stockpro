@@ -1,12 +1,10 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { api } from '../../services/api';
 import { toast } from 'react-toastify';
-import { useAuth } from '../AuthContext/useAuth';
-
 
 export const DashboardContext = createContext();
 
-export const DashboardProvider = ({ children }) => {      
+export const DashboardProvider = ({ children }) => {
 
     const [loading, setLoading] = useState(false);
 
@@ -60,7 +58,7 @@ export const DashboardProvider = ({ children }) => {
     return (
         <DashboardContext.Provider
             value={{
-                loading,              
+                loading,
                 listAllOrders,
                 listInventory,
                 listInventoryMovement,

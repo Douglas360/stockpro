@@ -4,35 +4,11 @@ import { toast } from "react-toastify";
 import { ERROR_MESSAGES } from "../../config/ErrorMessage";
 import { cleanCurrencyMask } from "../../functions/cleanCurrencyMask";
 
-import { format, parseISO, set } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-
-
-
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  /*const navigate = useNavigate();*/
+
   const [loading, setLoading] = useState(false);
-
-  const associarHoraAoDia = (dataString) => {
-    const dataAtual = new Date(); 
-    const dataFornecida = parseISO(dataString); 
-
-    const fusoHorario = 'America/Sao_Paulo';
-  
-    const dataAtualEmBrasilia = utcToZonedTime(dataAtual, fusoHorario);
-  
-    const dataAssociada = set(dataFornecida, {
-      hours: dataAtualEmBrasilia.getHours(),
-      minutes: dataAtualEmBrasilia.getMinutes(),
-      seconds: dataAtualEmBrasilia.getSeconds(),
-    });
-  
-    const dataAssociadaUtc = zonedTimeToUtc(dataAssociada, fusoHorario);
-  
-    return format(dataAssociadaUtc, 'yyyy-MM-dd HH:mm:ss'); 
-  }
 
   const handleRequest = async (requestPromise, message) => {
     try {

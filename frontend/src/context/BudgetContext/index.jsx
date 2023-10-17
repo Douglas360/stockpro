@@ -29,10 +29,7 @@ export const BudgetProvider = ({ children }) => {
     }
   };
 
-  const createBudget = async (data) => {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
-    )
+  const createBudget = async (data) => {  
     const pagamento =
       Array.isArray(data.pagamentoParcelado) &&
         data.pagamentoParcelado.length > 0
@@ -70,8 +67,8 @@ export const BudgetProvider = ({ children }) => {
       budgetData: {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
-        //data_orcamento: new Date(data.dataInclusao).toISOString(),
-        data_orcamento: date,
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
+        //data_orcamento: date,
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,
@@ -190,6 +187,7 @@ export const BudgetProvider = ({ children }) => {
         numero_orcamento: parseInt(data.numeroVenda),
         //Pegar horario do BRasil
         //data_orcamento: new Date(data.dataInclusao).toISOString(),
+        data_orcamento: new Date(data.dataInclusao).toISOString(),
         id_empresa: parseInt(data.id_empresa),
         id_cliente: parseInt(data.clienteOrcamento),
         id_situacao_venda: parseInt(data.situacaoVendaOrcamento) || 1,

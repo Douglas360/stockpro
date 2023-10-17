@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useBudget } from "../../../context/BudgetContext/useBudget";
 import { SearchBar } from "../../../components/SearchBar";
-import { dateFormatWithHours } from "../../../functions/getFomatter";
+import { dateFormatWithHours, dateFormatWithoutHours } from "../../../functions/getFomatter";
 import { faEdit, faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -135,7 +135,7 @@ const ListarOrcamentoProduto = () => {
     return {
       id: budget.numero_orcamento,
       nome: budget.cliente.nome,
-      data_orcamento: dateFormatWithHours(budget.data_orcamento),
+      data_orcamento: dateFormatWithoutHours(budget.data_orcamento),
       status: budget.situacao_venda.descricao,
       valor_total: getFormatterInputPrice(budget.valor_total),
     };

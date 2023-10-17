@@ -122,7 +122,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
               type='date'
               name='dataInclusao'
               id='dataInclusao'
-              min={new Date().toISOString().split('T')[0]}
+              //min={new Date().toISOString().split('T')[0]}
               value={data?.dataInclusao}
               onChange={handleInputChange}
               invalid={inputErrors.dateError}

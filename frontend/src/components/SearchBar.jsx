@@ -67,13 +67,8 @@ export const SearchBar = ({
   noActions,
 }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
+  const [selectedItem, setSelectedItem] = useState(null);  
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [isAdvancedSearchVisible, setIsAdvancedSearchVisible] = useState(false);
   const toggleAdvancedSearch = () =>
     setIsAdvancedSearchVisible(!isAdvancedSearchVisible);
@@ -82,14 +77,6 @@ export const SearchBar = ({
 
   const handleAddClient = () => {
     navigate(urlNavigate);
-  };
-
-  const handleDeleteClients = () => {
-    // Delete clients logic here
-  };
-
-  const handleImportClients = () => {
-    // Import clients logic here
   };
 
   const handleSearch = (e) => {
@@ -168,25 +155,7 @@ export const SearchBar = ({
             <FontAwesomeIcon icon={faPlusCircle} size="xl" />
             <span> Adicionar</span>
           </Button>
-        </Col>
-        {/* <Col xs={12} sm={6} md={4} lg={3} className="d-none d-sm-block">
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-                        <DropdownToggle caret>
-                            <FontAwesomeIcon icon={faGears} size='xl' />
-                            <span> Mais Ações</span>
-                        </DropdownToggle>
-                        <DropdownMenu>
-                            <DropdownItem onClick={handleImportClients}>
-                                <FontAwesomeIcon icon={faFileExcel} size='lg' style={{ color: 'green' }} />
-                                <span style={{ marginLeft: '1.0rem' }}> Importar de uma planilha</span>
-                            </DropdownItem>
-                            <DropdownItem onClick={handleDeleteClients}>
-                                <FontAwesomeIcon icon={faTrashArrowUp} size='lg' style={{ color: 'red' }} />
-                                <span style={{ marginLeft: '1.0rem' }}>   Excluir {msgDelete}</span>
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-    </Col>*/}
+        </Col>        
         <Col
           xs={12}
           sm={12}

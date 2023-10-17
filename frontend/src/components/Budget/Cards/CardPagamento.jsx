@@ -121,20 +121,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
     list.splice(index, 1);
     setPagamentoParcelado(list);
   };
-
-  /*const handleCheck = (checkboxName, value) => {
-    if (checkboxName === "exibePagamento") {
-      setCheckExibePagamento(value);
-    } else if (checkboxName === "pagamentoAvista") {
-      setCheckPagamentoAvista(value);
-      setCheckPagamentoParcelado(!value);
-      setPagamentoParcelado([]);
-    } else if (checkboxName === "pagamentoParcelado") {
-      setPagamentoParcelado([]);
-      setCheckPagamentoAvista(!value);
-      setCheckPagamentoParcelado(value);
-    }
-  };*/
+ 
   const handleCheck = (checkboxName, value) => {
     if (checkboxName === 'exibePagamento') {
       setCheckExibePagamento(value)
@@ -277,7 +264,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
                     <td>
                       <Input
                         type="date"
-                        min={new Date().toISOString().split("T")[0]}
+                        //min={new Date().toISOString().split("T")[0]}
                         name="vencimentoAvista"
                         id="vencimentoAvista"
                         placeholder="Vencimento"
@@ -425,7 +412,7 @@ const CardPagamento = ({ data, handleInputChange }) => {
                       <td>
                         <Input
                           type="date"
-                          min={new Date().toISOString().split("T")[0]}
+                          //min={new Date().toISOString().split("T")[0]}
                           name="dataPrimeiraParcela"
                           id="dataPrimeiraParcela"
                           placeholder="Data 1ª parcela"
