@@ -6,12 +6,13 @@ import { Button, Card, CardBody, Col, FormText, Input, InputGroup, Label, Row } 
 import { useAuth } from '../../../context/AuthContext/useAuth'
 import { useOrder } from '../../../context/OrderContext/useOrder'
 import { useRegister } from '../../../context/RegisterContext/useRegister'
+import Select from "react-select"
 
 const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
   const { user } = useAuth()
   const { listSalesStatus } = useOrder()
   const { listAllCustomers } = useRegister()
-
+  const [clientSelected, setClienteSelected] = useState([])
   const [customers, setCustomers] = useState([])
   const [situacaoVenda, setSituacaoVenda] = useState([])
   const [inputErrors, setInputErrors] = useState({
@@ -63,6 +64,13 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
     handleInputChange({ target: { name: 'numeroVenda', value: value } })
   }
 
+  const handleClientChange = (client) => {
+    setClienteSelected(client)
+    const updatedData = { ...data }
+    updatedData.clienteOrcamento = client.value
+    handleInputChange({ target: { name: 'clienteOrcamento', value: client.value } })
+  }
+
   return (
     <Card className="main-card mb-1">
       <CardBody>
@@ -98,7 +106,7 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
           </Col>
           <Col md='5'>
             <Label style={{ fontWeight: 'bold' }}>Cliente</Label><span className='text-danger'>*</span>
-            <Input type='select'
+            {/*<Input type='select'
               name='clienteOrcamento'
               id='clienteOrcamento'
               value={data?.clienteOrcamento || ''}
@@ -114,7 +122,15 @@ const CardDadosGerais = ({ data, handleInputChange, typeForm }) => {
                   {customer.nome}
                 </option>
               ))}
-            </Input>
+            </Input>*/}
+            <Select
+              value={clientSelected}
+              onChange={(selectedOption) => handleClientChange(selectedOption)}
+              options={customers.map(clients => ({ value: clients.id_cliente, label: clients.nome }))}
+              noOptionsMessage={() => "Nenhum registro encontrado"}
+              placeholder="Selecione o cliente"
+              required
+            />
           </Col>
           <Col md='4'>
             <Label style={{ fontWeight: 'bold' }}>Data</Label><span className='text-danger'>*</span>

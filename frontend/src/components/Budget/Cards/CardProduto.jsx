@@ -67,7 +67,8 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
     setProdutos((prevProdutos) => [
       ...prevProdutos,
       {
-        numero_item: prevProdutos.length + 1,
+        //numero_item: prevProdutos.length + 1,
+        numero_item: prevProdutos.length > 0 ? prevProdutos[prevProdutos.length - 1].numero_item + 1 : 1,
         produto: '',
         nome: '',
         quantidade: '',
@@ -121,11 +122,11 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
   };
 
 
-  const handleRemoveField = (index) => {
+  /*const handleRemoveField = (index) => {
     setProdutos((prevProdutos) => {
       /*const updatedFields = [...prevProdutos];
       updatedFields.splice(index, 1);
-      return updatedFields;*/
+      return updatedFields;
 
       // Remove the product at the specified index
       const updatedFields = [...prevProdutos];
@@ -143,6 +144,29 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
       setTotalValue(newTotalValue); // You need to define and update the total value state
 
       return updatedFields;
+    });
+  };*/
+
+  const handleRemoveField = (index) => {
+   
+    setProdutos((prevProdutos) => {
+      // Remove the product at the specified index
+      const updatedFields = prevProdutos.filter((_, i) => i !== index);
+
+      // Update the numbers of items
+      const updatedFieldsWithNumbers = updatedFields.map((item, i) => ({
+        ...item,
+        numero_item: i + 1,
+      }));
+
+      // Calculate the new total value
+      const newTotalValue = calculateTotalValue(updatedFieldsWithNumbers);
+
+      // Update the state with the new products and total value
+      handleInputChange({ target: { name: 'produtos', value: updatedFieldsWithNumbers } });
+      setTotalValue(newTotalValue); // You need to define and update the total value state
+    
+      return updatedFieldsWithNumbers;
     });
   };
   const calculateTotalValue = (produtos) => {
@@ -312,7 +336,10 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th style={{ width: "20%" }}>
+              <th style={{ width: "6%" }}>
+                Item
+              </th>
+              <th style={{ width: "25%" }}>
                 Produto <span className="text-danger">*</span>
               </th>
               <th style={{ width: "8%" }}>
@@ -333,6 +360,13 @@ const CardProduto = ({ data, handleInputChange, isEditMode }) => {
             {produtos?.map((produto, index) => {
               return (
                 <tr key={index}>
+                  <td>
+                    <Input
+                      disabled
+                      value={produto.numero_item}
+                    />
+
+                  </td>
                   <td>
                     <Select
                       value={isEditMode ? [{ value: produto.numero_item, label: produto.nome }]
