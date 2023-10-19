@@ -4,8 +4,6 @@ import { OrderData } from '../../types/OrderDataTypes';
 import { CreateInvoiceServiceRequest } from '../../types/CreateInvoiceTypes';
 import { DateTime } from 'luxon';
 
-const dataHoraAtual: string | null = DateTime.now().setZone('America/Sao_Paulo').toISO()!
-
 // Configure o cabeçalho da requisição com o método HTTP Basic Auth
 /*const config: AxiosRequestConfig = {
   auth: {
@@ -21,6 +19,7 @@ class CreateInvoiceService {
 
 
   async create(requestData: CreateInvoiceServiceRequest): Promise<any> {
+    const dataHoraAtual: string | null = DateTime.now().setZone('America/Sao_Paulo').toISO()!
     try {
       if (!requestData.orderId) {
         throw new Error('Missing orderId');
@@ -83,7 +82,7 @@ class CreateInvoiceService {
         valor_produto = order.valor_total
       }
 
-
+      console.log(dataHoraAtual)
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
         numero: requestData.numero_nota,
@@ -149,80 +148,80 @@ class CreateInvoiceService {
         })
       }
 
-      const ref = order?.numero_venda;
+      /* const ref = order?.numero_venda;
+ 
+ 
+       const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
+       const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
+       const token = order.empresa?.token_nfe as string
+ 
+       const config: AxiosRequestConfig = {
+         auth: {
+           username: token,
+           password: '',
+         },
+         headers: {
+           'Content-Type': 'application/json',
+         },
+       };
+ 
+       await axios.post(url, orderMapped, config);
+ 
+       //Verificar se a nf já existe no banco de dados e se não existir criar
+ 
+       let nf = await prismaClient.notaFiscal.findFirst({
+         where: {
+           ref: String(ref)
+         }
+       })
+      
+       if (!nf) {
+         nf = await prismaClient.notaFiscal.create({
+           data: {
+             //id_empresa: 2, // Alterar para pegar o id da empresa
+             id_empresa: requestData.id_empresa,
+             ref: String(ref),
+             status: 'Processamento autorizado',
+           }
+         })
+       } else {
+         nf = await prismaClient.notaFiscal.update({
+           where: {
+             ref: nf.ref as string
+           },
+           data: {
+             status: 'Processamento autorizado',
+           }
+         })
+       }
+ 
+       //Cria timeout para pegar os dados da nf
+       setTimeout(async () => {
+         const secondResponse = await axios.get(secondUrl, config);
+         const secondResponseData = secondResponse.data;
+ 
+ 
+         console.log(secondResponseData.requisicao_nota_fiscal.data_emissao)
+         //Atualiza nf no banco de dados
+         await prismaClient.notaFiscal.update({
+           where: {
+             ref: nf?.ref as string
+           },
+           data: {
+             status: secondResponseData.status,
+             status_sefaz: secondResponseData.status_sefaz,
+             mensagem_sefaz: secondResponseData.mensagem_sefaz,
+             chave_nfe: secondResponseData.chave_nfe,
+             numero_nfe: secondResponseData.numero,
+             caminho_xml: secondResponseData.caminho_xml_nota_fiscal,
+             caminho_pdf: secondResponseData.caminho_danfe,
+             //data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
+             data_emissao: dataHoraAtual
+           }
+         })
+       }, 10000)*/
 
-
-      const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
-      const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
-      const token = order.empresa?.token_nfe as string
-
-      const config: AxiosRequestConfig = {
-        auth: {
-          username: token,
-          password: '',
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-
-      await axios.post(url, orderMapped, config);
-
-      //Verificar se a nf já existe no banco de dados e se não existir criar
-
-      let nf = await prismaClient.notaFiscal.findFirst({
-        where: {
-          ref: String(ref)
-        }
-      })
-     
-      if (!nf) {
-        nf = await prismaClient.notaFiscal.create({
-          data: {
-            //id_empresa: 2, // Alterar para pegar o id da empresa
-            id_empresa: requestData.id_empresa,
-            ref: String(ref),
-            status: 'Processamento autorizado',
-          }
-        })
-      } else {
-        nf = await prismaClient.notaFiscal.update({
-          where: {
-            ref: nf.ref as string
-          },
-          data: {
-            status: 'Processamento autorizado',
-          }
-        })
-      }
-
-      //Cria timeout para pegar os dados da nf
-      setTimeout(async () => {
-        const secondResponse = await axios.get(secondUrl, config);
-        const secondResponseData = secondResponse.data;
-
-
-        console.log(secondResponseData.requisicao_nota_fiscal.data_emissao)
-        //Atualiza nf no banco de dados
-        await prismaClient.notaFiscal.update({
-          where: {
-            ref: nf?.ref as string
-          },
-          data: {
-            status: secondResponseData.status,
-            status_sefaz: secondResponseData.status_sefaz,
-            mensagem_sefaz: secondResponseData.mensagem_sefaz,
-            chave_nfe: secondResponseData.chave_nfe,
-            numero_nfe: secondResponseData.numero,
-            caminho_xml: secondResponseData.caminho_xml_nota_fiscal,
-            caminho_pdf: secondResponseData.caminho_danfe,
-            //data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
-            data_emissao: dataHoraAtual
-          }
-        })
-      }, 10000)
-
-      return nf
+      return orderMapped
     } catch (error: any) {
       if (error.response && error.response.data && typeof error.response.data === 'object') {
         const { mensagem, erros, mensagem_sefaz } = error.response.data;
@@ -336,10 +335,10 @@ class CreateInvoiceService {
         where: {
           ref: id_nfe
         },
-        include:{
-          empresa:{
-            select:{
-              token_nfe:true
+        include: {
+          empresa: {
+            select: {
+              token_nfe: true
             }
           }
         }
@@ -358,7 +357,7 @@ class CreateInvoiceService {
       const config: AxiosRequestConfig = {
         auth: {
           //username: process.env.TOKEN_API_NF as string,
-          username:token as string,          
+          username: token as string,
           password: '',
         },
         headers: {
@@ -368,7 +367,7 @@ class CreateInvoiceService {
       };
 
       const response = await axios.delete(url, config);
-      
+
       if (response.data.status === 'erro_cancelamento') {
         await prismaClient.notaFiscal.update({
           where: {
