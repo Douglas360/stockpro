@@ -109,6 +109,9 @@ class CreateBudgetService {
                         include: {
                             produto: true,
                         },
+                        orderBy:{
+                            numero_item:'asc'
+                        }
                     },
                     cliente: {
                         include: {
@@ -184,6 +187,9 @@ class CreateBudgetService {
                         include: {
                             produto: true,
                         },
+                        orderBy: {
+                            numero_item: 'asc'
+                        }
                     },
                     cliente: {
                         include: {
@@ -193,7 +199,7 @@ class CreateBudgetService {
                     situacao_venda: true,
                     empresa: true,
                 },
-
+                
             });
 
             return budget;
