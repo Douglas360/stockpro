@@ -148,7 +148,7 @@ class CreateInvoiceService {
         })
       }
 
-      /* const ref = order?.numero_venda;
+       const ref = order?.numero_venda;
  
  
        const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
@@ -219,9 +219,9 @@ class CreateInvoiceService {
              data_emissao: dataHoraAtual
            }
          })
-       }, 10000)*/
+       }, 10000)
 
-      return orderMapped
+      return nf
     } catch (error: any) {
       if (error.response && error.response.data && typeof error.response.data === 'object') {
         const { mensagem, erros, mensagem_sefaz } = error.response.data;
