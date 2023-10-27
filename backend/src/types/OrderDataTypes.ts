@@ -33,7 +33,22 @@ export interface OrderData {
     valor_total: number;
     valor_produtos: number;
     modalidade_frete: number;
-    informacoes_adicionais_contribuinte:string
+    informacoes_adicionais_contribuinte: string
+    nome_transportador?: string
+    cnpj_transportador?: string
+    inscricao_estadual_transportador?: string
+    endereco_transportador?: string
+    municipio_transportador?: string
+    uf_transportador?: string
+    volumes?: [{
+        quantidade?: number
+        especie?: string
+        marca?:string
+        numero?:string
+        peso_bruto?: number
+        peso_liquido?: number
+    }]
+
     items: OrderItemData[];
 }
 

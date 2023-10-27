@@ -110,7 +110,7 @@ export const OrderProvider = ({ children }) => {
         pagamentos: pagamento,
       },
     };
-    console.log(newData)
+  
     return handleRequest(
       api.post("/order", newData),
       "Venda cadastrada com sucesso"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faPlusSquare } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faFilePdf, faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   DropdownMenu,
   DropdownToggle,
@@ -42,10 +42,10 @@ const ListarVendaProduto = () => {
   const [data, setData] = useState({});
   const navigate = useNavigate();
   //const idEmpresa =
-    //sessionStorage?.getItem("user") || localStorage?.getItem("user");
+  //sessionStorage?.getItem("user") || localStorage?.getItem("user");
   //const id = JSON.parse(idEmpresa).id_empresa;
   const id = user?.id_empresa;
-  
+
   const loadOrders = async () => {
     const response = await listAllOrders(id);
 
@@ -89,7 +89,7 @@ const ListarVendaProduto = () => {
 
   const handlePrintA4 = async (client) => {
     const response = await listOrderToPrint(client.id);
-    console.log(response)
+   
     response.title = "VENDA";
     printA4(response);
   };
@@ -151,7 +151,7 @@ const ListarVendaProduto = () => {
     );
   };
 
-  const columns = ["Nº", "Cliente", "Data", "Situação", "Valor"];
+  const columns = ["Nº", "Cliente", "Data", "Situação", "Valor", "NF-e"];
 
   const actions = [
     {
@@ -172,6 +172,7 @@ const ListarVendaProduto = () => {
       data_venda,
       situacao_venda,
       valor_total,
+      nota_fiscal
     }) => ({
       id: numero_venda,
       nome: nome_cliente,
@@ -181,8 +182,26 @@ const ListarVendaProduto = () => {
         style: "currency",
         currency: "BRL",
       }),
-    })
+      nfe: nota_fiscal?.status === "cancelada" || nota_fiscal?.status === "autorizado" ? (
+        <FontAwesomeIcon
+          icon={faFilePdf}
+          color={nota_fiscal?.status === "cancelada" ? "gray" : "purple"}
+          size={"xl"}
+          onClick={() => { handleOpenInvoice(nota_fiscal?.caminho_pdf) }}
+          cursor={"pointer"}                
+        />
+
+      ) : null
+
+    }),
+
   );
+
+  const handleOpenInvoice = async (notaFiscal) => {
+    const url = `https://api.focusnfe.com.br${notaFiscal}`
+    window.open(url, '_blank')
+
+  };
 
   const toggleModal = () => {
     setShowModal(!showModal);

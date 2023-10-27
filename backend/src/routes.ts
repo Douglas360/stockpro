@@ -23,7 +23,7 @@ const router = Router();
 
 //Health check
 router.get("/health", (req, res) => {
-    return res.status(200).json({ message: 'OK 1.2.0' });
+    return res.status(200).json({ message: 'OK 1.3.0' });
 });
 
 //Company routes

@@ -231,9 +231,10 @@ class CreateOrderService {
                 },
             });
 
-            const ordersFormatted = orders.map((order) => {
+            const ordersFormatted = [];
 
-                return {
+            for (const order of orders) {
+                const orderFormatted: any = { // Defina o tipo como 'any' para permitir campos dinâmicos
                     id_venda: order.id_venda,
                     numero_venda: order.numero_venda,
                     nome_cliente: order.cliente?.nome,
@@ -242,11 +243,36 @@ class CreateOrderService {
                     valor_total: order.valor_total,
                     situacao_venda: order.situacao_venda?.descricao,
                     cor: order.situacao_venda?.cor,
-
-
                 };
-            });
 
+                const notaFiscal = await prismaClient.notaFiscal.findFirst({
+                    where: {
+                        ref: order.numero_venda.toString(), // Certifique-se de converter para string
+                    },
+                    select: {
+                        chave_nfe: true,
+                        status:true,
+                        numero_nfe: true,
+                        caminho_xml: true,
+                        caminho_pdf: true,
+                        data_emissao: true,
+                    },
+                });
+
+                if (notaFiscal) {
+                    orderFormatted.nota_fiscal = {
+                        chave_nfe: notaFiscal.chave_nfe,
+                        status:notaFiscal.status,
+                        numero_nfe: notaFiscal.numero_nfe,
+                        caminho_xml: notaFiscal.caminho_xml,
+                        caminho_pdf: notaFiscal.caminho_pdf,
+                        data_emissao: notaFiscal.data_emissao,
+                    };
+                }
+
+                ordersFormatted.push(orderFormatted);
+            }
+           
             return ordersFormatted;
         } catch (error: any) {
             throw new Error(error.message);
