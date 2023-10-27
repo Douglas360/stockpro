@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBox, faListCheck, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { getFormatterInputPrice } from '../../../functions/getFormatterInputPrice'
 import { useAuth } from '../../../context/AuthContext/useAuth'
+import { NumericFormat } from 'react-number-format'
+import { cleanCurrencyMask } from '../../../functions/cleanCurrencyMask'
 
 
 export const EmitirNotaFiscal = () => {
@@ -85,11 +87,11 @@ export const EmitirNotaFiscal = () => {
                             />
                         </Col>
                         <Col md={4}>
-                            <Label style={{ fontWeight: 'bold' }}>Nome</Label><span className='text-danger'>*</span>
+                            <Label style={{ fontWeight: 'bold' }}>Razão Social</Label><span className='text-danger'>*</span>
                             <Input
                                 required
                                 type="text"
-                                value={orderData?.cliente?.nome}
+                                value={orderData?.cliente?.razao_social}
                                 onChange={handleInputChange}
                                 name="nome"
                                 id="nome"
@@ -149,7 +151,7 @@ export const EmitirNotaFiscal = () => {
                             />
                         </Col>
                         <Col md={3}>
-                            <Label style={{ fontWeight: 'bold' }}>Complemento</Label><span className='text-danger'>*</span>
+                            <Label style={{ fontWeight: 'bold' }}>Complemento</Label>
                             <Input
                                 required
                                 type="text"
@@ -285,7 +287,7 @@ export const EmitirNotaFiscal = () => {
                             />
                         </Col>
                         <Col md={4}>
-                            <Label style={{ fontWeight: 'bold' }}>Natureza da oper.</Label><span className='text-danger'>*</span>
+                            <Label style={{ fontWeight: 'bold' }}>Natureza da operação</Label><span className='text-danger'>*</span>
                             <Input
                                 required
                                 type="select"
@@ -300,7 +302,7 @@ export const EmitirNotaFiscal = () => {
                             </Input>
                         </Col>
                         <Col md={4}>
-                            <Label style={{ fontWeight: 'bold' }}>Tipo da oper.</Label><span className='text-danger'>*</span>
+                            <Label style={{ fontWeight: 'bold' }}>Tipo da operação</Label><span className='text-danger'>*</span>
                             <Input
                                 required
                                 type="select"
@@ -413,18 +415,121 @@ export const EmitirNotaFiscal = () => {
                             </Input>
                         </Col>
                     </Row>
-                    <Row className='mb-3'> 
-                    <Col md={12}>
-                    <Label style={{ fontWeight: 'bold' }}>Informações adicionais</Label><span className='text-danger'>*</span>
+                    <Row className='mb-3'>
+                        <Col md={6}>
+                            <Label style={{ fontWeight: 'bold' }}>Informações adicionais</Label>
                             <Input
-                                type='text'
+                                type='textarea'
                                 value={data.informacoes_adicionais_contribuinte}
                                 onChange={handleInputChange}
                                 name='informacoes_adicionais_contribuinte'
                                 id='informacoes_adicionais_contribuinte'
-                                />
-                    </Col>
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label style={{ fontWeight: 'bold' }}>Modalidade do Frete</Label><span className='text-danger'>*</span>
+                            <Input
+                                required
+                                type="select"
+                                value={data.modalidade_frete}
+                                onChange={handleInputChange}
+                                name="modalidade_frete"
+                                id="modalidade_frete"                               
+                            >                              
+                                <option value={0} >0-Por conta do emitente / CIF</option>
+                                <option value={1}>1-Por conta do destinatário / FOB</option>
+                                <option value={2}>2-Por conta de terceiros</option>
+                                <option value={9}>Sem frete</option>
+                            </Input>
+                        </Col>
 
+                    </Row>
+                    <Row>
+                        <h3 className='mb-3'>
+                            <FontAwesomeIcon icon={faListCheck} />
+                            <span>VOLUME</span>
+                        </h3>
+                    </Row>
+                    <Row className='mb-3'>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Quantidade</Label>
+                            <Input
+                                type='number'
+                                id='quantidade'
+                                name='quantidade'
+                                value={data.quantidade}
+                                onChange={handleInputChange}
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Espécie</Label>
+                            <Input
+                                type='text'
+                                id='especie'
+                                name='especie'
+                                value={data.especie}
+                                placeholder='Caixa'
+                                onChange={handleInputChange}
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Marca</Label>
+                            <Input
+                                type='text'
+                                id='marca'
+                                name='marca'
+                                value={data.marca}
+                                onChange={handleInputChange}
+                            />
+                        </Col>
+                    </Row>
+                    <Row className='mb-3'>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Número</Label>
+                            <Input
+                                type='text'
+                                id='numero'
+                                name='numero'
+                                value={data.numero}
+                                onChange={handleInputChange}
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Peso Líquido</Label>
+                            <NumericFormat
+                                className="form-control"
+                                name="peso_liquido"
+                                id="peso_liquido"
+                                required={false}
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                placeholder="0,000"
+                                //prefix="R$ "
+                                decimalScale={3}
+                                fixedDecimalScale={true}
+                                allowNegative={false}
+                                value={parseFloat(data.peso_liquido)}
+                                onChange={handleInputChange}
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <Label style={{ fontWeight: 'bold' }}>Peso Bruto</Label>
+                            <NumericFormat
+                                className="form-control"
+                                name="peso_bruto"
+                                id="peso_bruto"
+                                required={false}
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                placeholder="0,000"
+                                //prefix="R$ "
+                                decimalScale={3}
+                                fixedDecimalScale={true}
+                                allowNegative={false}
+                                value={data.peso_bruto}
+                                onChange={handleInputChange}
+                            />
+                        </Col>
                     </Row>
                     <Row>
                         <Col md={4}>
@@ -435,11 +540,8 @@ export const EmitirNotaFiscal = () => {
                     </Row>
 
                 </CardBody>
+
             </Card>
-
-
-
-
         </div>
     )
 }

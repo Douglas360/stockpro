@@ -37,6 +37,11 @@ class CreateInvoiceService {
               enderecos: true
             }
           },
+          transportadora: {
+            include: {
+              enderecos: true
+            }
+          },
           itens: {
             include: {
               produto: true
@@ -82,7 +87,8 @@ class CreateInvoiceService {
         valor_produto = order.valor_total
       }
 
-      console.log(dataHoraAtual)
+      //console.log(dataHoraAtual)
+      const pesoBruto: number = parseFloat(requestData?.peso_bruto?.toString().replace(",",".") as string)
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
         numero: requestData.numero_nota,
@@ -106,7 +112,7 @@ class CreateInvoiceService {
         uf_emitente: order.empresa?.estado as string,
         cep_emitente: order.empresa?.cep as string,
         inscricao_estadual_emitente: order.empresa?.inscr_estadual as string,
-        nome_destinatario: order.cliente?.nome as string,
+        nome_destinatario: order.cliente?.razao_social as string,
         cnpj_destinatario: order.cliente?.cnpj as string,
         inscricao_estadual_destinatario: order.cliente?.inscricao_estadual as string,
         telefone_destinatario: order.cliente?.telefone as string,
@@ -122,8 +128,23 @@ class CreateInvoiceService {
         valor_seguro: 0,
         valor_total: order.valor_total as number,
         valor_produtos: valor_produto as number,
-        modalidade_frete: 0,
+        modalidade_frete: isNaN(Number(requestData.modalidade_frete)) ? 0 : Number(requestData.modalidade_frete),
         informacoes_adicionais_contribuinte: requestData.informacoes_adicionais_contribuinte,
+        nome_transportador: order?.transportadora?.razao_social as string,
+        cnpj_transportador: order.transportadora?.cnpj as string,
+        inscricao_estadual_transportador: order.transportadora?.inscricao_estadual as string,
+        //endereco_transportador: `${order.transportadora?.enderecos[0].rua}, ${order.transportadora?.enderecos[0].numero}` || undefined,
+        endereco_transportador: (order.transportadora?.enderecos[0].rua && order.transportadora?.enderecos[0].numero) ? `${order.transportadora.enderecos[0].rua}, ${order.transportadora.enderecos[0].numero}` : undefined,
+        municipio_transportador: order.transportadora?.enderecos[0].bairro as string,
+        uf_transportador: order.transportadora?.enderecos[0].estado as string,
+        volumes: [{
+          quantidade: Number(requestData.quantidade),
+          especie: requestData.especie,
+          marca: requestData.marca,
+          numero: requestData.numero,
+          peso_bruto: parseFloat(requestData?.peso_bruto?.toString().replace(",",".") as string),
+          peso_liquido: parseFloat(requestData?.peso_liquido?.toString().replace(",",".") as string)
+        }],
         items: order.itens.map(item => {
           return {
             valor_frete: valorFretePorItem,
@@ -147,79 +168,78 @@ class CreateInvoiceService {
           }
         })
       }
+   
+      const ref = order?.numero_venda;
 
-       const ref = order?.numero_venda;
- 
- 
-       const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
-       const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
-       const token = order.empresa?.token_nfe as string
- 
-       const config: AxiosRequestConfig = {
-         auth: {
-           username: token,
-           password: '',
-         },
-         headers: {
-           'Content-Type': 'application/json',
-         },
-       };
- 
-       await axios.post(url, orderMapped, config);
- 
-       //Verificar se a nf já existe no banco de dados e se não existir criar
- 
-       let nf = await prismaClient.notaFiscal.findFirst({
-         where: {
-           ref: String(ref)
-         }
-       })
-      
-       if (!nf) {
-         nf = await prismaClient.notaFiscal.create({
-           data: {
-             //id_empresa: 2, // Alterar para pegar o id da empresa
-             id_empresa: requestData.id_empresa,
-             ref: String(ref),
-             status: 'Processamento autorizado',
-           }
-         })
-       } else {
-         nf = await prismaClient.notaFiscal.update({
-           where: {
-             ref: nf.ref as string
-           },
-           data: {
-             status: 'Processamento autorizado',
-           }
-         })
-       }
- 
-       //Cria timeout para pegar os dados da nf
-       setTimeout(async () => {
-         const secondResponse = await axios.get(secondUrl, config);
-         const secondResponseData = secondResponse.data;
- 
- 
-         console.log(secondResponseData.requisicao_nota_fiscal.data_emissao)
-         //Atualiza nf no banco de dados
-         await prismaClient.notaFiscal.update({
-           where: {
-             ref: nf?.ref as string
-           },
-           data: {
-             status: secondResponseData.status,
-             status_sefaz: secondResponseData.status_sefaz,
-             mensagem_sefaz: secondResponseData.mensagem_sefaz,
-             chave_nfe: secondResponseData.chave_nfe,
-             numero_nfe: secondResponseData.numero,
-             caminho_xml: secondResponseData.caminho_xml_nota_fiscal,
-             caminho_pdf: secondResponseData.caminho_danfe,
-             //data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
-             data_emissao: dataHoraAtual
-           }
-         })
-       }, 10000)
+      const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;
+      const secondUrl = `${process.env.URL_API_NF}/v2/nfe/${ref}?completa=1`;
+      const token = order.empresa?.token_nfe as string
+
+      const config: AxiosRequestConfig = {
+        auth: {
+          username: token,
+          password: '',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      await axios.post(url, orderMapped, config);
+
+      //Verificar se a nf já existe no banco de dados e se não existir criar
+
+      let nf = await prismaClient.notaFiscal.findFirst({
+        where: {
+          ref: String(ref)
+        }
+      })
+
+      if (!nf) {
+        nf = await prismaClient.notaFiscal.create({
+          data: {
+            //id_empresa: 2, // Alterar para pegar o id da empresa
+            id_empresa: requestData.id_empresa,
+            ref: String(ref),
+            status: 'Processamento autorizado',
+          }
+        })
+      } else {
+        nf = await prismaClient.notaFiscal.update({
+          where: {
+            ref: nf.ref as string
+          },
+          data: {
+            status: 'Processamento autorizado',
+          }
+        })
+      }
+
+      //Cria timeout para pegar os dados da nf
+      setTimeout(async () => {
+        const secondResponse = await axios.get(secondUrl, config);
+        const secondResponseData = secondResponse.data;
+
+
+        //console.log(secondResponseData.requisicao_nota_fiscal.data_emissao)
+        //Atualiza nf no banco de dados
+        await prismaClient.notaFiscal.update({
+          where: {
+            ref: nf?.ref as string
+          },
+          data: {
+            status: secondResponseData.status,
+            status_sefaz: secondResponseData.status_sefaz,
+            mensagem_sefaz: secondResponseData.mensagem_sefaz,
+            chave_nfe: secondResponseData.chave_nfe,
+            numero_nfe: secondResponseData.numero,
+            caminho_xml: secondResponseData.caminho_xml_nota_fiscal,
+            caminho_pdf: secondResponseData.caminho_danfe,
+            //data_emissao: secondResponseData.requisicao_nota_fiscal.data_emissao,
+            data_emissao: dataHoraAtual
+          }
+        })
+      }, 10000)
 
       return nf
     } catch (error: any) {
