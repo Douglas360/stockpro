@@ -99,6 +99,7 @@ router.put("/update/orderstatus/:id", createOrderController.updateOrderStatus);
 router.get("/list/historysalesstatus/:id", createOrderController.listHistorySalesStatus);
 router.put("/cancel/order/:id", createOrderController.cancelOrder);
 router.put("/update/order/:id", createOrderController.update);
+router.get("/order/chart/:id", createOrderController.salesChart)
 
 //Budget routes
 const createBudgetController = new CreateBudgetController();
@@ -110,6 +111,7 @@ router.get("/list/budget/id_company/:id", createBudgetController.listBudgetByCom
 router.get("/list/historybudgetstatus/:id", createBudgetController.listHistoryBudgetStatus);
 router.get("/print/budget/:id", createBudgetController.listBudgetToPrint);
 router.put("/update/budget/:id", createBudgetController.update);
+router.get("/budget/chart/:id", createBudgetController.budgetChart)
 
 //Invoice routes
 const createInvoiceController = new CreateInvoiceController();
@@ -148,6 +150,8 @@ router.get("/formpayment", createTypeOfPaymentController.list);
 //Type of sale routes
 const createTypeOfSaleController = new TypeSaleController();
 router.get("/typesale", createTypeOfSaleController.listTypeSale);
+
+
 
 
 

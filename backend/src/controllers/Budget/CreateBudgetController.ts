@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CreateBudgetService } from "../../services/Budget/CreateBudgetService";
 
 class CreateBudgetController {
+   
     async create(request: Request, response: Response) {
         const { budgetData } = request.body;
 
@@ -70,11 +71,19 @@ class CreateBudgetController {
     async update(request: Request, response: Response) {
         const { id } = request.params;
         const { budgetData } = request.body;
-        console.log(budgetData)
+        
         const createBudgetService = new CreateBudgetService();
 
         const budget = await createBudgetService.update(Number(id), budgetData);
 
         return response.json(budget);
+    }
+    async budgetChart(req:Request, res:Response){
+        const {id} = req.params
+        const createBudgetService = new CreateBudgetService();
+
+        const data = await createBudgetService.budgetChart(Number(id))
+
+        return res.json(data)
     }
 } export { CreateBudgetController };

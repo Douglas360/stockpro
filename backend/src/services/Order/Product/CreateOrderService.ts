@@ -251,7 +251,7 @@ class CreateOrderService {
                     },
                     select: {
                         chave_nfe: true,
-                        status:true,
+                        status: true,
                         numero_nfe: true,
                         caminho_xml: true,
                         caminho_pdf: true,
@@ -262,7 +262,7 @@ class CreateOrderService {
                 if (notaFiscal) {
                     orderFormatted.nota_fiscal = {
                         chave_nfe: notaFiscal.chave_nfe,
-                        status:notaFiscal.status,
+                        status: notaFiscal.status,
                         numero_nfe: notaFiscal.numero_nfe,
                         caminho_xml: notaFiscal.caminho_xml,
                         caminho_pdf: notaFiscal.caminho_pdf,
@@ -272,7 +272,7 @@ class CreateOrderService {
 
                 ordersFormatted.push(orderFormatted);
             }
-           
+
             return ordersFormatted;
         } catch (error: any) {
             throw new Error(error.message);
@@ -852,6 +852,60 @@ class CreateOrderService {
             throw new Error(error.message);
         }
     }
+    async salesChart(id_empresa: number): Promise<any> {
+        try {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+
+            //Consulta para obter o valor total das vendas agrupadas
+
+            const salesData = await prismaClient.venda.groupBy({
+                by: ['data_venda'],
+                where: {
+                    id_empresa: id_empresa,
+                    id_situacao_venda: 1,
+                    data_venda: {
+                        gte: new Date(currentYear, 0, 1), //Inicio do ano atual
+                        lte: new Date(currentYear, 11, 31),//Fim do ano atual
+                    },
+
+                },
+
+                _sum: {
+                    valor_total: true
+                },
+            })
+
+            // Estrutura de dados para o gráfico
+            const data = {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                datasets: [
+                    {
+                        label: 'Vendas Mensais - R$',
+                        data: new Array(12).fill(0),
+
+                        backgroundColor: 'rgb(46, 204, 113)',
+
+                    },
+                ],
+            };
+
+            // Preencher os dados do gráfico com os valores das vendas
+            for (const sale of salesData) {
+                const saleDate = new Date(sale.data_venda);
+                const month = saleDate.getMonth();
+                data.datasets[0].data[month] += sale._sum.valor_total
+            }
+
+            return data
+
+
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+
 }
 
 export { CreateOrderService };

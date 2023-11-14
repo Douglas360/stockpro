@@ -13,6 +13,16 @@ import {
     TabPane,
     Table,
 } from 'reactstrap';
+import { Bar } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import { useDashboard } from '../../../context/DashboardContext/useDashboard';
 import { dateFormatWithHours } from '../../../functions/getFomatter';
@@ -99,40 +109,78 @@ const InventoryMovementTable = ({ data }) => {
     );
 };
 
-const SalesTable = ({ data }) => {
-    return (
-        <Table striped>
-            <thead>
-                <tr className='text-center' style={{ fontSize: 13 }}>
-                    <th>Nº</th>
-                    <th>Data</th>
-                    <th>Cliente</th>
-                    <th>Situação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {data?.map((sale, index) => {
-                    return (
-                        <tr key={index} className='text-center' style={{ fontSize: 13 }}>
-                            <td><a href={`/venda/produto/editar/${sale.id}`}>{sale.id}</a></td>
-                            <td>{dateFormatWithHours(sale?.data_venda) || dateFormatWithHours(sale?.data_orcamento)}</td>
-                            <td>{sale.nome_cliente}</td>
-                            <td >
-                                <div className="ms-auto badge" style={{ backgroundColor: sale.cor }}>
-                                    {sale.situacao_venda}
-                                </div>
-                            </td>
 
-                        </tr>
-                    );
-                })}
-            </tbody>
-        </Table>
-    );
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
+export const options = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: true,
+        },
+    },
 };
 
+
+const dataBudget = {
+    labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio'],
+    datasets: [
+        {
+            label: 'Vendas Mensais',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+        },
+    ],
+};
+
+const Chart = ({ data, options, title }) => {
+
+    // Verifica se há dados e se o array data.datasets possui a propriedade 'map'
+    if (!data || !data.datasets || typeof data.datasets.map !== 'function') {
+        return <div>Aguardando dados...</div>;
+    }
+
+    const dynamicOptions = {
+        ...options,
+        plugins: {
+            ...options.plugins,
+            title: {
+                ...options.plugins.title,
+                text: title,
+            },
+        },
+    };
+    return (
+        <Bar
+            data={data}
+            options={dynamicOptions}
+        />
+    )
+}
+
 const AnalyticsDashboard1 = () => {
-    const { listInventory, listInventoryMovement, listSales, listBudget, loading } = useDashboard();
+    const {
+        listInventory,
+        listInventoryMovement,
+        listSales,
+        listBudget,
+        loading,
+        listSaleChart,
+        listBudgetChart
+    } = useDashboard();
+    const [salesDataChart, setSalesDataChart] = useState([])
+    const [budgetDataChart, setBudgetDataChart] = useState([])
     const [inventory, setInventory] = useState([]);
     const [inventoryMovement, setInventoryMovement] = useState([]);
     const [sales, setSales] = useState([]);
@@ -147,11 +195,15 @@ const AnalyticsDashboard1 = () => {
         const responseMovement = await listInventoryMovement(idCompany);
         const responseSales = await listSales(idCompany);
         const responseBudget = await listBudget(idCompany);
+        const responseSalesDataChart = await listSaleChart(idCompany)
+        const responseBudgetDataChart = await listBudgetChart(idCompany)
 
         setInventory(response);
         setInventoryMovement(responseMovement);
         setSales(responseSales);
         setBudget(responseBudget);
+        setSalesDataChart(responseSalesDataChart)
+        setBudgetDataChart(responseBudgetDataChart)
 
     };
 
@@ -162,6 +214,39 @@ const AnalyticsDashboard1 = () => {
 
 
     }, [idCompany]);
+
+    const SalesTable = ({ data }) => {
+        return (
+            <Table striped>
+                <thead>
+                    <tr className='text-center' style={{ fontSize: 13 }}>
+                        <th>Nº</th>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data?.map((sale, index) => {
+                        return (
+                            <tr key={index} className='text-center' style={{ fontSize: 13 }}>
+                                <td><a href={`/venda/produto/editar/${sale.id}`}>{sale.id}</a></td>
+                                <td>{dateFormatWithHours(sale?.data_venda) || dateFormatWithHours(sale?.data_orcamento)}</td>
+                                <td>{sale?.nome_cliente}</td>
+                                <td >
+                                    <div className="ms-auto badge" style={{ backgroundColor: sale?.cor }}>
+                                        {sale?.situacao_venda}
+                                    </div>
+                                </td>
+
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </Table>
+        );
+    };
+
 
     const toggle1 = (tab) => {
         if (activeTab1 !== tab) {
@@ -196,6 +281,39 @@ const AnalyticsDashboard1 = () => {
                             icon="pe-7s-graph icon-gradient bg-mean-fruit"
                         />
                         {/* Other JSX content goes here */}
+                        <Row className='mb-3'>
+                            <Col md="12" lg="12">
+                                <CardHeader className='card-header-tab'>
+                                    <div className="card-header-title font-size-lg text-capitalize font-weight-normal">
+                                        <i className="header-icon lnr-rocket icon-gradient bg-tempting-azure"> </i>
+                                        Gráfico de vendas
+                                    </div>
+                                </CardHeader>
+                                <CardBody className='pt-2' >
+                                    <Row className="mt-3">
+                                        <Col md='6'>
+                                            <div style={{ maxHeight: 'auto' }}> {/* Adicionando a classe table-responsive para gerar scroll na tabela */}
+                                                <Chart
+                                                    data={salesDataChart}
+                                                    options={options}
+                                                    title={"Vendas concretizadas"}
+                                                />
+                                            </div>
+                                        </Col>
+                                        <Col md='6'>
+                                            <div style={{ maxHeight: 'auto' }}> {/* Adicionando a classe table-responsive para gerar scroll na tabela */}
+                                                <Chart
+                                                    data={budgetDataChart}
+                                                    options={options}
+                                                    title={"Orçamentos em aberto"}
+                                                />
+                                            </div>
+                                        </Col>
+                                    </Row>
+
+                                </CardBody>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col md="12" lg="6">
                                 <Card className="mb-3 ">

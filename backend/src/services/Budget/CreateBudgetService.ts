@@ -45,12 +45,12 @@ class CreateBudgetService {
                 },
 
             });
-          
+
             if (pagamentos) {
 
                 await Promise.all(
                     pagamentos.map(async (pagamento) => {
-                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;                     
+                        const { id_forma_pagamento, valor, parcelado, vencimento, observacao, venda } = pagamento;
 
                         if (!id_forma_pagamento) {
                             throw new Error("id_forma_pagamento not found");
@@ -109,8 +109,8 @@ class CreateBudgetService {
                         include: {
                             produto: true,
                         },
-                        orderBy:{
-                            numero_item:'asc'
+                        orderBy: {
+                            numero_item: 'asc'
                         }
                     },
                     cliente: {
@@ -199,7 +199,7 @@ class CreateBudgetService {
                     situacao_venda: true,
                     empresa: true,
                 },
-                
+
             });
 
             return budget;
@@ -343,7 +343,7 @@ class CreateBudgetService {
 
                 await Promise.all(updatedItemPromises);
             }
-          
+
 
             // Update payments
             if (pagamentos) {
@@ -390,6 +390,58 @@ class CreateBudgetService {
             // Additional update logic for history if needed
 
             return updatedBudget;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+    async budgetChart(id_empresa: number): Promise<any> {
+        try {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+
+            //Consulta para obter o valor total das vendas agrupadas
+
+            const budgetData = await prismaClient.orcamento.groupBy({
+                by: ['data_orcamento'],
+                where: {
+                    id_empresa: id_empresa,
+                    id_situacao_venda: 2,
+                    data_orcamento: {
+                        gte: new Date(currentYear, 0, 1), //Inicio do ano atual
+                        lte: new Date(currentYear, 11, 31),//Fim do ano atual
+                    },
+
+                },
+
+                _sum: {
+                    valor_total: true
+                },
+            })
+
+            // Estrutura de dados para o gráfico
+            const data = {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                datasets: [
+                    {
+                        label: 'Orçamento mensal - R$',
+                        data: new Array(12).fill(0),
+
+                        backgroundColor: 'rgb(243, 156, 18)',
+
+                    },
+                ],
+            };
+
+            // Preencher os dados do gráfico com os valores das vendas
+            for (const budget of budgetData) {
+                const budgetDate = new Date(budget.data_orcamento);
+                const month = budgetDate.getMonth();
+                data.datasets[0].data[month] += budget._sum.valor_total
+            }
+
+            return data
+
+
         } catch (error: any) {
             throw new Error(error.message);
         }
