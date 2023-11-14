@@ -64,7 +64,7 @@ class CreateOrderController {
     }
     async updateOrderStatus(req: Request, res: Response) {
         const { id } = req.params;
-        const { statusId, descricao, idUser} = req.body;
+        const { statusId, descricao, idUser } = req.body;
 
         const createOrderService = new CreateOrderService();
 
@@ -113,6 +113,14 @@ class CreateOrderController {
 
         return res.status(200).json(orderResult);
 
+    }
+    async salesChart(req: Request, res: Response) {
+        const { id } = req.params;
+        const createOrderService = new CreateOrderService();
+
+        const saleDate = await createOrderService.salesChart(Number(id))
+
+        return res.status(200).json(saleDate)
     }
 }
 

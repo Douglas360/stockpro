@@ -55,6 +55,17 @@ export const DashboardProvider = ({ children }) => {
         return handleRequest(api.get(`/dashboard/budgets/${id_company}`));
     };
 
+    //funtion to list data to chart
+    const listSaleChart = async (id_company) => {
+        return handleRequest(api.get(`/order/chart/${id_company}`))
+    };
+
+    //funtion to list data to chart
+    const listBudgetChart = async (id_company) => {
+        return handleRequest(api.get(`/budget/chart/${id_company}`))
+    }
+
+
     return (
         <DashboardContext.Provider
             value={{
@@ -64,6 +75,8 @@ export const DashboardProvider = ({ children }) => {
                 listInventoryMovement,
                 listSales,
                 listBudget,
+                listSaleChart,
+                listBudgetChart
 
 
             }}
