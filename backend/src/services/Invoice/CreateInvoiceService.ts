@@ -112,7 +112,7 @@ class CreateInvoiceService {
         uf_emitente: order.empresa?.estado as string,
         cep_emitente: order.empresa?.cep as string,
         inscricao_estadual_emitente: order.empresa?.inscr_estadual as string,
-        nome_destinatario: order.cliente?.razao_social as string,
+        nome_destinatario: order.cliente?.razao_social as string ||  order.cliente?.nome as string,
         cnpj_destinatario: order.cliente?.cnpj as string,
         cpf_destinatario: order.cliente?.cpf as string,
         inscricao_estadual_destinatario: order.cliente?.inscricao_estadual as string,
