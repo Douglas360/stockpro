@@ -16,12 +16,13 @@ const estados = [
 const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
 
     const { user } = useAuth()
-    const [tipoCliente, setTipoCliente] = useState(initialValues?.tipo_cliente || 'Pessoa Juridica')
+    const [tipoCliente, setTipoCliente] = useState(initialValues?.tipo_cliente)
     const [checked, setChecked] = useState(false)
     const [nameError, setNameError] = useState(false)
     const [tipoClienteError, setTipoClienteError] = useState(false)
     const [inscricaoEstadual, setInscricaoEstadual] = useState()
     const [cnpj, setCnpj] = useState(initialValues?.cnpj || '')
+    const [cpf, setCpf] = useState(initialValues?.cpf || '')
     const [enderecosCliente, setEnderecosCliente] = useState(
         initialValues?.enderecos?.map((endereco) => ({ ...endereco })) || [
             {
@@ -47,6 +48,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
             setEnderecosCliente(initialValues?.enderecos?.map((endereco) => ({ ...endereco })))
             setContatosCliente(initialValues?.contatos?.map((contato) => ({ ...contato })))
             setTipoContribuinte(initialValues?.tipo_contribuinte)
+            setTipoCliente(initialValues?.tipo_cliente)
         }
     }, [initialValues])
 
@@ -304,6 +306,7 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                                 Dados gerais</Label>
                         </Col>
                         <Col md='3'>
+
                             <Label for='tipoCliente' style={{ fontWeight: 'bold' }}>Tipo de {title} </Label><span className='text-danger'>*</span>
                             <Input
                                 required
@@ -356,19 +359,23 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                     {tipoCliente === 'Pessoa Fisica' &&
                         <Row className='mb-3'>
                             <Col md='3'>
-                                <Label for='cpfCliente' style={{ fontWeight: 'bold' }}>CPF </Label>
+                                <Label for='cpfCliente' style={{ fontWeight: 'bold' }}>CPF </Label> <span className='text-danger'>*</span>
                                 {/*<Input type='text' name='cpfCliente' id='cpfCliente' />*/}
                                 <InputMask
                                     mask="999.999.999-99"
                                     maskPlaceholder=""
+                                    value={initialValues?.cpf}
+                                    required
+                                //onChange={(e) =>  setCpf(e.target.value) }
                                 >
                                     {inputProps => (
                                         <Input
-                                            defaultValue={initialValues?.cpf}
+                                            // defaultValue={initialValues?.cpf}
                                             type="text"
                                             name="cpfCliente"
                                             id="cpfCliente"
                                             {...inputProps}
+
                                         />
                                     )}
                                 </InputMask>
@@ -378,8 +385,13 @@ const FormRegister = ({ title, handleFormSubmit, loading, initialValues }) => {
                                 <Input type='text' name='rgCliente' id='rgCliente' />
                             </Col>
                             <Col md='3'>
-                                <Label for='dataNascimentoCliente' style={{ fontWeight: 'bold' }}>Data de nascimento </Label>
-                                <Input type='date' name='dataNascimentoCliente' id='dataNascimentoCliente' />
+                                <Label for='dataNascimentoCliente' style={{ fontWeight: 'bold' }}>Data de nascimento </Label><span className='text-danger'>*</span>
+                                <Input
+                                    required
+                                    type='date'
+                                    defaultValue={initialValues ? initialValues.dt_nascimento.slice(0, 10) : ''}
+                                    name='dataNascimentoCliente'
+                                    id='dataNascimentoCliente' />
                             </Col>
                             <Col md='3'>
                                 <Label for='telefoneCliente' style={{ fontWeight: 'bold' }}>Telefone </Label>

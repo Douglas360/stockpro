@@ -56,7 +56,7 @@ export const RegisterProvider = ({ children }) => {
                 "cnpj": data.cnpjCliente,
                 "email": data.emailCliente,
                 "rg_representante": data.rgCliente,
-                "dt_nascimento": data.dataNascimentoCliente,
+                "dt_nascimento": new Date(data.dataNascimentoCliente),
                 "telefone": data.telefoneCliente,
                 "inscricao_estadual": data.inscricaoEstadualCliente,
                 "inscricao_municipal": data.inscricaoMunicipalCliente,
@@ -171,7 +171,7 @@ export const RegisterProvider = ({ children }) => {
     };
 
     //function to update a Company by id
-    const updateCompany = async (id, data) => {      
+    const updateCompany = async (id, data) => {
         return handleRequest(api.put(`/company/${id}`, data), 'Empresa atualizada com sucesso');
     };
 
