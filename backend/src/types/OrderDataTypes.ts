@@ -19,6 +19,7 @@ export interface OrderData {
     inscricao_estadual_emitente: string;
     nome_destinatario: string;
     cnpj_destinatario: string;
+    cpf_destinatario: string;
     inscricao_estadual_destinatario: string;
     telefone_destinatario: string;
     logradouro_destinatario: string;

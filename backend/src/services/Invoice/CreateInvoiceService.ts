@@ -88,7 +88,7 @@ class CreateInvoiceService {
       }
 
       //console.log(dataHoraAtual)
-      const pesoBruto: number = parseFloat(requestData?.peso_bruto?.toString().replace(",",".") as string)
+      
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
         numero: requestData.numero_nota,
@@ -114,6 +114,7 @@ class CreateInvoiceService {
         inscricao_estadual_emitente: order.empresa?.inscr_estadual as string,
         nome_destinatario: order.cliente?.razao_social as string,
         cnpj_destinatario: order.cliente?.cnpj as string,
+        cpf_destinatario: order.cliente?.cpf as string,
         inscricao_estadual_destinatario: order.cliente?.inscricao_estadual as string,
         telefone_destinatario: order.cliente?.telefone as string,
         logradouro_destinatario: order.cliente?.enderecos[0].rua as string,
@@ -168,7 +169,7 @@ class CreateInvoiceService {
           }
         })
       }
-   
+      console.log(orderMapped)
       const ref = order?.numero_venda;
 
       const url = `${process.env.URL_API_NF}/v2/nfe?ref=${ref}`;

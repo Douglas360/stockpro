@@ -3,8 +3,8 @@ import axios from "axios";
 const token = localStorage.getItem("token");
 
 export const api = axios.create({
-    baseURL: "http://localhost:3001",    
-    //baseURL: "http://3.222.142.181:3001", //Lightsail
+    //baseURL: "http://localhost:3001",    
+    baseURL: "http://3.222.142.181:3001", //Lightsail
     headers: {
         Authorization: token ? `Bearer ${token}` : undefined,
     },
