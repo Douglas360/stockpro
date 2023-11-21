@@ -91,7 +91,7 @@ export const EmitirNotaFiscal = () => {
                             <Input
                                 required
                                 type="text"
-                                value={orderData?.cliente?.razao_social}
+                                value={orderData?.cliente?.razao_social || orderData?.cliente?.nome}
                                 onChange={handleInputChange}
                                 name="nome"
                                 id="nome"
@@ -103,7 +103,7 @@ export const EmitirNotaFiscal = () => {
                             <Input
                                 required
                                 type="text"
-                                value={orderData?.cliente?.cnpj}
+                                value={orderData?.cliente?.cnpj || orderData?.cliente?.cpf}
                                 onChange={handleInputChange}
                                 name="cnpj"
                                 id="cnpj"
