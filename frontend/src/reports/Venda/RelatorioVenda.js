@@ -44,19 +44,23 @@ export const RelatorioVenda = (data) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['auto', 'auto', '*', '*', '*',],
+                    widths: ['auto', 'auto', 'auto','auto','auto', '*', '*',],
                     body: [
                         [
                             { text: 'Cód', bold: true },
                             { text: 'Cliente', bold: true },
                             { text: 'Data', bold: true },
-                            { text: 'Situação', bold: true },
+                            { text: 'Nota Fiscal', bold: true },
+                            { text: 'Status Nota Fiscal', bold: true },
+                            { text: 'Situação Venda', bold: true },
                             { text: 'Valor total', bold: true },
                         ],
                         ...(data || []).map((item) => [
                             { text: item.numero_orcamento || item.numero_venda, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.cliente, fontSize: 10 }, // Adjust the font size if needed
                             { text: item.data_orcamento || item.data_venda, fontSize: 10 }, // Adjust the font size if needed
+                            { text: item.numero_nfe, fontSize:10 },
+                            { text: item.status_nfe, fontSize:10 },
                             { text: item.situacao, fontSize: 10 }, // Adjust the font size if needed
                             //field formatted as currency brl 
                             { text: item.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), fontSize: 10 }, // Adjust the font size if needed         
@@ -64,6 +68,8 @@ export const RelatorioVenda = (data) => {
                         ]),
                         [
                             {}, // Empty cell spanning four columns
+                            {},
+                            {},
                             {},
                             {},
                             { text: 'Total', bold: true, fontSize: 14, alignment: 'right' },

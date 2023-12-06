@@ -241,7 +241,9 @@ class CreateReportService {
                 throw new Error("Nenhum produto encontrado")
             }
 
-            const salesFormatted = sales.map((sale) => {
+
+
+            /*const salesFormatted = sales.map((sale) => {
                 return {
                     numero_venda: sale.numero_venda,
                     cliente: sale?.cliente?.nome,
@@ -255,7 +257,36 @@ class CreateReportService {
                     emailEmpresa: sale?.empresa?.email,
                     logoEmpresa: sale?.empresa?.avatar,
                 }
-            });
+            });*/
+            const salesFormatted = []
+            for (const sale of sales) {
+                const nfNumber = await prismaClient.notaFiscal.findFirst({
+                    where: {
+                        ref: String(sale.numero_venda)
+                    },
+                    select: {
+                        numero_nfe: true,
+                        status:true
+                    }
+                })
+                salesFormatted.push({
+                    numero_venda: sale.numero_venda,
+                    cliente: sale?.cliente?.nome,
+                    data_venda: new Date(sale.data_venda).toLocaleDateString("pt-BR"),
+                    situacao: sale?.situacao_venda?.descricao,
+                    valor_total: sale.valor_total,
+                    nomeEmpresa: sale?.empresa?.nome_fantasia,
+                    cnpjEmpresa: sale?.empresa?.cnpj,
+                    enderecoEmpresa: `${sale?.empresa?.logradouro}, ${sale?.empresa?.numero} - ${sale?.empresa?.bairro} - ${sale?.empresa?.cidade} - ${sale?.empresa?.estado}`,
+                    telefoneEmpresa: sale?.empresa?.telefone,
+                    emailEmpresa: sale?.empresa?.email,
+                    logoEmpresa: sale?.empresa?.avatar,
+                    // Access the numero_nfe from the separate query
+                    numero_nfe: nfNumber?.numero_nfe || null,
+                    status_nfe: nfNumber?.status || null    
+                });
+
+            }
 
             // Calculate the total value from the sales data
             const totalValue = sales.reduce((total, sale) => total + sale.valor_total, 0);

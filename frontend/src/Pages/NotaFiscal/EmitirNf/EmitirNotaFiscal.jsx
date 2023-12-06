@@ -434,8 +434,8 @@ export const EmitirNotaFiscal = () => {
                                 value={data.modalidade_frete}
                                 onChange={handleInputChange}
                                 name="modalidade_frete"
-                                id="modalidade_frete"                               
-                            >                              
+                                id="modalidade_frete"
+                            >
                                 <option value={0} >0-Por conta do emitente / CIF</option>
                                 <option value={1}>1-Por conta do destinatário / FOB</option>
                                 <option value={2}>2-Por conta de terceiros</option>

@@ -61,12 +61,12 @@ class CreateInvoiceService {
         throw new Error(`Produto: ${nameOfProductMissingNcm} não possui codigo_ncm`);
       }
       //Verify if all products in the order have cfop
-      const hasMissingCfop = order.itens.some(item => !item.produto.cfop);
+      /*const hasMissingCfop = order.itens.some(item => !item.produto.cfop);
       //get name of the product that is missing cfop and ncm to show in the error message 
       const nameOfProductMissingCfop = order.itens.find(item => !item.produto.cfop)?.produto.nome;
       if (hasMissingCfop) {
         throw new Error(`Produto: ${nameOfProductMissingCfop} não possui cfop`);
-      }
+      }*/
 
       if (!order.empresa?.nome) {
         throw new Error('Missing nome');
@@ -88,7 +88,7 @@ class CreateInvoiceService {
       }
 
       //console.log(dataHoraAtual)
-      
+
       const orderMapped: OrderData = {
         natureza_operacao: requestData.natureza_operacao,
         numero: requestData.numero_nota,
@@ -112,7 +112,7 @@ class CreateInvoiceService {
         uf_emitente: order.empresa?.estado as string,
         cep_emitente: order.empresa?.cep as string,
         inscricao_estadual_emitente: order.empresa?.inscr_estadual as string,
-        nome_destinatario: order.cliente?.razao_social as string ||  order.cliente?.nome as string,
+        nome_destinatario: order.cliente?.razao_social as string || order.cliente?.nome as string,
         cnpj_destinatario: order.cliente?.cnpj as string,
         cpf_destinatario: order.cliente?.cpf as string,
         inscricao_estadual_destinatario: order.cliente?.inscricao_estadual as string,
@@ -143,8 +143,8 @@ class CreateInvoiceService {
           especie: requestData.especie,
           marca: requestData.marca,
           numero: requestData.numero,
-          peso_bruto: parseFloat(requestData?.peso_bruto?.toString().replace(",",".") as string),
-          peso_liquido: parseFloat(requestData?.peso_liquido?.toString().replace(",",".") as string)
+          peso_bruto: parseFloat(requestData?.peso_bruto?.toString().replace(",", ".") as string),
+          peso_liquido: parseFloat(requestData?.peso_liquido?.toString().replace(",", ".") as string)
         }],
         items: order.itens.map(item => {
           return {
